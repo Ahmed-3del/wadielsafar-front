@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment, type ReactNode } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Hero } from "@/components/hero/Hero";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
@@ -12,6 +13,8 @@ import { TrustSection } from "@/components/services/TrustSection";
 import { PartnersWall } from "@/components/partners/PartnersWall";
 import { Testimonials } from "@/components/testimonials/Testimonials";
 import { FinalCta } from "@/components/layout/FinalCta";
+import { resolveHomeSections } from "@/lib/api/resolve-home-sections";
+import type { HomeSectionKey } from "@/types/home-section";
 import type { Locale } from "@/i18n/routing";
 
 interface HomePageProps {
@@ -27,33 +30,43 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
   return { description: t("description") };
 }
 
+/*
+ * Every block the homepage can show, keyed to what the panel calls it.
+ *
+ * The hero is not in here: it carries the booking widget, which is the point
+ * of the page, so it is always first and cannot be switched off. The order and
+ * the on/off state of everything else are an editorial decision, not a
+ * deployment — see apps/pages HomeSection.
+ */
+const SECTIONS: Record<HomeSectionKey, () => ReactNode> = {
+  SERVICES: () => <ServicesGrid />,
+  EXPLORER: () => <BudgetExplorer />,
+  DESTINATIONS: () => <PopularDestinations />,
+  PACKAGES: () => <FeaturedPackages />,
+  OFFERS: () => <FeaturedOffers />,
+  VISAS: () => <VisaSection />,
+  CRUISES: () => <FeaturedCruises />,
+  TRUST: () => <TrustSection />,
+  PARTNERS: () => <PartnersWall />,
+  TESTIMONIALS: () => <Testimonials />,
+  CTA: () => <FinalCta />,
+};
+
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const sections = await resolveHomeSections();
+
   return (
     <>
-      {/* Order follows the customer's decision path: what can I book (Hero,
-          Services) → what can I afford (Explorer) → where could I go
-          (Destinations) → what does it cost (Packages, Offers) → the one
-          service people arrive specifically for (Visas) → can I trust them
-          (Trust, Testimonials) → act (FinalCta).
-
-          The explorer comes before the destination and package rails on
-          purpose: those show trips and leave the reader to check prices one at
-          a time, which is the question backwards. */}
       <Hero />
-      <ServicesGrid />
-      <BudgetExplorer />
-      <PopularDestinations />
-      <FeaturedPackages />
-      <FeaturedOffers />
-      <VisaSection />
-      <FeaturedCruises />
-      <TrustSection />
-      <PartnersWall />
-      <Testimonials />
-      <FinalCta />
+      {/* Fragment, not a wrapper div: each section owns its own full-bleed
+          background, and an extra block element between them and the page
+          would be one more thing to keep out of the way. */}
+      {sections.map((key) => (
+        <Fragment key={key}>{SECTIONS[key]()}</Fragment>
+      ))}
     </>
   );
 }

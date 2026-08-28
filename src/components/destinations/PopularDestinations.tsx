@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -41,13 +42,16 @@ export async function PopularDestinations() {
               <DestinationCard destination={featured} featured className="lg:row-span-2" />
             </Reveal>
             {rest.length > 0 ? (
-              <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
+              /* The supporting cards swipe on a phone. Stacked, they turned a
+                 section that is meant to be a glance into two screens of
+                 scrolling before the visitor reached anything else. */
+              <ScrollGrid label={t("title")} gridClassName="sm:grid-cols-2 sm:gap-5">
                 {rest.map((destination, index) => (
                   <Reveal key={destination.id} delay={(index + 1) * 70}>
                     <DestinationCard destination={destination} />
                   </Reveal>
                 ))}
-              </div>
+              </ScrollGrid>
             ) : null}
           </div>
         ) : (

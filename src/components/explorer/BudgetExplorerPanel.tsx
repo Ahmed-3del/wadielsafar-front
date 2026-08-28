@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type CSSProperties } from "react";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PackageCard } from "@/components/packages/PackageCard";
@@ -129,11 +130,15 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
       </p>
 
       {results.length > 0 ? (
-        <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ScrollGrid
+          label={t("title")}
+          gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-5"
+        >
           {results.slice(0, 6).map((pkg) => (
             <PackageCard key={pkg.id} pkg={pkg} />
           ))}
-        </div>
+        </ScrollGrid>
       ) : (
         /* An empty result is the most valuable moment here, not a dead end:
            this is a traveller who has just told us their budget and found

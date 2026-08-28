@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -37,7 +38,11 @@ export async function ServicesGrid() {
       <Container>
         <SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+        <ScrollGrid
+          label={t("title")}
+          gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-10"
+        >
           {FALLBACK_SERVICES.map((service, index) => {
             const Icon = ICONS[service.key];
             return (
@@ -69,7 +74,7 @@ export async function ServicesGrid() {
               </Reveal>
             );
           })}
-        </div>
+        </ScrollGrid>
       </Container>
     </Section>
   );

@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -24,11 +25,15 @@ export async function FeaturedOffers() {
         </div>
 
         {offers.length > 0 ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ScrollGrid
+            label={t("title")}
+            gridClassName="sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-10"
+          >
             {offers.map((offer) => (
               <OfferCard key={offer.id} offer={offer} />
             ))}
-          </div>
+          </ScrollGrid>
         ) : (
           <p className="mt-10 text-sand-500">{t("empty")}</p>
         )}

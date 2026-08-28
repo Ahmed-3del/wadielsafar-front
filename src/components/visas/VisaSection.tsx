@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -31,13 +32,17 @@ export async function VisaSection() {
         </div>
 
         {featured.length > 0 ? (
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ScrollGrid
+            label={t("title")}
+            gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-10"
+          >
             {featured.map((visa, index) => (
               <Reveal key={visa.id} delay={index * 70}>
                 <VisaCard visa={visa} />
               </Reveal>
             ))}
-          </div>
+          </ScrollGrid>
         ) : (
           <EmptyState
             title={t("empty")}

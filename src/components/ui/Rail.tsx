@@ -41,7 +41,11 @@ export function Rail({ children, className, label }: RailProps) {
         aria-label={label}
         tabIndex={0}
         className={cn(
-          "no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2",
+          // `relative` so the scroller is the containing block for anything
+          // absolutely positioned inside a card. Without it the clip does not
+          // apply to those, and one `sr-only` span was enough to drag a whole
+          // page sideways — see ScrollGrid, where that actually happened.
+          "no-scrollbar relative -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2",
           "sm:gap-6 lg:mx-0 lg:px-0",
           className,
         )}

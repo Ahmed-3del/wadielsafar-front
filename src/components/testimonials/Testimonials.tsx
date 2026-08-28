@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -23,11 +24,15 @@ export async function Testimonials() {
         />
 
         {testimonials.length > 0 ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ScrollGrid
+            label={t("title")}
+            gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-10"
+          >
             {testimonials.map((testimonial) => (
               <TestimonialCard key={testimonial.id} testimonial={testimonial} />
             ))}
-          </div>
+          </ScrollGrid>
         ) : (
           <p className="mt-10 text-center text-sand-500">{t("empty")}</p>
         )}

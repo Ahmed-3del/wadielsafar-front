@@ -11,3 +11,4 @@ export * as offersApi from "./offers";
 export * as inquiriesApi from "./inquiries";
 export * as testimonialsApi from "./testimonials";
 export * as companyApi from "./company";
+export * as homeSectionsApi from "./home-sections";
