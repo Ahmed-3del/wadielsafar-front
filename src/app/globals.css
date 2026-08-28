@@ -1,0 +1,521 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. See docs/design/strategy.md for the reasoning; the short
+ * version: navy and gold come from the logo, and the neutrals are warm (sand)
+ * rather than cool grey because warm neutrals read as hospitality while cool
+ * greys read as software — and every competitor uses cool greys.
+ */
+@theme {
+  /* Brand */
+  --color-navy-50: #f2f3f7;
+  --color-navy-100: #e2e4ee;
+  --color-navy-200: #c5c9dd;
+  --color-navy-300: #9aa1c1;
+  --color-navy-400: #6b74a1;
+  --color-navy-500: #454e84;
+  --color-navy-600: #2c3468;
+  --color-navy-700: #1a2153;
+  --color-navy-800: #0f1444;
+  --color-navy-900: #060940;
+  --color-navy-950: #03051f;
+
+  --color-gold-50: #fdf9ed;
+  --color-gold-100: #faf0cf;
+  --color-gold-200: #f4e0a0;
+  --color-gold-300: #eecd6c;
+  --color-gold-400: #e7c05e;
+  --color-gold-500: #e8ba30;
+  --color-gold-600: #c99a1c;
+  --color-gold-700: #a17716;
+  --color-gold-800: #7c5b16;
+  --color-gold-900: #654a17;
+
+  /* Neutrals */
+  --color-sand-50: #faf9f7;
+  --color-sand-100: #f4f2ee;
+  --color-sand-200: #e8e4dd;
+  --color-sand-300: #d6d0c5;
+  --color-sand-400: #b3aa9c;
+  --color-sand-500: #8d8375;
+  --color-sand-600: #6b6255;
+  --color-sand-700: #4f483e;
+  --color-sand-800: #332f28;
+  --color-sand-900: #1c1a16;
+
+  /* Semantic */
+  --color-success-50: #ecfdf3;
+  --color-success-600: #067647;
+  --color-warning-50: #fffaeb;
+  --color-warning-600: #b54708;
+  --color-danger-50: #fef3f2;
+  --color-danger-600: #d92d20;
+  --color-whatsapp: #25d366;
+
+  /* Radius — generous, which is most of what makes a UI read as premium */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+
+  /* Shadows — layered and low-opacity, tinted navy rather than pure black */
+  --shadow-xs: 0 1px 2px 0 rgb(6 9 64 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(6 9 64 / 0.08), 0 1px 2px -1px rgb(6 9 64 / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(6 9 64 / 0.08), 0 2px 6px -2px rgb(6 9 64 / 0.05);
+  --shadow-lg: 0 12px 28px -6px rgb(6 9 64 / 0.12), 0 4px 10px -4px rgb(6 9 64 / 0.06);
+  --shadow-xl: 0 24px 48px -12px rgb(6 9 64 / 0.18);
+
+  --font-sans: var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: var(--color-navy-900);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/*
+ * Western digits in Arabic are enforced at the Intl layer (see
+ * lib/utils/format-date.ts), not here — a font feature cannot change
+ * Arabic-Indic code points into Latin ones. This only nudges fonts that expose
+ * lining figures as an OpenType variant.
+ */
+[lang="ar"] {
+  font-feature-settings: "lnum";
+}
+
+/* Scroll-reveal: hidden until observed, so content never flashes in unstyled. */
+@utility reveal {
+  opacity: 0;
+  transform: translateY(1rem);
+  transition:
+    opacity 0.6s var(--ease-out-soft),
+    transform 0.6s var(--ease-out-soft);
+}
+
+@utility reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Horizontal rails: momentum scrolling on mobile, no visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* A single visible focus treatment across the whole site. */
+:focus-visible {
+  outline: 2px solid var(--color-gold-600);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/*
+ * Booking widget controls. Native date and select chrome is inconsistent
+ * across browsers and, in RTL, the browser's own calendar icon lands in the
+ * middle of the field beside ours — so we suppress it and let the whole field
+ * open the picker instead.
+ */
+.booking-control {
+  width: 100%;
+  background-color: transparent;
+  text-align: start;
+}
+
+.booking-control:focus {
+  outline: none;
+}
+
+.booking-control[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+select.booking-control {
+  appearance: none;
+  padding-inline-end: 1.15rem;
+  background-repeat: no-repeat;
+  background-size: 0.85rem;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238d8375' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+[dir="rtl"] select.booking-control {
+  background-position: left center;
+}
+
+[dir="ltr"] select.booking-control {
+  background-position: right center;
+}
+
+/*
+ * Chrome renders the editable part of a date input LTR and ignores text-align
+ * on the input itself, so in RTL the value parks on the far left of the field.
+ * Sizing the inner edit section and aligning it is the one approach that
+ * actually moves it (verified in-browser against text-align and direction).
+ */
+[dir="rtl"] input[type="date"]::-webkit-datetime-edit {
+  width: 100%;
+  /* Tailwind's preflight makes this element inline-flex, so text-align has no
+     effect on it — the flex alignment property is what actually moves the
+     value to the start of an RTL field. */
+  justify-content: flex-end;
+}
+
+/* =========================================================================
+ * Mobile app shell
+ * ---------------------------------------------------------------------
+ * Below lg the site runs behind a fixed bottom tab bar. Everything that
+ * anchors to the bottom of the viewport has to clear it, and the page has to
+ * end above it.
+ * ========================================================================= */
+
+:root {
+  /* Bar height plus whatever the device reserves for its home indicator. */
+  --bottom-nav-height: calc(4rem + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 1023px) {
+  /* The bar overlays the page, so the last section would sit under it. Padding
+     on the body rather than a spacer element keeps this out of every page. */
+  body {
+    padding-bottom: var(--bottom-nav-height);
+  }
+
+  /* Detail-page price bars stack directly on top of the tab bar. Declared
+     unlayered so it outranks Tailwind's bottom-0 utility, which lives in
+     @layer utilities. */
+  [data-sticky-cta] {
+    bottom: var(--bottom-nav-height);
+  }
+}
+
+/*
+ * Touch feel. The grey flash a mobile browser paints on every tap is the
+ * clearest giveaway that something is a web page rather than an app. Removing
+ * it is only safe because buttonVariants carries its own pressed state — a
+ * blanket :active transform here would shrink plain text links too, and would
+ * turn every link into a containing block for any fixed child.
+ */
+@media (hover: none) {
+  a,
+  button,
+  [role="button"],
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+}
+
+/* =========================================================================
+ * Motion
+ * ---------------------------------------------------------------------
+ * Everything below is decorative. The global prefers-reduced-motion rule
+ * above collapses each of these to ~0ms, so none of it needs its own guard.
+ * ========================================================================= */
+
+/*
+ * Navigation beam. A gold hairline creeps across the top of the viewport with
+ * a plane riding its leading tip, so a click that has to wait on the network
+ * still says "something is happening" without covering the page the traveller
+ * is leaving.
+ *
+ * Width, not transform: the bar is 3px tall, so the paint cost is negligible,
+ * and animating the inline size means a single set of keyframes fills
+ * rightwards in English and leftwards in Arabic with no direction branch.
+ */
+.route-beam {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 100;
+  height: 3px;
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    var(--color-gold-600),
+    var(--color-gold-400) 70%,
+    var(--color-gold-300)
+  );
+  box-shadow: 0 0 14px 1px rgb(232 186 48 / 0.55);
+}
+
+.route-beam__plane {
+  position: absolute;
+  inset-inline-end: -0.5rem;
+  inset-block-start: 50%;
+  height: 1.05rem;
+  width: 1.05rem;
+  margin-block-start: -0.525rem;
+  color: var(--color-gold-400);
+  filter: drop-shadow(0 0 5px rgb(232 186 48 / 0.7));
+}
+
+/* Creeps and then stalls: the real duration is unknowable, and a bar that
+   reaches the end before the page does is a lie the next click exposes. */
+.route-beam.is-loading {
+  opacity: 1;
+  animation: route-beam-grow 10s var(--ease-out-soft) forwards;
+}
+
+.route-beam.is-done {
+  opacity: 1;
+  animation: route-beam-finish 420ms ease-out forwards;
+}
+
+@keyframes route-beam-grow {
+  0% {
+    width: 0;
+  }
+  30% {
+    width: 42%;
+  }
+  70% {
+    width: 74%;
+  }
+  100% {
+    width: 88%;
+  }
+}
+
+@keyframes route-beam-finish {
+  60% {
+    width: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+/* Entrance for freshly navigated content. Transform-only, so it cannot move
+   anything already painted and cannot register as layout shift. */
+.page-enter {
+  animation: page-enter 460ms var(--ease-out-soft) both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Branded loading mark: the logo held still while a plane circles it. */
+.brand-orbit {
+  animation: brand-orbit 2.8s linear infinite;
+}
+
+@keyframes brand-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Orbit follows the reading direction, so in Arabic the plane travels the way
+   the eye already scans rather than against it. */
+[dir="rtl"] .brand-orbit {
+  animation-name: brand-orbit-rtl;
+}
+
+@keyframes brand-orbit-rtl {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.brand-pulse {
+  animation: brand-pulse 2.8s var(--ease-out-soft) infinite;
+}
+
+@keyframes brand-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+/* Sweeping highlight for skeleton bars, so a slow page reads as loading
+   rather than broken. */
+@utility shimmer {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.55),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/*
+ * Card hover. One utility rather than repeating four transition properties on
+ * every card in the site — and it keeps the lift identical across packages,
+ * hotels, flights and visas, which is what makes them read as one product.
+ */
+@utility card-lift {
+  transition:
+    transform 0.4s var(--ease-out-soft),
+    box-shadow 0.4s var(--ease-out-soft),
+    border-color 0.3s var(--ease-out-soft);
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-0.25rem);
+      box-shadow: var(--shadow-lg);
+    }
+  }
+}
+
+/* Nose-forward in both directions: the plane marker points along the reading
+   direction, so in Arabic it faces left. */
+[dir="rtl"] .plane-mark-flip {
+  transform: scaleX(-1);
+  transform-box: view-box;
+  transform-origin: center;
+}
+
+
+
+/*
+ * Footer illustration. Its own page tone is a few units warmer than the sand
+ * panel it sits on — invisible as a field, but enough to draw a rectangle
+ * where the two meet. Feathering the four edges dissolves that boundary; the
+ * fade is kept narrow because the outermost landmarks sit close to the frame.
+ */
+.footer-scene {
+  /* Top and bottom carry most of the work: those are the edges that meet the
+     panel. The sides are barely touched — at full bleed they land on the
+     viewport edge, and the outermost landmarks sit close to the frame. */
+  --edge: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent),
+    linear-gradient(to right, transparent, #000 1.5%, #000 98.5%, transparent);
+  -webkit-mask-image: var(--edge);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--edge);
+  mask-composite: intersect;
+}
+
+/*
+ * Budget slider. A native range input, restyled — it keeps keyboard support,
+ * the arrow keys, and the platform's own touch target behaviour, none of which
+ * a div-and-pointer-events reimplementation gets for free.
+ */
+.range-gold {
+  --range-fill: 0%;
+  appearance: none;
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  /* Hard stop rather than a blend: the track has a filled side and an empty
+     one, not a fade between them. */
+  background: linear-gradient(
+    to right,
+    var(--color-gold-400) var(--range-fill),
+    var(--color-sand-200) var(--range-fill)
+  );
+}
+
+/* The thumb travels right-to-left in Arabic, so the fill has to start from the
+   same edge it does. */
+[dir="rtl"] .range-gold {
+  background: linear-gradient(
+    to left,
+    var(--color-gold-400) var(--range-fill),
+    var(--color-sand-200) var(--range-fill)
+  );
+}
+
+.range-gold::-webkit-slider-thumb {
+  appearance: none;
+  height: 1.65rem;
+  width: 1.65rem;
+  border-radius: 999px;
+  background: var(--color-gold-500);
+  border: 4px solid #fff;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.15s var(--ease-out-soft);
+}
+
+.range-gold::-webkit-slider-thumb:active {
+  transform: scale(1.12);
+}
+
+.range-gold::-moz-range-thumb {
+  height: 1.65rem;
+  width: 1.65rem;
+  border-radius: 999px;
+  background: var(--color-gold-500);
+  border: 4px solid #fff;
+  box-shadow: var(--shadow-md);
+}
+
+/* The picker list, dropped in through a portal. Short and small — it appears
+   under the field the traveller just tapped, so it needs to read as attached
+   to it rather than as a new layer arriving. The global
+   prefers-reduced-motion rule above already flattens it. */
+.animate-combobox {
+  animation: combobox-in 0.14s var(--ease-out-soft);
+}
+
+@keyframes combobox-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+}

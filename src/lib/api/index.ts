@@ -1,0 +1,13 @@
+export * from "./client";
+export * as destinationsApi from "./destinations";
+export * as packagesApi from "./packages";
+export * as servicesApi from "./services";
+export * as visasApi from "./visas";
+export * as hotelsApi from "./hotels";
+export * as flightsApi from "./flights";
+export * as airportsApi from "./airports";
+export * as cruisesApi from "./cruises";
+export * as offersApi from "./offers";
+export * as inquiriesApi from "./inquiries";
+export * as testimonialsApi from "./testimonials";
+export * as companyApi from "./company";

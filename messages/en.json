@@ -1,0 +1,939 @@
+{
+  "Metadata": {
+    "titleTemplate": "%s | Wadi Al Safar",
+    "title": "Wadi Al Safar | Saudi Travel & Tourism",
+    "description": "Plan flights, hotels, visas, Umrah & Hajj packages, and cruises with Wadi Al Safar, your trusted Saudi travel partner."
+  },
+  "Brand": {
+    "name": "Wadi Al Safar"
+  },
+  "Nav": {
+    "home": "Home",
+    "flights": "Flights",
+    "hotels": "Hotels",
+    "packages": "Packages",
+    "visas": "Visas",
+    "cruises": "Cruises",
+    "offers": "Offers",
+    "corporate": "Corporate",
+    "about": "About Us",
+    "contact": "Contact Us",
+    "menu": "Menu",
+    "close": "Close menu",
+    "destinations": "Destinations"
+  },
+  "LocaleSwitcher": {
+    "ar": "العربية",
+    "en": "English",
+    "label": "Language"
+  },
+  "Footer": {
+    "description": "Wadi Al Safar is a Saudi travel and tourism company offering flights, hotels, visas, curated packages, and cruises.",
+    "quickLinksTitle": "Quick Links",
+    "contactTitle": "Get in Touch",
+    "servicesTitle": "Our Services",
+    "rights": "All rights reserved.",
+    "phone": "Phone",
+    "email": "Email",
+    "commercialRegistry": "Commercial registry",
+    "taxNumber": "Tax number",
+    "skylineCaption": "From Saudi Arabia to the world",
+    "socialTitle": "Follow us",
+    "whatsappLine": "Message us on WhatsApp",
+    "branchesTitle": "Our branches",
+    "branches": {
+      "main": "Main branch",
+      "one": "Branch 1",
+      "two": "Branch 2",
+      "three": "Branch 3"
+    },
+    "credentialsTitle": "Registration"
+  },
+  "Hero": {
+    "eyebrow": "Wadi Al Safar",
+    "title": "Your Journey Across Saudi Arabia and Beyond",
+    "subtitle": "Flights, hotels, visas, Umrah & Hajj packages, and cruises — planned with a trusted local partner.",
+    "ctaPrimary": "Request a Quote",
+    "ctaSecondary": "Explore Packages"
+  },
+  "Services": {
+    "eyebrow": "What We Offer",
+    "title": "Everything You Need to Travel",
+    "description": "From a single flight to a fully planned pilgrimage, our team handles every detail of your trip.",
+    "flights": {
+      "title": "Flights",
+      "description": "Domestic and international fares with flexible booking options."
+    },
+    "hotels": {
+      "title": "Hotels",
+      "description": "Handpicked stays near Makkah, Madinah, and destinations worldwide."
+    },
+    "packages": {
+      "title": "Packages",
+      "description": "Umrah, Hajj, and holiday packages tailored to your group."
+    },
+    "visas": {
+      "title": "Visas",
+      "description": "Fast, guided visa processing for Saudi and international travel."
+    },
+    "cruises": {
+      "title": "Cruises",
+      "description": "Sea journeys to the region's most scenic coastlines."
+    },
+    "corporate": {
+      "title": "Corporate Travel",
+      "description": "Dedicated travel management for businesses and delegations."
+    },
+    "more": "Learn more"
+  },
+  "Offers": {
+    "eyebrow": "Limited Time",
+    "title": "Featured Offers",
+    "description": "Seasonal deals on flights, hotels, and packages.",
+    "viewAll": "View All Offers",
+    "empty": "New offers are being prepared. Please check back soon.",
+    "until": "Valid until {date}",
+    "validPeriod": "Valid from {start} to {end}",
+    "discount": "{percent}% off",
+    "was": "Was {price}",
+    "details": "View Offer",
+    "statuses": {
+      "SCHEDULED": "Starts soon",
+      "ACTIVE": "Available now",
+      "EXPIRED": "Ended"
+    }
+  },
+  "Destinations": {
+    "eyebrow": "Where To Next",
+    "title": "Popular Destinations",
+    "description": "Discover the places our travelers love most.",
+    "viewAll": "View All Destinations",
+    "empty": "Destinations will appear here soon."
+  },
+  "Packages": {
+    "eyebrow": "Curated For You",
+    "title": "Featured Packages",
+    "description": "Ready-made itineraries for Umrah, Hajj, and leisure travel.",
+    "viewAll": "View All Packages",
+    "empty": "Featured packages will appear here soon.",
+    "duration": "{days} days",
+    "priceFrom": "From {price}",
+    "details": "View Details",
+    "durationNights": "{days} days / {nights} nights",
+    "badgeFeatured": "Most popular",
+    "discover": "Explore trip",
+    "startingFrom": "Starting from",
+    "requestTrip": "Request a custom trip",
+    "includedTitle": "What's included",
+    "itineraryTitle": "Daily programme",
+    "dayLabel": "Day {day}",
+    "planPrompt": "Not quite the trip you had in mind?",
+    "planPromptBody": "Plan your own — tell us the destination, the length and the services you want, and we'll put together a custom quote.",
+    "planCta": "Plan your own trip"
+  },
+  "Visas": {
+    "eyebrow": "Travel Documents",
+    "title": "Visa Services",
+    "description": "We guide you through visa requirements and processing for popular destinations.",
+    "viewAll": "View All Visa Types",
+    "empty": "Visa information will appear here soon.",
+    "processingTime": "{days}-day processing",
+    "priceFrom": "From {price}",
+    "price": "Fees",
+    "processingLabel": "Processing",
+    "days": "{days} working days",
+    "apply": "Start visa application",
+    "searchPlaceholder": "Search a country or visa type",
+    "allCountries": "All countries",
+    "noResults": "No matching visas",
+    "noResultsBody": "Try another country, or contact us and we'll help.",
+    "countryLabel": "Country",
+    "typeLabel": "Visa type",
+    "validityLabel": "Validity",
+    "purposeLabel": "Purpose of travel",
+    "purposes": {
+      "TOURISM": "Tourism",
+      "BUSINESS": "Business",
+      "STUDY": "Study",
+      "UMRAH": "Umrah",
+      "OTHER": "Other",
+      "ALL": "All purposes"
+    }
+  },
+  "WhyUs": {
+    "eyebrow": "Why Wadi Al Safar",
+    "title": "A Travel Partner You Can Trust",
+    "description": "Local expertise, transparent pricing, and support at every step of your journey.",
+    "reason1Title": "Local Expertise",
+    "reason1Description": "Deep knowledge of Saudi travel, Umrah, and Hajj logistics.",
+    "reason2Title": "Trusted Support",
+    "reason2Description": "A dedicated team available before, during, and after your trip.",
+    "reason3Title": "Transparent Pricing",
+    "reason3Description": "Clear quotes with no hidden fees.",
+    "reason4Title": "Tailored Itineraries",
+    "reason4Description": "Packages built around your schedule and budget."
+  },
+  "Testimonials": {
+    "eyebrow": "Traveler Stories",
+    "title": "What Our Clients Say",
+    "description": "Real experiences from travelers we've helped.",
+    "empty": "Traveler reviews will appear here soon.",
+    "ratingLabel": "Rated {rating} out of 5"
+  },
+  "FinalCta": {
+    "title": "Ready to Plan Your Next Trip?",
+    "description": "Tell us what you need and a booking agent will be in touch during working hours.",
+    "cta": "Contact Us"
+  },
+  "InquiryForm": {
+    "title": "Request Information",
+    "description": "Share your travel plans and we'll follow up shortly.",
+    "name": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "serviceType": "Service Needed",
+    "destination": "Destination (optional)",
+    "travelDate": "Preferred Travel Date (optional)",
+    "message": "Message",
+    "messagePlaceholder": "Tell us about your travel plans...",
+    "submit": "Send Inquiry",
+    "submitting": "Sending...",
+    "success": "Thank you! Your inquiry has been received. We'll be in touch soon.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errors": {
+      "name": "Please enter your full name (at least 2 characters).",
+      "email": "Please enter a valid email address.",
+      "phone": "Please enter a valid phone number.",
+      "message": "Please enter a message of at least 10 characters.",
+      "travelDate": "Choose a date from today onwards."
+    }
+  },
+  "Flights": {
+    "empty": "Flight deals will appear here soon.",
+    "priceFrom": "From {price}",
+    "baggage": "{kg} kg baggage",
+    "baggageLabel": "Baggage Allowance",
+    "kilograms": "{kg} kg",
+    "departure": "Departure",
+    "returnDate": "Return",
+    "airline": "Airline",
+    "cabin": "Cabin Class",
+    "trip": "Trip Type",
+    "details": "View Deal",
+    "requestBooking": "Request This Fare",
+    "tripTypes": {
+      "ONE_WAY": "One way",
+      "ROUND_TRIP": "Round trip",
+      "MULTI_CITY": "Multi-city"
+    },
+    "cabinClasses": {
+      "ECONOMY": "Economy",
+      "PREMIUM_ECONOMY": "Premium Economy",
+      "BUSINESS": "Business",
+      "FIRST": "First Class"
+    },
+    "eyebrow": "Selected fares",
+    "dealsTitle": "Featured flight deals",
+    "dealsDescription": "Selected fares on the routes our travellers ask for most."
+  },
+  "Hotels": {
+    "empty": "Hotels will appear here soon.",
+    "priceFrom": "From {price}",
+    "perNight": "per night",
+    "starRating": "{count, plural, one {# star hotel} other {# star hotel}}",
+    "amenities": "Amenities",
+    "address": "Address",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "about": "About This Hotel",
+    "details": "View Hotel",
+    "requestBooking": "Request a Room",
+    "eyebrow": "Selected stays",
+    "featuredTitle": "Featured hotels",
+    "featuredDescription": "Stays we've chosen carefully in the most requested destinations."
+  },
+  "FlightsPage": {
+    "title": "Flight booking",
+    "description": "Tell us your trip details and our team will prepare the best options and fares.",
+    "resultsFor": "Flights to {query}",
+    "noResultsBody": "We don't have a matching deal in our current selection — tell us your trip details and we'll prepare a quote.",
+    "requestQuote": "Request a quote",
+    "whatsappMessageWithQuery": "Hello, I'm looking for a flight to {query}.",
+    "formTitle": "Trip details",
+    "how": {
+      "title": "How your booking works",
+      "description": "No automated search and no online payment — a booking agent handles your request from start to finish.",
+      "steps": {
+        "send": {
+          "title": "Send us your route",
+          "body": "Fill in the two cities, your dates and how many are travelling. No account and no card required."
+        },
+        "options": {
+          "title": "We put the options together",
+          "body": "A booking agent reviews the available routings and fares, and sends you the comparison on WhatsApp."
+        },
+        "issue": {
+          "title": "You confirm and we issue",
+          "body": "Once you pick the option that suits you, we complete the booking and send the ticket electronically."
+        }
+      }
+    },
+    "faq": {
+      "title": "Flight questions",
+      "items": {
+        "cost": {
+          "q": "Is anything charged when I send the request?",
+          "a": "No. The form is a quote request only, and nothing is payable until you confirm the option you chose."
+        },
+        "reply": {
+          "q": "When will I hear back?",
+          "a": "A booking agent contacts you during working hours, on the WhatsApp number or phone you entered."
+        },
+        "change": {
+          "q": "Can I change the details after sending?",
+          "a": "Yes. Tell the agent on WhatsApp — there is no need to fill the form in again."
+        },
+        "multicity": {
+          "q": "What about multi-city trips or group bookings?",
+          "a": "Write the full routing in the notes field and the agent will build the quote around it."
+        }
+      }
+    }
+  },
+  "FlightDetailPage": {
+    "backToFlights": "Back to Flights",
+    "route": "Route",
+    "notFound": "Flight deal not found.",
+    "priceNote": "Starting price per person for a return trip; it changes with the dates and availability at the time of booking.",
+    "whatsappMessage": "Hello, I would like to ask about the flight deal {route}.",
+    "aboutTitle": "Deal details"
+  },
+  "HotelsPage": {
+    "title": "Hotel booking",
+    "description": "Choose your destination and dates, and we'll recommend a stay that fits your budget.",
+    "formTitle": "Stay details",
+    "how": {
+      "title": "How your stay is booked",
+      "description": "Prices shown on the site are indicative; the agent confirms the final price before anything is booked.",
+      "steps": {
+        "tell": {
+          "title": "Tell us city and dates",
+          "body": "Enter the destination, your check-in and check-out dates, and how many rooms and guests."
+        },
+        "shortlist": {
+          "title": "We shortlist options",
+          "body": "We send you hotels within your budget, with photos, location and what the room includes."
+        },
+        "confirm": {
+          "title": "You confirm and we send the voucher",
+          "body": "Once you approve an option we complete the booking and send you the confirmation."
+        }
+      }
+    },
+    "faq": {
+      "title": "Hotel questions",
+      "items": {
+        "price": {
+          "q": "Is the price shown final?",
+          "a": "No — it is a starting price that changes with the dates, room type and availability. The agent confirms the final price before booking."
+        },
+        "breakfast": {
+          "q": "Does the stay include breakfast?",
+          "a": "It varies by hotel and room type, and is stated in the offer we send you."
+        },
+        "rooms": {
+          "q": "Can I book more than one room?",
+          "a": "Yes — set the number of rooms and guests in the form and the quote is built on that basis."
+        },
+        "transfers": {
+          "q": "Can you arrange airport transfers?",
+          "a": "Yes — mention it in the notes and the agent will add it to the quote."
+        }
+      }
+    }
+  },
+  "HotelDetailPage": {
+    "backToHotels": "Back to Hotels",
+    "notFound": "Hotel not found.",
+    "priceNote": "Starting price per night; it changes with the dates, room type and availability.",
+    "whatsappMessage": "Hello, I would like to ask about staying at {hotel}."
+  },
+  "PackagesPage": {
+    "title": "Packages",
+    "description": "Explore our full range of Umrah, Hajj, and holiday packages.",
+    "filtered": "Matching your search",
+    "clearFilters": "Show all packages"
+  },
+  "PackageDetailPage": {
+    "notFound": "Package not found.",
+    "backToPackages": "Back to Packages",
+    "priceNote": "Per person in a double room; varies by season and group size.",
+    "bookNow": "Book now",
+    "whatsappMessage": "Hello, I'd like to ask about the {package} package."
+  },
+  "VisasPage": {
+    "title": "Visas",
+    "description": "Know which visa you need, what it costs, how long it takes and which documents are required — before you start.",
+    "headline": "Where are you travelling?"
+  },
+  "VisaDetailPage": {
+    "requirements": "Requirements",
+    "processingTime": "Processing Time",
+    "price": "Price",
+    "notFound": "Visa type not found.",
+    "backToVisas": "Back to Visas",
+    "requirementsTitle": "Required documents",
+    "overviewTitle": "Overview",
+    "faqTitle": "Common questions",
+    "applyCta": "Start visa application",
+    "whatsappMessage": "Hello, I'd like to ask about the {visa} visa.",
+    "priceNote": "Fees include our service charge. Embassies may charge additional fees.",
+    "faq": {
+      "q1": {
+        "q": "Are the fees all-inclusive?",
+        "a": "The price shown includes our service fee. Some embassies charge government or application-centre fees paid directly; we explain these before you start."
+      },
+      "q2": {
+        "q": "How long does processing take?",
+        "a": "The stated time is an estimate in working days and starts once your documents are complete. It varies by embassy and travel season."
+      },
+      "q3": {
+        "q": "What if the application is refused?",
+        "a": "We review your file before submitting to reduce the chance of refusal. The decision rests solely with the embassy, and approval cannot be guaranteed."
+      }
+    },
+    "applyTitle": "Apply for {visa}",
+    "applyBody": "Fill in the details below and our team will contact you to complete the process and arrange biometrics if required.",
+    "noRequirements": "We'll share the full document checklist as soon as you start your application."
+  },
+  "CruisesPage": {
+    "title": "Cruises",
+    "description": "Choose your next sailing — destination, duration, itinerary and what's included.",
+    "noResultsBody": "Tell us the destination and dates that suit you and we'll prepare a quote.",
+    "filtered": "Matching your search",
+    "clearFilters": "Show all cruises"
+  },
+  "OffersPage": {
+    "title": "Offers",
+    "description": "All current promotions and limited-time deals."
+  },
+  "OfferDetailPage": {
+    "backToOffers": "Back to Offers",
+    "validity": "Validity",
+    "notFound": "Offer not found."
+  },
+  "CorporatePage": {
+    "title": "Corporate Travel",
+    "description": "Travel management solutions for businesses, teams, and delegations.",
+    "servicesTitle": "What we handle for your company",
+    "servicesDescription": "Travel arrangements for staff and delegations, from the ticket to the invoice.",
+    "services": {
+      "teams": {
+        "title": "Team travel",
+        "body": "Booking tickets and accommodation for your staff, for a single trip or across the year."
+      },
+      "delegations": {
+        "title": "Delegations and groups",
+        "body": "Arranging travel for delegations and conferences, with transfers and stays coordinated."
+      },
+      "visas": {
+        "title": "Employee visas",
+        "body": "Preparing visa files and following up applications for destinations that require one."
+      },
+      "billing": {
+        "title": "Invoiced to the company",
+        "body": "An invoice issued to the company rather than individual payment, with travel spend consolidated."
+      }
+    },
+    "how": {
+      "title": "How we work with companies",
+      "description": "One point of contact, rather than a different agent on every request.",
+      "steps": {
+        "talk": {
+          "title": "Get in touch",
+          "body": "Tell us the volume of your travel and the destinations you use most."
+        },
+        "account": {
+          "title": "We assign an account contact",
+          "body": "One person on our team follows your company's requests and knows its preferences."
+        },
+        "book": {
+          "title": "You send the request, we book",
+          "body": "You send the travel request and we come back with options, prices and booking details."
+        }
+      }
+    }
+  },
+  "AboutPage": {
+    "title": "About Us",
+    "description": "Learn about Wadi Al Safar and our mission."
+  },
+  "ContactPage": {
+    "title": "Contact Us",
+    "description": "Reach our team for questions or travel requests."
+  },
+  "NotFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has moved.",
+    "backHome": "Back to Home"
+  },
+  "ServiceTypes": {
+    "FLIGHT": "Flight",
+    "HOTEL": "Hotel",
+    "PACKAGE": "Package",
+    "VISA": "Visa",
+    "CRUISE": "Cruise",
+    "CORPORATE": "Corporate Travel",
+    "OTHER": "Other"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "sar": "SAR"
+  },
+  "Booking": {
+    "tabsLabel": "Choose a service",
+    "tabs": {
+      "flights": "Flights",
+      "hotels": "Hotels",
+      "packages": "Packages",
+      "visas": "Visas",
+      "cruises": "Cruises"
+    },
+    "roundTrip": "Round trip",
+    "oneWay": "One way",
+    "from": "From",
+    "to": "To",
+    "toPlaceholder": "City or airport",
+    "defaultOrigin": "Riyadh",
+    "depart": "Departure",
+    "return": "Return",
+    "travellers": "Travellers",
+    "travellerCount": "{count} traveller",
+    "destination": "Destination",
+    "anyDestination": "All destinations",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "guests": "Guests",
+    "guestCount": "{count} guest",
+    "budget": "Budget",
+    "anyBudget": "Any budget",
+    "upTo": "Up to SAR {amount}",
+    "visaDestination": "Where are you travelling?",
+    "chooseCountry": "Choose a country",
+    "visaFor": "Purpose of travel",
+    "anyVisaType": "All types",
+    "visaPurposes": {
+      "tourism": "Tourism",
+      "business": "Business",
+      "study": "Study"
+    },
+    "search": "Search",
+    "disclaimer": "We search our own curated packages and offers, then our team confirms details and pricing with you."
+  },
+  "Trust": {
+    "eyebrow": "Why Wadi Al Safar",
+    "title": "With you at every step of the journey",
+    "description": "A Saudi travel and tourism company — we plan, book and support you before, during and after your trip.",
+    "items": {
+      "destinations": {
+        "title": "More than 70 destinations",
+        "body": "Chosen carefully by our team, all over the world."
+      },
+      "support": {
+        "title": "Support before, during and after",
+        "body": "Our team is with you from the first question until you're home."
+      },
+      "team": {
+        "title": "A specialist team",
+        "body": "We recommend what fits your budget and dates, not what suits us."
+      },
+      "licensed": {
+        "title": "A licensed company",
+        "body": "Commercial registry {cr} — you're dealing with a registered Saudi business."
+      }
+    }
+  },
+  "QuickServices": {
+    "title": "More services",
+    "corporate": "Corporate travel",
+    "transport": "Transport",
+    "medical": "Medical tourism",
+    "study": "Study abroad",
+    "hajj": "Hajj & Umrah",
+    "events": "Events & conferences"
+  },
+  "Whatsapp": {
+    "cta": "Chat with us on WhatsApp",
+    "short": "WhatsApp",
+    "message": "Hello, I'd like to ask about Wadi Al Safar's services."
+  },
+  "DestinationsPage": {
+    "title": "Destinations",
+    "description": "Choose your next destination from our curated list.",
+    "packagesCount": "{count} packages",
+    "explore": "Explore destination",
+    "empty": "No destinations available yet",
+    "emptyBody": "Tell us where you want to go and we'll plan it with you.",
+    "planTrip": "Plan your trip",
+    "whatsappMessage": "Hello, I'd like to ask about a trip to {destination}.",
+    "packagesIn": "Packages in {destination}",
+    "noPackagesBody": "Get in touch and we'll build a custom trip to this destination."
+  },
+  "Common2": {
+    "bookNow": "Book now",
+    "viewDetails": "View details",
+    "startingFrom": "from",
+    "night": "per night",
+    "retry": "Try again",
+    "loadError": "Something went wrong loading results",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "VisaSteps": {
+    "eyebrow": "How it works",
+    "title": "Four steps to your visa",
+    "steps": {
+      "choose": {
+        "title": "Choose your destination",
+        "body": "Pick the country and the visa type that matches your purpose of travel."
+      },
+      "documents": {
+        "title": "Prepare your documents",
+        "body": "We send a clear checklist and review each document with you."
+      },
+      "review": {
+        "title": "We review and submit",
+        "body": "Our team checks the file is complete before submitting, to avoid refusals."
+      },
+      "receive": {
+        "title": "Receive your visa",
+        "body": "We track the application and notify you as soon as it's issued."
+      }
+    }
+  },
+  "RequestForm": {
+    "contactTitle": "Contact details",
+    "submit": "Send request",
+    "submitting": "Sending…",
+    "submitNote": "We'll review your request and come back with a quote during working hours.",
+    "required": "This field is required",
+    "phoneInvalid": "Enter a valid phone number.",
+    "emailInvalid": "Enter a valid email address",
+    "phoneHint": "A WhatsApp number gets you the fastest reply.",
+    "notesPlaceholder": "Anything else that helps us prepare your quote…",
+    "errorGeneric": "We couldn't send your request just now.",
+    "successTitle": "We've got your request",
+    "successBody": "Our team will confirm the details and send your quote. You can carry on directly over WhatsApp.",
+    "successDegraded": "We couldn't save the request on our side, but you can still send it on WhatsApp.",
+    "continueOnWhatsapp": "Continue on WhatsApp",
+    "waIntro": "Hello, I'd like to request {service}:",
+    "services": {
+      "FLIGHT": "a flight booking",
+      "HOTEL": "a hotel booking",
+      "VISA": "a visa",
+      "PACKAGE": "a custom travel package",
+      "CRUISE": "a cruise",
+      "CORPORATE": "corporate travel",
+      "OTHER": "a service"
+    },
+    "labels": {
+      "tripType": "Trip type",
+      "cabinClass": "Cabin class",
+      "from": "From",
+      "to": "To",
+      "depart": "Departure date",
+      "return": "Return date",
+      "passengers": "Passengers",
+      "city": "City or destination",
+      "stars": "Hotel rating",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "rooms": "Rooms",
+      "guests": "Guests",
+      "travellers": "Applicants",
+      "travelDate": "Expected travel date",
+      "name": "Full name",
+      "phone": "Mobile number",
+      "email": "Email",
+      "notes": "Notes",
+      "cityPlaceholder": "e.g. Dubai",
+      "destination": "Destination",
+      "nights": "Nights",
+      "hotelLevel": "Hotel level",
+      "services": "What should we include?",
+      "budget": "Approximate budget per person",
+      "destinationPlaceholder": "e.g. Georgia, Malaysia, or several places",
+      "travellersCount": "Travellers"
+    },
+    "options": {
+      "roundTrip": "Round trip",
+      "oneWay": "One way",
+      "anyStars": "Any rating",
+      "cabin": {
+        "ECONOMY": "Economy",
+        "PREMIUM_ECONOMY": "Premium economy",
+        "BUSINESS": "Business",
+        "FIRST": "First"
+      },
+      "hotelLevels": {
+        "3": "3 stars",
+        "4": "4 stars",
+        "5": "5 stars",
+        "any": "Any level"
+      },
+      "budgets": {
+        "under5k": "Under SAR 5,000",
+        "5to10k": "SAR 5,000 – 10,000",
+        "10to20k": "SAR 10,000 – 20,000",
+        "over20k": "Over SAR 20,000"
+      },
+      "services": {
+        "flights": "Flights",
+        "hotel": "Accommodation",
+        "transfers": "Transfers",
+        "tours": "Guided tours",
+        "visa": "Visa",
+        "insurance": "Travel insurance",
+        "meals": "Meals"
+      },
+      "anyBudget": "Any budget"
+    },
+    "groups": {
+      "trip": "Destination and dates",
+      "style": "Travel style",
+      "services": "What to include"
+    },
+    "decrease": "Decrease",
+    "increase": "Increase",
+    "prefilledNotice": "We carried your search into the form. Add your contact details and we will come back with the available options.",
+    "phonePlaceholder": "5X XXX XXXX"
+  },
+  "Assurance": {
+    "items": {
+      "reply": {
+        "title": "A quick reply",
+        "body": "We get back to you within working hours to confirm the details."
+      },
+      "human": {
+        "title": "A real specialist",
+        "body": "Someone from our team handles your request — not an automated system."
+      },
+      "noCharge": {
+        "title": "Quotes are free",
+        "body": "Sending a request carries no obligation and no fee."
+      }
+    }
+  },
+  "ErrorPage": {
+    "title": "We couldn't load this page",
+    "description": "Something went wrong on our side. Try again, and if it keeps happening please contact us directly.",
+    "retry": "Try again"
+  },
+  "VisaBooking": {
+    "metaTitle": "Apply for {visa}",
+    "title": "Start your {country} visa application",
+    "subtitle": "Complete these steps to submit your application.",
+    "backToRequirements": "Back to requirements",
+    "steps": {
+      "trip": "Trip details",
+      "applicants": "Applicant details",
+      "review": "Review & confirm"
+    },
+    "tripDateTitle": "When do you expect to travel?",
+    "tripDateNote": "You can apply now and prepare your documents later, two or three days before your biometrics appointment.",
+    "cityTitle": "Where would you like your appointment?",
+    "cityNote": "Most embassies require you in person for biometrics; we book the nearest available centre for you.",
+    "cities": {
+      "riyadh": "Riyadh",
+      "jeddah": "Jeddah",
+      "dammam": "Dammam"
+    },
+    "applicantsTitle": "Applicant details",
+    "reviewTitle": "Review your application before sending",
+    "noPaymentNote": "No payment now — our team will confirm the details and arrange the fees once your file has been reviewed.",
+    "labels": {
+      "country": "Country",
+      "visaType": "Visa type",
+      "fee": "Fees",
+      "processing": "Processing",
+      "travelDate": "Travel date",
+      "city": "Appointment city",
+      "applicants": "Applicants"
+    },
+    "daysValue": "{days} working days",
+    "back": "Back",
+    "continue": "Save and continue",
+    "submit": "Send application",
+    "waIntro": "Hello, I'd like to submit an application for {visa}:",
+    "successTitle": "We've got your application",
+    "successBody": "Our team will review your documents, arrange biometrics if required, and confirm the fees."
+  },
+  "Cruises": {
+    "eyebrow": "Cruises",
+    "title": "Our finest cruises",
+    "description": "Curated sailings with leading cruise lines.",
+    "viewAll": "View all cruises",
+    "empty": "No cruises available yet",
+    "requestCruise": "Request a cruise",
+    "badgeFeatured": "Most popular",
+    "durationNights": "{days} days / {nights} nights",
+    "departsFrom": "Departs from {port}",
+    "startingFrom": "Starting from",
+    "discover": "Explore cruise",
+    "includedTitle": "What's included",
+    "itineraryTitle": "Itinerary",
+    "dayLabel": "Day {day}",
+    "bookNow": "Book now",
+    "priceNote": "Per person in a double cabin; varies by season and suite type.",
+    "whatsappMessage": "Hello, I'd like to ask about the {cruise} cruise.",
+    "departsOn": "Sails {date}"
+  },
+  "PackagePlanPage": {
+    "title": "Plan your own trip",
+    "description": "Tell us where you want to go, for how long, and what you need included — our team will build a custom quote.",
+    "formTitle": "Your trip",
+    "facts": {
+      "noFee": "No obligation",
+      "agent": "Handled by a booking agent",
+      "whatsapp": "Follow-up on WhatsApp"
+    },
+    "how": {
+      "title": "From an idea to a finished itinerary",
+      "description": "You set the destination, the length and the budget; we build the programme around them.",
+      "steps": {
+        "brief": {
+          "title": "Tell us the idea",
+          "body": "The destination, how many nights, how many are travelling, and the standard of accommodation that suits you."
+        },
+        "design": {
+          "title": "We build the programme",
+          "body": "The agent puts together a day-by-day plan with the flights, stays, transfers and tours you asked for."
+        },
+        "refine": {
+          "title": "You refine it",
+          "body": "Change the hotel, add a day, drop a tour — all on WhatsApp, without filling the form in again."
+        },
+        "confirm": {
+          "title": "You confirm and we book",
+          "body": "When you approve the programme and the final price, we start the bookings."
+        }
+      }
+    },
+    "includes": {
+      "title": "What your programme can include",
+      "description": "Pick only what you need — the programme is built from what you ask for, not from a fixed list.",
+      "items": {
+        "flights": {
+          "title": "Flights",
+          "body": "Return or multi-city, in the cabin you choose."
+        },
+        "hotel": {
+          "title": "Accommodation",
+          "body": "Three- to five-star hotels, matched to your standard and budget."
+        },
+        "transfers": {
+          "title": "Transfers",
+          "body": "Airport pick-up and transfers between cities."
+        },
+        "tours": {
+          "title": "Tours",
+          "body": "Guided day tours, private or in a group."
+        },
+        "visa": {
+          "title": "Visa",
+          "body": "Preparing and following up the visa file for destinations that need one."
+        },
+        "insurance": {
+          "title": "Travel insurance",
+          "body": "A travel insurance policy covering the length of the trip."
+        },
+        "meals": {
+          "title": "Meals",
+          "body": "Breakfast only or full board, as you prefer."
+        }
+      }
+    },
+    "readymade": {
+      "title": "Or start from a ready-made package",
+      "description": "Take one of our programmes as a starting point and change it as you like."
+    },
+    "faq": {
+      "title": "Common questions",
+      "items": {
+        "cost": {
+          "q": "Is planning the programme free?",
+          "a": "Yes. Preparing the programme and the quote carries no fee, and nothing is payable until you approve the booking."
+        },
+        "budget": {
+          "q": "What if I do not know my budget yet?",
+          "a": "Leave the budget field on ‘Any’ and we will send more than one level so you can compare."
+        },
+        "time": {
+          "q": "How long does the programme take to prepare?",
+          "a": "It depends on the destination and how many services are involved; the agent tells you the expected turnaround when they contact you."
+        },
+        "group": {
+          "q": "Do you arrange trips for groups and large families?",
+          "a": "Yes. Set the number of travellers in the form and note any special arrangements."
+        }
+      }
+    },
+    "startCta": "Start planning"
+  },
+  "BottomNav": {
+    "label": "Primary",
+    "home": "Home",
+    "packages": "Packages",
+    "visas": "Visas",
+    "whatsapp": "WhatsApp",
+    "more": "More",
+    "close": "Close"
+  },
+  "Explorer": {
+    "eyebrow": "Plan by budget",
+    "title": "Where can you go?",
+    "description": "Move the budget and pick a trip length to see the packages that fit.",
+    "budgetLabel": "Budget per person",
+    "upTo": "Up to {price}",
+    "nightsLabel": "Trip length",
+    "nights": {
+      "any": "Any length",
+      "short": "Up to 4 nights",
+      "medium": "5 to 7 nights",
+      "long": "8 nights or more"
+    },
+    "count": "{count, plural, =0 {No packages match} one {1 package matches} other {# packages match}}",
+    "emptyTitle": "Nothing ready-made in that range",
+    "emptyBody": "Tell us your budget and where you want to go, and we will build a programme around it."
+  },
+  "Partners": {
+    "eyebrow": "Who we work with",
+    "title": "Our partners",
+    "description": "The airlines, hotels and authorities we deal with when arranging your trip."
+  },
+  "Picker": {
+    "loading": "Searching…",
+    "empty": "Nothing matched. Try a city or an airport code.",
+    "popular": "Popular",
+    "airportListbox": "Airports",
+    "destinationListbox": "Destinations",
+    "countryListbox": "Countries",
+    "airportPlaceholder": "City or airport code",
+    "destinationPlaceholder": "Choose a destination",
+    "countryPlaceholder": "Choose a country",
+    "anyOption": "Any",
+    "cityPlaceholder": "City"
+  },
+  "Certificates": {
+    "open": "Open the certificate",
+    "close": "Close",
+    "newTab": "Open in a new tab",
+    "hint": "If the document does not appear here, open it in a new tab.",
+    "issuedBy": "Issued by {issuer}",
+    "number": "No. {number}"
+  },
+  "Dates": {
+    "past": "Choose a date from today onwards.",
+    "notBefore": "Cannot be earlier than {field}."
+  }
+}
