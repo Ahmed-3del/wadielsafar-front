@@ -9,6 +9,9 @@ export interface OfferPricing {
   strikethrough: string | null;
   /** Server-computed whole-percent saving, only when it represents a real one. */
   discountPercentage: number | null;
+  /** Formatted cash saving, on the same terms as `strikethrough`: only when
+   *  there are two prices and the earlier one is genuinely higher. */
+  savings: string | null;
 }
 
 function parseAmount(value: string | null): number | null {
@@ -33,5 +36,9 @@ export function getOfferPricing(offer: Offer, locale: Locale): OfferPricing {
     strikethrough:
       before !== null && after !== null && before > after ? formatPrice(before, locale) : null,
     discountPercentage: discount !== null && discount > 0 ? discount : null,
+    savings:
+      before !== null && after !== null && before > after
+        ? formatPrice(before - after, locale)
+        : null,
   };
 }

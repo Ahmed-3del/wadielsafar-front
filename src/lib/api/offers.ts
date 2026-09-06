@@ -8,6 +8,7 @@ export type OfferParams = {
   status?: OfferStatus;
   is_featured?: boolean;
   page?: number;
+  page_size?: number;
 };
 
 export function getOffers(params?: OfferParams) {

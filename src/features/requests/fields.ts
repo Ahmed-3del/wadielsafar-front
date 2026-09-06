@@ -6,6 +6,7 @@ export type RequestLabelKey =
   | "tripType" | "cabinClass" | "from" | "to" | "depart" | "return" | "passengers"
   | "city" | "stars" | "checkIn" | "checkOut" | "rooms" | "guests"
   | "travellers" | "travellersCount" | "travelDate" | "name" | "phone" | "email" | "notes"
+  | "departurePort" | "sailDate" | "cabinType"
   | "cityPlaceholder" | "destination" | "nights" | "hotelLevel" | "services"
   | "budget" | "destinationPlaceholder";
 
@@ -15,7 +16,8 @@ export type RequestOptionKey =
   | "hotelLevels.3" | "hotelLevels.4" | "hotelLevels.5" | "hotelLevels.any"
   | "budgets.under5k" | "budgets.5to10k" | "budgets.10to20k" | "budgets.over20k"
   | "services.flights" | "services.hotel" | "services.transfers"
-  | "services.tours" | "services.visa" | "services.insurance" | "services.meals";
+  | "services.tours" | "services.visa" | "services.insurance" | "services.meals"
+  | "cabins.any" | "cabins.inside" | "cabins.oceanView" | "cabins.balcony" | "cabins.suite";
 
 /* Optional section headings inside a long form. Only the planner uses them so
  * far; every other request form is short enough to read as one block. */
@@ -144,10 +146,37 @@ export const VISA_FIELDS: RequestFieldDef[] = [
   { name: "travel_date", labelKey: "travelDate", type: "date", notPast: true },
 ];
 
+/*
+ * A cruise is quoted from the port, the sailing and the cabin — the ship and
+ * the fare code are the agent's job, not the traveller's. The port is a plain
+ * text field rather than the catalogue picker: the homepage fills it in from
+ * the port that was chosen, and anyone arriving here directly can name a port
+ * the catalogue has not got yet.
+ */
+export const CRUISE_FIELDS: RequestFieldDef[] = [
+  { name: "departure_port", labelKey: "departurePort", type: "text", required: true },
+  { name: "sail_date", labelKey: "sailDate", type: "date", notPast: true },
+  { name: "nights", labelKey: "nights", type: "stepper", min: 2, max: 21 },
+  { name: "travellers", labelKey: "travellersCount", type: "stepper", min: 1, max: 9 },
+  {
+    name: "cabin_type",
+    labelKey: "cabinType",
+    type: "select",
+    options: [
+      { value: "", label: "cabins.any" },
+      { value: "INSIDE", label: "cabins.inside" },
+      { value: "OCEAN_VIEW", label: "cabins.oceanView" },
+      { value: "BALCONY", label: "cabins.balcony" },
+      { value: "SUITE", label: "cabins.suite" },
+    ],
+  },
+];
+
 export const SERVICE_FIELDS: Partial<Record<ServiceType, RequestFieldDef[]>> = {
   FLIGHT: FLIGHT_FIELDS,
   HOTEL: HOTEL_FIELDS,
   VISA: VISA_FIELDS,
+  CRUISE: CRUISE_FIELDS,
 };
 
 /*

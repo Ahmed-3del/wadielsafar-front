@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Rail } from "@/components/ui/Rail";
+import { railCardClass } from "@/components/ui/railCard";
 import { Reveal } from "@/components/ui/Reveal";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
@@ -32,13 +33,13 @@ export async function FeaturedCruises() {
         </div>
 
         {cruises.length > 0 ? (
-          <Reveal className="mt-10">
+          <Reveal className="mt-6 sm:mt-10">
             <Rail label={t("title")}>
               {cruises.map((cruise) => (
                 <CruiseCard
                   key={cruise.id}
                   cruise={cruise}
-                  className="w-[80vw] shrink-0 snap-start sm:w-72 lg:w-80"
+                  className={railCardClass}
                 />
               ))}
             </Rail>
@@ -46,7 +47,7 @@ export async function FeaturedCruises() {
         ) : (
           <EmptyState
             title={t("empty")}
-            className="mt-10"
+            className="mt-6 sm:mt-10"
             action={
               <Link href="/contact" className={buttonVariants("primary", "md")}>
                 {t("requestCruise")}

@@ -8,7 +8,9 @@ import { Reveal } from "@/components/ui/Reveal";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
 import { CruiseCard } from "@/components/cruises/CruiseCard";
-import { getCruises } from "@/lib/api/cruises";
+import { ServiceRequestForm } from "@/components/forms/ServiceRequestForm";
+import { CRUISE_FIELDS } from "@/features/requests/fields";
+import { getCruisePorts, getCruises } from "@/lib/api/cruises";
 import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
 import type { Locale } from "@/i18n/routing";
@@ -21,7 +23,15 @@ function isIsoDate(value: string | undefined): string | undefined {
 
 interface CruisesPageProps {
   params: Promise<{ locale: Locale }>;
-  searchParams: Promise<{ destination?: string; search?: string; depart?: string }>;
+  searchParams: Promise<{
+    destination?: string;
+    search?: string;
+    depart?: string;
+    /** ISO 3166-1 alpha-2 — the country the homepage's cruise search asked for. */
+    country?: string;
+    /** A port code from the same search. */
+    port?: string;
+  }>;
 }
 
 export async function generateMetadata({ params }: CruisesPageProps): Promise<Metadata> {
@@ -32,17 +42,42 @@ export async function generateMetadata({ params }: CruisesPageProps): Promise<Me
 
 export default async function CruisesPage({ params, searchParams }: CruisesPageProps) {
   const { locale } = await params;
-  const { destination, search, depart } = await searchParams;
+  const { destination, search, depart, country, port } = await searchParams;
   setRequestLocale(locale);
 
-  const [t, tCruises, cruises, hero] = await Promise.all([
+  const [t, tCruises, tForm, cruises, ports, hero] = await Promise.all([
     getTranslations("CruisesPage"),
     getTranslations("Cruises"),
-    safeResults(getCruises({ destination, search, depart_after: isIsoDate(depart) })),
+    getTranslations("RequestForm"),
+    safeResults(
+      getCruises({
+        destination,
+        search,
+        depart_after: isIsoDate(depart),
+        // A port is inside a country, so sending both narrows to the port —
+        // which is what someone who picked both asked for.
+        country,
+        port,
+      }),
+    ),
+    safeResults(getCruisePorts()),
     getPageHero("cruises").catch(() => null),
   ]);
 
-  const isFiltered = Boolean(destination ?? search ?? isIsoDate(depart));
+  /*
+   * The homepage sends a port code; the form asks a person for a port. So the
+   * code is resolved back to the name that was picked, and anything the
+   * catalogue does not know is simply left blank rather than printed raw.
+   */
+  const chosenPort = ports.find((row) => row.code === port);
+  const isArabic = locale === "ar";
+  const defaults: Record<string, string> = {};
+  if (chosenPort) defaults.departure_port = isArabic ? chosenPort.city_ar : chosenPort.city_en;
+  const sailDate = isIsoDate(depart);
+  if (sailDate) defaults.sail_date = sailDate;
+  const arrivedFromSearch = Boolean(chosenPort ?? country ?? sailDate);
+
+  const isFiltered = Boolean(destination ?? search ?? country ?? port ?? isIsoDate(depart));
 
   return (
     <>
@@ -52,7 +87,23 @@ export default async function CruisesPage({ params, searchParams }: CruisesPageP
         title={t("title")}
         description={t("description")}
       />
+      {/* The request form first, as on the flights and hotels pages. Someone
+          who came through the homepage search has already said where they want
+          to sail from and when — this is where they finish the sentence, and
+          the sailings below are suggestions rather than the answer. */}
       <Section>
+        <Container className="max-w-4xl">
+          <ServiceRequestForm
+            serviceType="CRUISE"
+            fields={CRUISE_FIELDS}
+            defaults={defaults}
+            title={t("formTitle")}
+            notice={arrivedFromSearch ? tForm("prefilledNotice") : undefined}
+          />
+        </Container>
+      </Section>
+
+      <Section className="bg-sand-50">
         <Container>
           {isFiltered ? (
             <p className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-sand-600">

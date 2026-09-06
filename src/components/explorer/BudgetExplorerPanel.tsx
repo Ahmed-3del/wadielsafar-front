@@ -6,12 +6,15 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PackageCard } from "@/components/packages/PackageCard";
 import { buttonVariants } from "@/components/ui/Button";
+import { ResetIcon } from "@/components/ui/icons";
 import { formatPrice } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils/cn";
 import {
+  ANY_TRIP_TYPE,
   budgetBandFor,
   filterByBudget,
   NIGHTS_BANDS,
+  tripTypesOf,
   type NightsBand,
 } from "@/features/package-discovery";
 import type { Package } from "@/types/package";
@@ -23,6 +26,12 @@ interface BudgetExplorerPanelProps {
   step: number;
 }
 
+/* Shared by every chip in the bar, so trip type and trip length read as one
+   control rather than two that happen to sit near each other. */
+const CHIP = "h-11 rounded-full border px-4 text-sm font-semibold transition-all duration-200 ease-out-soft";
+const CHIP_ON = "border-gold-500 bg-gold-50 text-navy-900";
+const CHIP_OFF = "border-sand-200 text-sand-600 hover:border-navy-300 hover:text-navy-900";
+
 /*
  * The interactive half. It filters a catalogue the server already fetched
  * rather than querying on every drag: the whole package list is small, and a
@@ -32,19 +41,33 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
   const t = useTranslations("Explorer");
   const tPackages = useTranslations("Packages");
   const locale = useLocale();
+  const isArabic = locale === "ar";
 
   // Opens showing everything, so the first impression is the catalogue rather
   // than a filter someone has to undo.
   const [budget, setBudget] = useState(max);
   const [nights, setNights] = useState<NightsBand>("any");
+  const [tripType, setTripType] = useState<string>(ANY_TRIP_TYPE);
 
   // Guarded: a catalogue priced at a single point would divide by zero.
   const fillPercent = max > min ? ((budget - min) / (max - min)) * 100 : 100;
 
+  // Read off the catalogue, so a chip can never offer a filter that matches
+  // nothing and the labels are the ones the admin set in the panel.
+  const tripTypes = useMemo(() => tripTypesOf(packages), [packages]);
+
   const results = useMemo(
-    () => filterByBudget(packages, { budget, nights }),
-    [packages, budget, nights],
+    () => filterByBudget(packages, { budget, nights, tripType }),
+    [packages, budget, nights, tripType],
   );
+
+  const touched = budget !== max || nights !== "any" || tripType !== ANY_TRIP_TYPE;
+
+  const reset = () => {
+    setBudget(max);
+    setNights("any");
+    setTripType(ANY_TRIP_TYPE);
+  };
 
   return (
     <div>
@@ -107,12 +130,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
                     role="radio"
                     aria-checked={selected}
                     onClick={() => { setNights(band); }}
-                    className={cn(
-                      "h-11 rounded-full border px-4 text-sm font-semibold transition-all duration-200 ease-out-soft",
-                      selected
-                        ? "border-gold-500 bg-gold-50 text-navy-900"
-                        : "border-sand-200 text-sand-600 hover:border-navy-300 hover:text-navy-900",
-                    )}
+                    className={cn(CHIP, selected ? CHIP_ON : CHIP_OFF)}
                   >
                     {t(`nights.${band}`)}
                   </button>
@@ -123,17 +141,72 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
             <div aria-hidden="true" className="mt-2 hidden h-4 lg:block" />
           </div>
         </div>
-      </div>
 
-      <p aria-live="polite" className="mt-6 text-sm font-medium text-sand-600">
-        {t("count", { count: results.length })}
-      </p>
+        {/* What kind of trip, which is how people actually describe what they
+            are after — "a honeymoon", "Umrah" — before they think about price.
+            Hidden when the catalogue only holds one kind: a filter with a
+            single option filters nothing. */}
+        {tripTypes.length > 1 ? (
+          <div className="mt-7 border-t border-sand-200 pt-6">
+            <p className="text-sm font-medium text-navy-900">{t("tripTypeLabel")}</p>
+            <div
+              role="radiogroup"
+              aria-label={t("tripTypeLabel")}
+              className="mt-4 flex flex-wrap gap-2"
+            >
+              <button
+                type="button"
+                role="radio"
+                aria-checked={tripType === ANY_TRIP_TYPE}
+                onClick={() => { setTripType(ANY_TRIP_TYPE); }}
+                className={cn(CHIP, tripType === ANY_TRIP_TYPE ? CHIP_ON : CHIP_OFF)}
+              >
+                {t("anyTripType")}
+              </button>
+              {tripTypes.map((type) => {
+                const selected = type.slug === tripType;
+                return (
+                  <button
+                    key={type.slug}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => { setTripType(type.slug); }}
+                    className={cn(CHIP, selected ? CHIP_ON : CHIP_OFF)}
+                  >
+                    {isArabic ? type.name_ar : type.name_en}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
+        {/* The count belongs to the filters, not to the results: it is the
+            answer to the last thing the reader touched, and it was sitting
+            outside the card where a change to a chip left it unnoticed. */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-sand-200 pt-5">
+          <p aria-live="polite" className="text-sm font-semibold text-navy-900">
+            {t("count", { count: results.length })}
+          </p>
+
+          <button
+            type="button"
+            onClick={reset}
+            disabled={!touched}
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-sand-600 transition-colors hover:bg-sand-100 hover:text-navy-900 disabled:pointer-events-none disabled:opacity-40"
+          >
+            <ResetIcon className="h-4 w-4" />
+            {t("reset")}
+          </button>
+        </div>
+      </div>
 
       {results.length > 0 ? (
         <ScrollGrid
           label={t("title")}
           gridClassName="sm:grid-cols-2 lg:grid-cols-3"
-          className="mt-5"
+          className="mt-6"
         >
           {results.slice(0, 6).map((pkg) => (
             <PackageCard key={pkg.id} pkg={pkg} />
@@ -143,15 +216,27 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
         /* An empty result is the most valuable moment here, not a dead end:
            this is a traveller who has just told us their budget and found
            nothing off the shelf. */
-        <div className="mt-5 rounded-2xl border border-sand-200 bg-white p-8 text-center">
+        <div className="mt-6 rounded-2xl border border-sand-200 bg-white p-8 text-center">
           <h3 className="text-lg font-bold text-navy-900">{t("emptyTitle")}</h3>
           <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-sand-600">{t("emptyBody")}</p>
-          <Link
-            href={`/packages/plan?budget=${budgetBandFor(budget)}`}
-            className={cn(buttonVariants("primary", "md"), "mt-5")}
-          >
-            {tPackages("planCta")}
-          </Link>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href={`/packages/plan?budget=${budgetBandFor(budget)}`}
+              className={buttonVariants("primary", "md")}
+            >
+              {tPackages("planCta")}
+            </Link>
+            {/* The way out, next to the offer to build something — undoing the
+                filters is usually the quicker of the two. */}
+            <button
+              type="button"
+              onClick={reset}
+              className={cn(buttonVariants("outline", "md"), "gap-1.5")}
+            >
+              <ResetIcon className="h-4 w-4" />
+              {t("reset")}
+            </button>
+          </div>
         </div>
       )}
     </div>

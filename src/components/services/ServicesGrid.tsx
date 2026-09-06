@@ -1,80 +1,134 @@
-import { getTranslations } from "next-intl/server";
-import { ScrollGrid } from "@/components/ui/ScrollGrid";
-import { Link } from "@/i18n/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Reveal } from "@/components/ui/Reveal";
+import { Link } from "@/i18n/navigation";
+import { Rail } from "@/components/ui/Rail";
 import {
+  BagIcon,
   BedIcon,
-  ChevronForwardIcon,
+  BookIcon,
+  CalendarIcon,
+  CarIcon,
+  ClockIcon,
+  GiftIcon,
   GlobeIcon,
+  HeadsetIcon,
+  LicenceIcon,
+  MapIcon,
+  MealIcon,
+  MosqueIcon,
   PassportIcon,
+  PinIcon,
   PlaneIcon,
+  ShieldIcon,
   ShipIcon,
+  SimIcon,
+  TagIcon,
+  TicketIcon,
+  TransferIcon,
   UsersIcon,
 } from "@/components/ui/icons";
-import { FALLBACK_SERVICES, type ServiceLinkKey } from "@/lib/constants/services";
+import { getServices } from "@/lib/api/services";
+import { safeResults } from "@/lib/api/client";
+import { FALLBACK_ADDON_SERVICES } from "@/lib/constants/services";
+import type { Service } from "@/types/service";
 
-const ICONS: Record<ServiceLinkKey, typeof PlaneIcon> = {
-  flights: PlaneIcon,
-  hotels: BedIcon,
-  packages: GlobeIcon,
-  visas: PassportIcon,
-  cruises: ShipIcon,
-  corporate: UsersIcon,
+/*
+ * The `icon` column holds a key, not an asset, so the site owns its own marks.
+ *
+ * Every key in the panel's list is drawn here — the backend's
+ * ServiceIconChoices and this map are meant to be changed together. A key with
+ * no entry still falls back to the ticket rather than leaving a gap, but that
+ * is now a bug rather than the normal case it used to be.
+ */
+const ICONS: Record<string, typeof CarIcon> = {
+  car: CarIcon,
+  transfer: TransferIcon,
+  licence: LicenceIcon,
+  shield: ShieldIcon,
+  sim: SimIcon,
+  ticket: TicketIcon,
+  passport: PassportIcon,
+  headset: HeadsetIcon,
+  plane: PlaneIcon,
+  bed: BedIcon,
+  ship: ShipIcon,
+  globe: GlobeIcon,
+  bag: BagIcon,
+  map: MapIcon,
+  pin: PinIcon,
+  calendar: CalendarIcon,
+  clock: ClockIcon,
+  users: UsersIcon,
+  meal: MealIcon,
+  tag: TagIcon,
+  gift: GiftIcon,
+  book: BookIcon,
+  mosque: MosqueIcon,
 };
 
 /*
- * The homepage's primary route into each service line. It reads from the
- * static service list rather than the API on purpose: this grid is navigation,
- * and navigation must not disappear because a content fetch failed.
+ * "Everything you need for your trip" — the add-ons, as one swipeable row.
+ *
+ * Deliberately not flights/hotels/packages/visas/cruises: those five are the
+ * search tabs at the top of the page, and repeating them here as cards was the
+ * duplication the client's feedback asked us to remove. What is left is what a
+ * traveller adds once the trip itself is settled.
+ *
+ * One row that scrolls, not a grid that stacks: eight tiles in a column is two
+ * screens of phone, and these are things to glance across rather than read.
  */
 export async function ServicesGrid() {
-  const t = await getTranslations("Services");
+  const [t, locale, services] = await Promise.all([
+    getTranslations("Services"),
+    getLocale(),
+    safeResults(getServices({ page_size: 20 })),
+  ]);
+
+  const isArabic = locale === "ar";
+  // Navigation-ish content, so it must not vanish because a fetch failed.
+  const rows: Service[] = services.length > 0 ? services : FALLBACK_ADDON_SERVICES;
 
   return (
     <Section>
       <Container>
         <SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
 
-        <ScrollGrid
-          label={t("title")}
-          gridClassName="sm:grid-cols-2 lg:grid-cols-3"
-          className="mt-10"
-        >
-          {FALLBACK_SERVICES.map((service, index) => {
-            const Icon = ICONS[service.key];
+        {/* Swipe on a phone, arrows on a desktop — the Rail is where that
+            behaviour already lives, and eight tiles is exactly the case it was
+            built for. */}
+        <Rail label={t("title")} className="mt-8 gap-3 sm:gap-4">
+          {rows.map((service) => {
+            const Icon = ICONS[service.icon] ?? TicketIcon;
+            const description = isArabic ? service.description_ar : service.description_en;
             return (
-              <Reveal key={service.key} delay={index * 60}>
-                <Link
-                  href={service.href}
-                  className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-sand-200 bg-white p-6 transition-all duration-300 ease-out-soft hover:-translate-y-1 hover:border-transparent hover:shadow-lg"
-                >
-                  {/* Gold wash that only appears on hover, so the resting state
-                      stays calm and the hover state clearly reads as a target. */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 bg-linear-to-br from-gold-50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  />
-                  <span className="relative grid h-12 w-12 place-items-center rounded-xl bg-navy-900 text-gold-400 transition-transform duration-300 group-hover:scale-105">
-                    <Icon className="h-6 w-6" />
+              <Link
+                key={service.slug}
+                // Where the panel points it. Most of these are arranged by an
+                // agent, so the contact form is the default — but a tile with
+                // a page of its own should lead there.
+                href={service.link || "/contact"}
+                className="group flex w-52 shrink-0 snap-start flex-col items-center gap-3 rounded-2xl border border-sand-200 bg-white p-4 text-center transition-all duration-200 hover:-translate-y-1 hover:border-gold-500 hover:shadow-lg sm:w-56 sm:p-5"
+              >
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-navy-900 text-gold-400 transition-transform duration-300 group-hover:scale-105">
+                  <Icon className="h-7 w-7" />
+                </span>
+                <span className="text-sm font-bold leading-5 text-navy-900">
+                  {isArabic ? service.name_ar : service.name_en}
+                </span>
+                {/* The line an editor writes in the panel, which the tiles
+                    used to drop on the floor. Clamped so one long answer
+                    cannot make its tile twice the height of its neighbours. */}
+                {description ? (
+                  <span className="line-clamp-3 text-xs leading-5 text-sand-600">
+                    {description}
                   </span>
-                  <h3 className="relative mt-5 text-lg font-bold text-navy-900">
-                    {t(`${service.key}.title`)}
-                  </h3>
-                  <p className="relative mt-2 flex-1 text-sm leading-6 text-sand-600">
-                    {t(`${service.key}.description`)}
-                  </p>
-                  <span className="relative mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-700 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
-                    {t("more")}
-                    <ChevronForwardIcon className="h-4 w-4" />
-                  </span>
-                </Link>
-              </Reveal>
+                ) : null}
+              </Link>
             );
           })}
-        </ScrollGrid>
+        </Rail>
       </Container>
     </Section>
   );

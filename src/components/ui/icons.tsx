@@ -181,6 +181,103 @@ export const HeadsetIcon = (p: IconProps) => (
   </Base>
 );
 
+export const CloseIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M18 6 6 18M6 6l12 12" />
+  </Base>
+);
+
+/* Add-on service marks. Stroked to match the rest of the set. */
+export const TransferIcon = (p: IconProps) => (
+  <Base {...p}>
+    {/* An airport shuttle. The first attempt drew a route arrow between two
+        wheels, which read as a scribble at 24px. */}
+    <path d="M3 16V8.5A1.5 1.5 0 0 1 4.5 7h9.8a2 2 0 0 1 1.5.7l3.6 4.1a2 2 0 0 1 .5 1.3V16" />
+    <path d="M3 16h1.2M14.8 16h4.4M21 16h-.6" />
+    <path d="M4.5 11h9.5M9 7v4" />
+    <circle cx="7" cy="16.8" r="1.8" />
+    <circle cx="17" cy="16.8" r="1.8" />
+  </Base>
+);
+
+export const LicenceIcon = (p: IconProps) => (
+  <Base {...p}>
+    <rect x="2.5" y="5" width="19" height="14" rx="2" />
+    <circle cx="8" cy="11" r="2" />
+    <path d="M5 16c.6-1.5 1.7-2.2 3-2.2s2.4.7 3 2.2" />
+    <path d="M14.5 10h4M14.5 13.5h4" />
+  </Base>
+);
+
+export const SimIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M6 2.5h7.5L19 8v13.5H6z" />
+    <rect x="9" y="12" width="7" height="6" rx="1" />
+    <path d="M12.5 12v6M9 15h7" />
+  </Base>
+);
+
+export const TicketIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M3 9V7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a2.5 2.5 0 0 0 0 5v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a2.5 2.5 0 0 0 0-5z" />
+    <path d="M14 6v12" strokeDasharray="2 2.5" />
+  </Base>
+);
+
+export const BookIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H18a1 1 0 0 1 1 1v13H5.5A1.5 1.5 0 0 0 4 18.5z" />
+    <path d="M4 18.5A1.5 1.5 0 0 0 5.5 20H19" />
+  </Base>
+);
+
+/*
+ * Dome, two minarets, arched door — the mark for an Umrah visa. Symmetry is
+ * what makes it read at 20px: an earlier draw put the dome left of a single
+ * minaret and it came out looking like a bell on a stick.
+ */
+export const MosqueIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M2.5 20.5h19" />
+    <path d="M6.5 20.5v-7.2a5.5 5.5 0 0 1 11 0v7.2" />
+    <path d="M12 7.8V6" />
+    <path d="M4 20.5v-8.2M3.1 12.3 4 10.6l.9 1.7" />
+    <path d="M20 20.5v-8.2M19.1 12.3 20 10.6l.9 1.7" />
+    <path d="M10.3 20.5v-3.2a1.7 1.7 0 0 1 3.4 0v3.2" />
+  </Base>
+);
+
+export const TagIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M3 12.5V4a1 1 0 0 1 1-1h8.5a1 1 0 0 1 .7.3l7.5 7.5a1 1 0 0 1 0 1.4l-8.5 8.5a1 1 0 0 1-1.4 0L3.3 13.2a1 1 0 0 1-.3-.7z" />
+    <circle cx="7.5" cy="7.5" r="1.4" />
+  </Base>
+);
+
+/* Counter-clockwise, so it reads as "put it back" rather than "load again". */
+export const ResetIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M3.5 12a8.5 8.5 0 1 0 8.5-8.5 9 9 0 0 0-6.4 2.6L3.5 8.2" />
+    <path d="M3.5 3.5v5h5" />
+  </Base>
+);
+
+export const GiftIcon = (p: IconProps) => (
+  <Base {...p}>
+    <rect x="3" y="9" width="18" height="12" rx="1.5" />
+    <path d="M3 13h18M12 9v12" />
+    <path d="M12 9S10.5 3 8 3a2.5 2.5 0 0 0 0 6" />
+    <path d="M12 9s1.5-6 4-6a2.5 2.5 0 0 1 0 6" />
+  </Base>
+);
+
+export const MapIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5z" />
+    <path d="M9 4v13M15 6.5v13" />
+  </Base>
+);
+
 export const ExternalLinkIcon = (p: IconProps) => (
   <Base {...p}>
     <path d="M14 4h6v6" />

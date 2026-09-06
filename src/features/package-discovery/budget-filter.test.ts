@@ -1,14 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { budgetBandFor, budgetBounds, filterByBudget, nightsOf } from "./budget-filter";
+import {
+  budgetBandFor,
+  budgetBounds,
+  filterByBudget,
+  nightsOf,
+  tripTypesOf,
+} from "./budget-filter";
 import type { Package } from "@/types/package";
 
-function pkg(price: string, days: number, slug = price): Package {
+function pkg(price: string, days: number, category = "family", slug = price): Package {
   return {
     id: Number(price),
     title_ar: slug,
     title_en: slug,
     slug,
-    category: { id: 1, name_ar: "عائلية", name_en: "Family", slug: "family" },
+    category: { id: 1, name_ar: category, name_en: category, slug: category },
     destination: {
       id: 1,
       name_ar: "دبي",
@@ -35,23 +41,23 @@ describe("filterByBudget", () => {
   const catalogue = [pkg("12500", 8), pkg("3900", 4), pkg("6200", 6), pkg("4799", 5)];
 
   it("keeps only what the budget covers", () => {
-    const result = filterByBudget(catalogue, { budget: 5000, nights: "any" });
+    const result = filterByBudget(catalogue, { budget: 5000, nights: "any", tripType: "any" });
     expect(result.map((p) => p.price_from)).toEqual(["3900", "4799"]);
   });
 
   it("sorts by price numerically, not as text", () => {
-    const result = filterByBudget(catalogue, { budget: 99999, nights: "any" });
+    const result = filterByBudget(catalogue, { budget: 99999, nights: "any", tripType: "any" });
     expect(result.map((p) => p.price_from)).toEqual(["3900", "4799", "6200", "12500"]);
   });
 
   it("includes a package priced exactly at the budget", () => {
-    expect(filterByBudget(catalogue, { budget: 3900, nights: "any" })).toHaveLength(1);
+    expect(filterByBudget(catalogue, { budget: 3900, nights: "any", tripType: "any" })).toHaveLength(1);
   });
 
   it("bands by nights rather than days", () => {
     // The catalogue runs 4, 5, 6 and 8 days — so 3, 4, 5 and 7 nights.
     const nights = (band: "short" | "medium" | "long") =>
-      filterByBudget(catalogue, { budget: 99999, nights: band }).map(nightsOf);
+      filterByBudget(catalogue, { budget: 99999, nights: band, tripType: "any" }).map(nightsOf);
 
     expect(nights("short")).toEqual([3, 4]);
     expect(nights("medium")).toEqual([5, 7]);
@@ -59,7 +65,64 @@ describe("filterByBudget", () => {
   });
 
   it("returns nothing rather than throwing on an empty catalogue", () => {
-    expect(filterByBudget([], { budget: 5000, nights: "any" })).toEqual([]);
+    expect(filterByBudget([], { budget: 5000, nights: "any", tripType: "any" })).toEqual([]);
+  });
+});
+
+describe("filterByBudget, by trip type", () => {
+  const catalogue = [
+    pkg("3900", 4, "family"),
+    pkg("6200", 6, "honeymoon"),
+    pkg("4799", 5, "religious"),
+  ];
+
+  it("keeps only the chosen category", () => {
+    const result = filterByBudget(catalogue, {
+      budget: 99999,
+      nights: "any",
+      tripType: "religious",
+    });
+    expect(result.map((p) => p.category.slug)).toEqual(["religious"]);
+  });
+
+  it("keeps everything on \"any\"", () => {
+    const result = filterByBudget(catalogue, { budget: 99999, nights: "any", tripType: "any" });
+    expect(result).toHaveLength(3);
+  });
+
+  it("combines with the budget rather than replacing it", () => {
+    const result = filterByBudget(catalogue, {
+      budget: 4000,
+      nights: "any",
+      tripType: "honeymoon",
+    });
+    expect(result).toEqual([]);
+  });
+});
+
+describe("tripTypesOf", () => {
+  it("offers the client's order first, then whatever else the catalogue holds", () => {
+    const catalogue = [
+      pkg("1", 3, "cultural"),
+      pkg("2", 3, "adventure"),
+      pkg("3", 3, "family"),
+      pkg("4", 3, "religious"),
+    ];
+    expect(tripTypesOf(catalogue).map((t) => t.slug)).toEqual([
+      "family",
+      "religious",
+      "adventure",
+      "cultural",
+    ]);
+  });
+
+  it("lists each category once", () => {
+    const catalogue = [pkg("1", 3, "family"), pkg("2", 4, "family")];
+    expect(tripTypesOf(catalogue)).toHaveLength(1);
+  });
+
+  it("offers nothing for an empty catalogue, so the row can be hidden", () => {
+    expect(tripTypesOf([])).toEqual([]);
   });
 });
 

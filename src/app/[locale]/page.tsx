@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Fragment, type ReactNode } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Hero } from "@/components/hero/Hero";
+import { SearchBand } from "@/components/search/SearchBand";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
+import { SavingsSection } from "@/components/savings/SavingsSection";
 import { BudgetExplorer } from "@/components/explorer/BudgetExplorer";
 import { FeaturedOffers } from "@/components/offers/FeaturedOffers";
 import { PopularDestinations } from "@/components/destinations/PopularDestinations";
@@ -33,13 +34,15 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
 /*
  * Every block the homepage can show, keyed to what the panel calls it.
  *
- * The hero is not in here: it carries the booking widget, which is the point
- * of the page, so it is always first and cannot be switched off. The order and
+ * The search band is not in here: it carries the tabs, the results and the
+ * cross-sell, which is the point of the page, so it is always first and
+ * cannot be switched off. The order and
  * the on/off state of everything else are an editorial decision, not a
  * deployment — see apps/pages HomeSection.
  */
 const SECTIONS: Record<HomeSectionKey, () => ReactNode> = {
   SERVICES: () => <ServicesGrid />,
+  SAVINGS: () => <SavingsSection />,
   EXPLORER: () => <BudgetExplorer />,
   DESTINATIONS: () => <PopularDestinations />,
   PACKAGES: () => <FeaturedPackages />,
@@ -60,7 +63,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <>
-      <Hero />
+      <SearchBand />
       {/* Fragment, not a wrapper div: each section owns its own full-bleed
           background, and an extra block element between them and the page
           would be one more thing to keep out of the way. */}

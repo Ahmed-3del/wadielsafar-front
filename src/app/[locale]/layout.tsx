@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
+import { PromoBar } from "@/components/layout/PromoBar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { BottomNav } from "@/components/navigation/BottomNav";
@@ -120,6 +121,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <NextIntlClientProvider>
+          <PromoBar />
           <Header />
           <RouteTransition>{children}</RouteTransition>
           <Footer />

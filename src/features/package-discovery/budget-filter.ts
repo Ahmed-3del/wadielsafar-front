@@ -4,10 +4,54 @@ export type NightsBand = "any" | "short" | "medium" | "long";
 
 export const NIGHTS_BANDS: NightsBand[] = ["any", "short", "medium", "long"];
 
+/** A package category slug, or "any" for no restriction. */
+export type TripType = string;
+
+export const ANY_TRIP_TYPE = "any";
+
+export interface TripTypeOption {
+  slug: string;
+  name_ar: string;
+  name_en: string;
+}
+
 export interface BudgetQuery {
   /** Maximum price per person, in SAR. */
   budget: number;
   nights: NightsBand;
+  tripType: TripType;
+}
+
+/*
+ * The order the client asked for, for the categories they named. Anything an
+ * admin adds later still appears — after these, in catalogue order — so the
+ * filter never silently hides a category that exists.
+ */
+const TRIP_TYPE_ORDER = ["family", "honeymoon", "religious", "adventure"];
+
+/*
+ * The trip types are read off the catalogue rather than hard-coded, so a chip
+ * can never offer a filter that matches nothing, and the labels are the ones
+ * the admin set in the panel rather than a second copy kept in the front end.
+ */
+export function tripTypesOf(packages: Package[]): TripTypeOption[] {
+  const seen = new Map<string, TripTypeOption>();
+  for (const pkg of packages) {
+    const category = pkg.category;
+    if (!category?.slug || seen.has(category.slug)) continue;
+    seen.set(category.slug, {
+      slug: category.slug,
+      name_ar: category.name_ar,
+      name_en: category.name_en,
+    });
+  }
+
+  const rank = (slug: string) => {
+    const index = TRIP_TYPE_ORDER.indexOf(slug);
+    return index === -1 ? TRIP_TYPE_ORDER.length : index;
+  };
+
+  return [...seen.values()].sort((a, b) => rank(a.slug) - rank(b.slug));
 }
 
 /** Trips are sold as days; nights is one fewer for a return itinerary. */
@@ -39,6 +83,7 @@ export function filterByBudget(packages: Package[], query: BudgetQuery): Package
   return packages
     .filter((pkg) => Number(pkg.price_from) <= query.budget)
     .filter((pkg) => withinBand(nightsOf(pkg), query.nights))
+    .filter((pkg) => query.tripType === ANY_TRIP_TYPE || pkg.category?.slug === query.tripType)
     .sort((a, b) => Number(a.price_from) - Number(b.price_from));
 }
 

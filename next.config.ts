@@ -13,6 +13,23 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const apiOrigin = new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1");
 const isLocalApi = ["localhost", "127.0.0.1", "[::1]", "::1"].includes(apiOrigin.hostname);
 
+/*
+ * Where pasted image URLs are allowed to come from.
+ *
+ * The first two are what the catalogue actually uses today — Unsplash for
+ * photography and flagcdn for country flags. The environment variable is the
+ * escape hatch for a CDN bought later: a comma-separated list of hostnames,
+ * read at build time, so a new host is a rebuild rather than a code change.
+ */
+const IMAGE_HOSTS = [
+  "images.unsplash.com",
+  "flagcdn.com",
+  ...(process.env.NEXT_PUBLIC_IMAGE_HOSTS ?? "")
+    .split(",")
+    .map((host) => host.trim())
+    .filter(Boolean),
+];
+
 const nextConfig: NextConfig = {
   images: {
     /*
@@ -36,15 +53,12 @@ const nextConfig: NextConfig = {
         hostname: apiOrigin.hostname,
         port: apiOrigin.port || undefined,
       },
-      // Content editors also paste image URLs from a CDN, so the host isn't
-      // known ahead of time. Before production launch this must be narrowed to
-      // the actual CDN hostnames: a wildcard lets the image optimizer fetch and
-      // re-serve any https URL on demand, which is both an open-proxy surface
-      // and an uncapped optimization cost.
-      {
-        protocol: "https",
-        hostname: "**",
-      },
+      // Content editors also paste image URLs rather than uploading, so the
+      // hosts they use have to be listed. A wildcard used to stand here, which
+      // let the optimizer fetch and re-serve any https URL on demand — an open
+      // proxy and an uncapped optimization bill. Add a host below (or to
+      // NEXT_PUBLIC_IMAGE_HOSTS) rather than widening this back out.
+      ...IMAGE_HOSTS.map((hostname) => ({ protocol: "https" as const, hostname })),
     ],
   },
 };

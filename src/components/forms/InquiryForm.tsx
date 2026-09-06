@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
-import { inquiryFormSchema, type InquiryFormValues } from "@/lib/validations/inquiry";
+import { inquiryFormSchema } from "@/lib/validations/inquiry";
+import { InquiryDetailFields } from "@/components/forms/InquiryDetailFields";
+import type { InquiryField } from "@/types/inquiry-field";
 import { createInquiry } from "@/lib/api/inquiries";
 import { ApiError } from "@/lib/api/client";
 import { SERVICE_TYPES } from "@/lib/constants/service-types";
@@ -16,6 +19,9 @@ import type { Destination } from "@/types/destination";
 
 interface InquiryFormProps {
   destinations?: Destination[];
+  /** Every question the panel defines, for every service. The form shows the
+   *  ones belonging to whichever service is chosen. */
+  fields?: InquiryField[];
 }
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -23,12 +29,36 @@ type FormStatus = "idle" | "submitting" | "success" | "error";
 const fieldClass =
   "mt-1.5 w-full rounded-lg border border-sand-300 px-3.5 py-2.5 text-sm text-navy-900 focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500";
 
-export function InquiryForm({ destinations = [] }: InquiryFormProps) {
+export function InquiryForm({ destinations = [], fields = [] }: InquiryFormProps) {
   const t = useTranslations("InquiryForm");
   const tServiceTypes = useTranslations("ServiceTypes");
   const locale = useLocale();
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  /*
+   * The fixed half of the form is the same whatever the service; the rest is
+   * whatever the panel says to ask. Required-ness comes from the rows too, so
+   * the schema is rebuilt when they change rather than written out here.
+   */
+  const schema = useMemo(
+    () =>
+      inquiryFormSchema
+        .extend({ details: z.record(z.string(), z.string()) })
+        .superRefine((values, ctx) => {
+          for (const field of fields) {
+            if (field.service_type !== values.service_type || !field.is_required) continue;
+            if (!values.details[field.key]?.trim()) {
+              ctx.addIssue({
+                code: "custom",
+                path: ["details", field.key],
+                message: "required",
+              });
+            }
+          }
+        }),
+    [fields],
+  );
 
   const {
     register,
@@ -36,8 +66,8 @@ export function InquiryForm({ destinations = [] }: InquiryFormProps) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<InquiryFormValues>({
-    resolver: zodResolver(inquiryFormSchema),
+  } = useForm<z.input<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       email: "",
@@ -46,14 +76,37 @@ export function InquiryForm({ destinations = [] }: InquiryFormProps) {
       destination: null,
       travel_date: null,
       message: "",
+      details: {},
     },
   });
 
-  async function onSubmit(values: InquiryFormValues) {
+  // The chosen service decides which questions are on screen.
+  const serviceType = useWatch({ control, name: "service_type" });
+  const serviceFields = useMemo(
+    () =>
+      fields
+        .filter((field) => field.service_type === serviceType)
+        .sort((a, b) => a.order - b.order),
+    [fields, serviceType],
+  );
+
+  async function onSubmit(values: z.output<typeof schema>) {
     setStatus("submitting");
     setErrorMessage(null);
     try {
-      await createInquiry({ ...values, source: "WEBSITE" });
+      /*
+       * Only the answers belonging to the chosen service, and only the ones
+       * actually filled in: switching the picker leaves the old service's
+       * answers in form state, and an agent should not receive a cruise's
+       * cabin type on a visa enquiry.
+       */
+      const details = Object.fromEntries(
+        serviceFields
+          .map((field) => [field.key, values.details[field.key]?.trim() ?? ""] as const)
+          .filter(([, value]) => value !== ""),
+      );
+
+      await createInquiry({ ...values, details, source: "WEBSITE" });
       setStatus("success");
       reset();
     } catch (error) {
@@ -63,7 +116,14 @@ export function InquiryForm({ destinations = [] }: InquiryFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <form
+      onSubmit={handleSubmit(onSubmit, () => {
+        /* A validation failure on a field that is off screen — or one whose
+           message nothing renders — used to leave the button doing nothing at
+           all. Say something rather than nothing. */
+        setStatus("error");
+        setErrorMessage(t("errorInvalid"));
+      })} className="space-y-5" noValidate>
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-navy-900">
           {t("name")}
@@ -136,6 +196,10 @@ export function InquiryForm({ destinations = [] }: InquiryFormProps) {
         </div>
       </div>
 
+      {/* Whatever the panel says to ask for this service. Empty for a service
+          with no rows, which is a decision an editor can make. */}
+      <InquiryDetailFields fields={serviceFields} register={register} errors={errors} />
+
       {destinations.length > 0 ? (
         <div>
           <label htmlFor="destination" className="block text-sm font-medium text-navy-900">
@@ -146,7 +210,15 @@ export function InquiryForm({ destinations = [] }: InquiryFormProps) {
             className={fieldClass}
             defaultValue=""
             {...register("destination", {
-              setValueAs: (value: string) => (value === "" ? null : Number(value)),
+              /* "No destination" arrives here as "" from the DOM and as null
+                 from the form's own defaults, and Number(null) is 0 — which
+                 failed .positive() on a field nobody had touched, blocking
+                 the whole form with no message on screen. Anything blank is
+                 null; only a real value is converted. */
+              setValueAs: (value: unknown) => {
+                const text = typeof value === "string" ? value.trim() : value;
+                return text === "" || text === null || text === undefined ? null : Number(text);
+              },
             })}
           >
             <option value=""></option>

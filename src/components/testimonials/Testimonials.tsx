@@ -27,14 +27,14 @@ export async function Testimonials() {
           <ScrollGrid
             label={t("title")}
             gridClassName="sm:grid-cols-2 lg:grid-cols-3"
-            className="mt-10"
+            className="mt-6 sm:mt-10"
           >
             {testimonials.map((testimonial) => (
               <TestimonialCard key={testimonial.id} testimonial={testimonial} />
             ))}
           </ScrollGrid>
         ) : (
-          <p className="mt-10 text-center text-sand-500">{t("empty")}</p>
+          <p className="mt-6 sm:mt-10 text-center text-sand-500">{t("empty")}</p>
         )}
       </Container>
     </Section>

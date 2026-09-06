@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { ScrollGrid } from "@/components/ui/ScrollGrid";
+import { Rail } from "@/components/ui/Rail";
+import { railCardClass } from "@/components/ui/railCard";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -16,7 +17,9 @@ export async function VisaSection() {
     getTranslations("Visas"),
     safeResults(getVisaTypes({ page: 1 })),
   ]);
-  const featured = visaTypes.slice(0, 3);
+  // Eight rather than three: the row scrolls now, so the limit is what a
+  // reader will flick through rather than what fits across the page.
+  const featured = visaTypes.slice(0, 8);
 
   return (
     <Section className="bg-sand-50">
@@ -32,21 +35,24 @@ export async function VisaSection() {
         </div>
 
         {featured.length > 0 ? (
-          <ScrollGrid
-            label={t("title")}
-            gridClassName="sm:grid-cols-2 lg:grid-cols-3"
-            className="mt-10"
-          >
-            {featured.map((visa, index) => (
-              <Reveal key={visa.id} delay={index * 70}>
-                <VisaCard visa={visa} />
-              </Reveal>
-            ))}
-          </ScrollGrid>
+          /* One scrollable row, as the client asked: swipe on a phone, arrows
+             from lg up. A three-across grid could only ever show three of the
+             eighteen visas we actually sell. */
+          <Reveal className="mt-6 sm:mt-10 block">
+            <Rail label={t("title")}>
+              {featured.map((visa) => (
+                <VisaCard
+                  key={visa.id}
+                  visa={visa}
+                  className={railCardClass}
+                />
+              ))}
+            </Rail>
+          </Reveal>
         ) : (
           <EmptyState
             title={t("empty")}
-            className="mt-10"
+            className="mt-6 sm:mt-10"
             action={
               <Link href="/contact" className={buttonVariants("primary", "md")}>
                 {t("apply")}

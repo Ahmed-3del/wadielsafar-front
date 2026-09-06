@@ -20,7 +20,9 @@
     "contact": "Contact Us",
     "menu": "Menu",
     "close": "Close menu",
-    "destinations": "Destinations"
+    "destinations": "Destinations",
+    "servicesGroup": "Services",
+    "moreGroup": "More"
   },
   "LocaleSwitcher": {
     "ar": "العربية",
@@ -58,8 +60,8 @@
   },
   "Services": {
     "eyebrow": "What We Offer",
-    "title": "Everything You Need to Travel",
-    "description": "From a single flight to a fully planned pilgrimage, our team handles every detail of your trip.",
+    "title": "Everything you need for your trip",
+    "description": "The extras that turn a booking into a trip — arranged by the same team, on the same invoice.",
     "flights": {
       "title": "Flights",
       "description": "Domestic and international fares with flexible booking options."
@@ -141,7 +143,8 @@
     "priceFrom": "From {price}",
     "price": "Fees",
     "processingLabel": "Processing",
-    "days": "{days} working days",
+    "days": "{days, plural, one {1 day} other {# days}}",
+    "workingDays": "{days, plural, one {1 working day} other {# working days}}",
     "apply": "Start visa application",
     "searchPlaceholder": "Search a country or visa type",
     "allCountries": "All countries",
@@ -150,6 +153,11 @@
     "countryLabel": "Country",
     "typeLabel": "Visa type",
     "validityLabel": "Validity",
+    "entryLabel": "Entry type",
+    "entry": {
+      "SINGLE": "Single entry",
+      "MULTIPLE": "Multiple entry"
+    },
     "purposeLabel": "Purpose of travel",
     "purposes": {
       "TOURISM": "Tourism",
@@ -205,8 +213,11 @@
       "email": "Please enter a valid email address.",
       "phone": "Please enter a valid phone number.",
       "message": "Please enter a message of at least 10 characters.",
-      "travelDate": "Choose a date from today onwards."
-    }
+      "travelDate": "Choose a date from today onwards.",
+      "required": "This answer is needed"
+    },
+    "chooseOption": "Choose…",
+    "errorInvalid": "Please check the highlighted fields and try again."
   },
   "Flights": {
     "empty": "Flight deals will appear here soon.",
@@ -374,7 +385,8 @@
   "VisasPage": {
     "title": "Visas",
     "description": "Know which visa you need, what it costs, how long it takes and which documents are required — before you start.",
-    "headline": "Where are you travelling?"
+    "headline": "Where are you travelling?",
+    "formTitle": "Tell us which visa you need"
   },
   "VisaDetailPage": {
     "requirements": "Requirements",
@@ -411,7 +423,8 @@
     "description": "Choose your next sailing — destination, duration, itinerary and what's included.",
     "noResultsBody": "Tell us the destination and dates that suit you and we'll prepare a quote.",
     "filtered": "Matching your search",
-    "clearFilters": "Show all cruises"
+    "clearFilters": "Show all cruises",
+    "formTitle": "Tell us about the cruise you want"
   },
   "OffersPage": {
     "title": "Offers",
@@ -420,7 +433,18 @@
   "OfferDetailPage": {
     "backToOffers": "Back to Offers",
     "validity": "Validity",
-    "notFound": "Offer not found."
+    "notFound": "Offer not found.",
+    "detailsTitle": "Offer details",
+    "savingsLabel": "You save",
+    "endsInLabel": "Time left",
+    "endsIn": "{days, plural, =0 {Ends today} one {1 day left} other {# days left}}",
+    "priceOnRequest": "Price on request",
+    "priceNote": "The price shown is the offer's starting point. Our team confirms the final figure with you against your dates and party size before anything is booked.",
+    "claim": "Claim this offer",
+    "whatsappMessage": "Hello, I would like to ask about the offer: {offer}",
+    "moreOffers": "More offers running now",
+    "appliesTo": "Applies to",
+    "offerPrice": "Offer price"
   },
   "CorporatePage": {
     "title": "Corporate Travel",
@@ -527,8 +551,20 @@
       "business": "Business",
       "study": "Study"
     },
-    "search": "Search",
-    "disclaimer": "We search our own curated packages and offers, then our team confirms details and pricing with you."
+    "search": "Continue to request",
+    "disclaimer": "Tell us what you need and our team comes back to you with availability and pricing — by WhatsApp or a call, whichever you prefer.",
+    "leaving": "Leaving",
+    "cruiseCountry": "Sailing from",
+    "anyCountry": "Any country",
+    "countryListbox": "Countries with cruise ports",
+    "noCountries": "No countries match",
+    "departurePort": "Departure port",
+    "anyPort": "Any port",
+    "anyPortInCountry": "Any port in this country",
+    "portListbox": "Departure ports",
+    "noPorts": "No ports match",
+    "portCount": "{count, plural, one {1 port} other {# ports}}",
+    "loading": "Searching…"
   },
   "Trust": {
     "eyebrow": "Why Wadi Al Safar",
@@ -577,7 +613,9 @@
     "planTrip": "Plan your trip",
     "whatsappMessage": "Hello, I'd like to ask about a trip to {destination}.",
     "packagesIn": "Packages in {destination}",
-    "noPackagesBody": "Get in touch and we'll build a custom trip to this destination."
+    "noPackagesBody": "Get in touch and we'll build a custom trip to this destination.",
+    "hotelsIn": "Hotels in {destination}",
+    "cruisesIn": "Cruises from {destination}"
   },
   "Common2": {
     "bookNow": "Book now",
@@ -587,7 +625,10 @@
     "retry": "Try again",
     "loadError": "Something went wrong loading results",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "callUs": "Call us",
+    "menu": "Menu",
+    "close": "Close"
   },
   "VisaSteps": {
     "eyebrow": "How it works",
@@ -663,7 +704,10 @@
       "services": "What should we include?",
       "budget": "Approximate budget per person",
       "destinationPlaceholder": "e.g. Georgia, Malaysia, or several places",
-      "travellersCount": "Travellers"
+      "travellersCount": "Travellers",
+      "departurePort": "Departure port",
+      "sailDate": "Sailing date",
+      "cabinType": "Cabin"
     },
     "options": {
       "roundTrip": "Round trip",
@@ -696,7 +740,14 @@
         "insurance": "Travel insurance",
         "meals": "Meals"
       },
-      "anyBudget": "Any budget"
+      "anyBudget": "Any budget",
+      "cabins": {
+        "any": "Any cabin",
+        "inside": "Inside",
+        "oceanView": "Ocean view",
+        "balcony": "Balcony",
+        "suite": "Suite"
+      }
     },
     "groups": {
       "trip": "Destination and dates",
@@ -892,7 +943,7 @@
   "Explorer": {
     "eyebrow": "Plan by budget",
     "title": "Where can you go?",
-    "description": "Move the budget and pick a trip length to see the packages that fit.",
+    "description": "Set your budget, pick a trip length and a trip type, and see what fits.",
     "budgetLabel": "Budget per person",
     "upTo": "Up to {price}",
     "nightsLabel": "Trip length",
@@ -902,9 +953,12 @@
       "medium": "5 to 7 nights",
       "long": "8 nights or more"
     },
+    "tripTypeLabel": "Trip type",
+    "anyTripType": "All trip types",
     "count": "{count, plural, =0 {No packages match} one {1 package matches} other {# packages match}}",
-    "emptyTitle": "Nothing ready-made in that range",
-    "emptyBody": "Tell us your budget and where you want to go, and we will build a programme around it."
+    "emptyTitle": "No packages found in this range",
+    "emptyBody": "Try raising the budget or clearing the other filters — or tell us what you have in mind and we will build a programme around it.",
+    "reset": "Reset filters"
   },
   "Partners": {
     "eyebrow": "Who we work with",
@@ -935,5 +989,53 @@
   "Dates": {
     "past": "Choose a date from today onwards.",
     "notBefore": "Cannot be earlier than {field}."
+  },
+  "Promo": {
+    "headline": "15% off for new Wadi Al Safar customers on your first booking",
+    "codeLabel": "Code",
+    "code": "WELCOME15",
+    "cta": "Book now",
+    "dismiss": "Dismiss this offer"
+  },
+  "Search": {
+    "title": "Where would you like to go?",
+    "subtitle": "Flights, hotels, packages, visas and cruises — send us the details and our team plans it with you.",
+    "seeAll": "See all",
+    "empty": "Nothing matches this search yet. Try another tab, or send us a request and we'll look for you.",
+    "results": {
+      "flights": "Flight deals",
+      "hotels": "Hotels we recommend",
+      "packages": "Featured packages",
+      "visas": "Visas we handle",
+      "cruises": "Cruises sailing soon"
+    },
+    "resultsHint": {
+      "flights": "Fares our team has confirmed recently. Ask and we'll check today's price.",
+      "hotels": "Stays we book often, with the rate we last confirmed.",
+      "packages": "Ready-made trips you can take as they are, or change to suit you.",
+      "visas": "Fees and processing times for the visas we issue most.",
+      "cruises": "Sailings with cabins still available."
+    },
+    "crossSellTitle": "You might also like",
+    "crossSellHint": "{service} that pair well with what you're looking at."
+  },
+  "Branches": {
+    "mainBadge": "Main branch",
+    "viewOnMap": "View on map",
+    "mapTitle": "Map of {branch}",
+    "viewOnMapNamed": "View {branch} on the map"
+  },
+  "Savings": {
+    "eyebrow": "Save more",
+    "title": "Ways to pay less",
+    "description": "Standing offers on every booking — no haggling, no small print.",
+    "codeLabel": "Code",
+    "endsIn": "Offer ends in",
+    "units": {
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Mins"
+    },
+    "cta": "Claim this offer"
   }
 }

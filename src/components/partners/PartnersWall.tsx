@@ -37,7 +37,7 @@ export async function PartnersWall() {
           align="center"
         />
 
-        <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <ul className="mt-6 sm:mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {visible.map((partner, index) => {
             const name = isArabic ? partner.name_ar : partner.name_en;
             const logo = (

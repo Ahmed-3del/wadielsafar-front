@@ -58,7 +58,10 @@ export function Logo({ name, variant = "horizontal", priority = false, className
         alt={name}
         priority={priority}
         sizes="(min-width: 640px) 116px, 89px"
-        className="h-6.5 w-auto sm:h-8.5"
+        /* Dropped on phones, where those 89px are the difference between a
+           header that fits and a phone number that wraps mid-sentence. The
+           mark still reads as the brand, and the link carries the name. */
+        className="h-6.5 w-auto max-[479px]:hidden sm:h-8.5"
       />
     </span>
   );

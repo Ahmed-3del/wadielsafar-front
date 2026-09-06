@@ -24,7 +24,7 @@ export function FaqSection({ title, description, items, className }: FaqSectionP
     <Section className={cn(className)}>
       <Container className="max-w-3xl">
         <SectionHeading title={title} description={description} align="center" />
-        <Accordion items={items} className="mt-10" />
+        <Accordion items={items} className="mt-6 sm:mt-10" />
       </Container>
     </Section>
   );

@@ -7,8 +7,11 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { buttonVariants } from "@/components/ui/Button";
 import { FlightRoute } from "@/components/flights/FlightRoute";
+import { MediaImage } from "@/components/ui/MediaImage";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { getFlightDealBySlug } from "@/lib/api/flights";
+import { getDestinations } from "@/lib/api/destinations";
+import { safeResults } from "@/lib/api/client";
 import { formatDate, formatPrice } from "@/lib/utils/format-date";
 import { whatsappLink } from "@/lib/utils/whatsapp";
 import { cn } from "@/lib/utils/cn";
@@ -88,14 +91,45 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
 
   const routeLabel = `${origin} → ${destination}`;
 
+  /*
+   * Flight deals carry city names, not a destination record, so the picture is
+   * found by an exact name match and simply left out when there is none.
+   */
+  const destinations = await safeResults(getDestinations({ page_size: 60 }));
+  const destinationPhoto =
+    destinations.find(
+      (row) =>
+        row.name_en.trim().toLowerCase() === flight.destination_city_en.trim().toLowerCase(),
+    )?.cover_image ?? null;
+
   return (
     <>
       {/* Flight deals carry no photography, only an airline logo — so the
           banner is built from the route itself, which is the thing being sold. */}
       <section className="relative overflow-hidden bg-navy-900">
+        {/* The city being flown to, when the catalogue has a photograph of it.
+            Matched on the exact destination name — a looser match is how a
+            flight to Alexandria ends up illustrated with somewhere else. With
+            no match the gradient below is the whole background, which is what
+            this page had before. */}
+        {destinationPhoto ? (
+          <MediaImage
+            src={destinationPhoto}
+            alt={destination}
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover opacity-40"
+          />
+        ) : null}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-linear-to-br from-navy-950 via-navy-900 to-navy-700"
+          className={cn(
+            "absolute inset-0",
+            destinationPhoto
+              ? "bg-linear-to-t from-navy-950/95 via-navy-950/70 to-navy-950/40"
+              : "bg-linear-to-br from-navy-950 via-navy-900 to-navy-700",
+          )}
         />
         <div
           aria-hidden="true"

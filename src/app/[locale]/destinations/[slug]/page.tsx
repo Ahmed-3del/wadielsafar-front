@@ -6,12 +6,16 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MediaImage } from "@/components/ui/MediaImage";
-import { Reveal } from "@/components/ui/Reveal";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
 import { PackageCard } from "@/components/packages/PackageCard";
+import { HotelCard } from "@/components/hotels/HotelCard";
+import { CruiseCard } from "@/components/cruises/CruiseCard";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { getDestinationBySlug } from "@/lib/api/destinations";
 import { getPackages } from "@/lib/api/packages";
+import { getHotels } from "@/lib/api/hotels";
+import { getCruises } from "@/lib/api/cruises";
 import { safeResults } from "@/lib/api/client";
 import { whatsappLink } from "@/lib/utils/whatsapp";
 import { WhatsAppIcon } from "@/components/ui/icons";
@@ -56,7 +60,18 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
   const isArabic = locale === "ar";
   const name = isArabic ? destination.name_ar : destination.name_en;
   const description = isArabic ? destination.description_ar : destination.description_en;
-  const packages = await safeResults(getPackages({ destination: slug }));
+  /*
+   * Everything this destination can be booked as. The page used to answer only
+   * "which packages go here", which left a city with no ready-made package
+   * looking like a place we do not sell — while its hotels sat one click away
+   * on another page.
+   */
+  const [packages, hotels, cruises] = await Promise.all([
+    safeResults(getPackages({ destination: slug })),
+    safeResults(getHotels({ destination: slug })),
+    safeResults(getCruises({ destination: slug })),
+  ]);
+  const hasAnything = packages.length + hotels.length + cruises.length > 0;
 
   return (
     <>
@@ -98,31 +113,74 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
         </Container>
       </section>
 
-      <Section>
-        <Container>
-          <SectionHeading title={t("packagesIn", { destination: name })} />
-          {packages.length > 0 ? (
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {packages.map((pkg, index) => (
-                <Reveal key={pkg.id} delay={Math.min(index, 5) * 60}>
-                  <PackageCard pkg={pkg} />
-                </Reveal>
+      {packages.length > 0 ? (
+        <Section>
+          <Container>
+            <SectionHeading title={t("packagesIn", { destination: name })} />
+            <ScrollGrid
+              label={t("packagesIn", { destination: name })}
+              gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+              className="mt-6 sm:mt-8"
+            >
+              {packages.map((pkg) => (
+                <PackageCard key={pkg.id} pkg={pkg} />
               ))}
-            </div>
-          ) : (
+            </ScrollGrid>
+          </Container>
+        </Section>
+      ) : null}
+
+      {hotels.length > 0 ? (
+        <Section className="bg-sand-50">
+          <Container>
+            <SectionHeading title={t("hotelsIn", { destination: name })} />
+            <ScrollGrid
+              label={t("hotelsIn", { destination: name })}
+              gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+              className="mt-6 sm:mt-8"
+            >
+              {hotels.map((hotel) => (
+                <HotelCard key={hotel.id} hotel={hotel} />
+              ))}
+            </ScrollGrid>
+          </Container>
+        </Section>
+      ) : null}
+
+      {cruises.length > 0 ? (
+        <Section>
+          <Container>
+            <SectionHeading title={t("cruisesIn", { destination: name })} />
+            <ScrollGrid
+              label={t("cruisesIn", { destination: name })}
+              gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+              className="mt-6 sm:mt-8"
+            >
+              {cruises.map((cruise) => (
+                <CruiseCard key={cruise.id} cruise={cruise} />
+              ))}
+            </ScrollGrid>
+          </Container>
+        </Section>
+      ) : null}
+
+      {/* Only when there is genuinely nothing on the shelf for this place —
+          which is an invitation to ask, not an apology. */}
+      {hasAnything ? null : (
+        <Section>
+          <Container>
             <EmptyState
               title={tPackages("empty")}
               description={t("noPackagesBody")}
-              className="mt-8"
               action={
                 <Link href="/contact" className={buttonVariants("primary", "md")}>
                   {tPackages("requestTrip")}
                 </Link>
               }
             />
-          )}
-        </Container>
-      </Section>
+          </Container>
+        </Section>
+      )}
     </>
   );
 }

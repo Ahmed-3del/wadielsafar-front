@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
 import { BookingField, bookingControlClass } from "./BookingField";
 import { AirportPicker } from "./LocationPicker";
+import { CruiseRoutePicker } from "./CruiseRoutePicker";
 import { Combobox, type ComboboxItem } from "@/components/ui/Combobox";
 import {
   BedIcon,
@@ -13,14 +14,17 @@ import {
   GlobeIcon,
   PassportIcon,
   PinIcon,
+  ChevronForwardIcon,
   PlaneIcon,
-  SearchIcon,
   ShipIcon,
   UsersIcon,
 } from "@/components/ui/icons";
 import { cn } from "@/lib/utils/cn";
 import { isBeforeIso, todayIso } from "@/lib/utils/dates";
+import { budgetBandFor } from "@/features/package-discovery";
 import type { Airport } from "@/types/airport";
+import type { CruisePort } from "@/types/cruise";
+import type { SearchTab } from "@/types/search";
 
 export interface BookingOption {
   value: string;
@@ -34,14 +38,21 @@ interface BookingWidgetProps {
   visaCountries: BookingOption[];
   /** Offered before the traveller types in the airport pickers. */
   popularAirports: Airport[];
+  /** Every cruise port, which the country and port pickers are both built
+   *  from. Empty hides the cruise route fields rather than offering two boxes
+   *  with nothing in them. */
+  cruisePorts: CruisePort[];
   /** Where most travellers here depart from, resolved from the catalogue so
    *  the field starts on a real airport rather than a bare city name. */
   defaultOrigin: string;
+  /** Controlled by the homepage, which shows results for the open tab. Left
+   *  out, the widget keeps its own tab — the visa and package pages use it
+   *  that way. */
+  tab?: SearchTab;
+  onTabChange?: (tab: SearchTab) => void;
 }
 
-type TabId = "flights" | "hotels" | "packages" | "visas" | "cruises";
-
-const TABS: { id: TabId; Icon: typeof PlaneIcon }[] = [
+const TABS: { id: SearchTab; Icon: typeof PlaneIcon }[] = [
   { id: "flights", Icon: PlaneIcon },
   { id: "hotels", Icon: BedIcon },
   { id: "packages", Icon: GlobeIcon },
@@ -74,13 +85,23 @@ export function BookingWidget({
   destinations,
   visaCountries,
   popularAirports,
+  cruisePorts,
   defaultOrigin,
+  tab: controlledTab,
+  onTabChange,
 }: BookingWidgetProps) {
   const t = useTranslations("Booking");
   const tPicker = useTranslations("Picker");
   const tDates = useTranslations("Dates");
   const router = useRouter();
-  const [tab, setTab] = useState<TabId>("flights");
+  // Uncontrolled unless the page asks to own the tab. Both modes go through
+  // `setTab` so the rest of the component never has to know which is in play.
+  const [ownTab, setOwnTab] = useState<SearchTab>("flights");
+  const tab = controlledTab ?? ownTab;
+  const setTab = (next: SearchTab) => {
+    setOwnTab(next);
+    onTabChange?.(next);
+  };
   const [roundTrip, setRoundTrip] = useState(true);
 
   // Held here rather than inside the form, which is remounted on every tab
@@ -90,7 +111,9 @@ export function BookingWidget({
   const [arrival, setArrival] = useState("");
   const [destination, setDestination] = useState("");
   const [visaCountry, setVisaCountry] = useState("");
-  const [cruiseSearch, setCruiseSearch] = useState("");
+  // Country first, then one of its ports — the cruise search's two halves.
+  const [cruiseCountry, setCruiseCountry] = useState("");
+  const [cruisePort, setCruisePort] = useState("");
 
   /* Dates are held here rather than left to the DOM because the return field's
      floor is the departure the traveller just chose, and a bare `min={today}`
@@ -140,17 +163,39 @@ export function BookingWidget({
       if (typeof value === "string" && value.trim()) params.set(key, value.trim());
     }
 
+    /*
+     * A package search has no listing worth landing on that the homepage has
+     * not already shown: the results sit under this widget. What it needs next
+     * is a quote, and the planner is the form that produces one — it asks for
+     * exactly what was collected here, so nothing is typed twice.
+     */
+    if (tab === "packages") {
+      const plan = new URLSearchParams();
+      const destination = params.get("destination");
+      const priceMax = params.get("price_max");
+      const depart = params.get("depart");
+      if (destination) plan.set("destination", destination);
+      if (depart) plan.set("travel_date", depart);
+      if (priceMax) plan.set("budget", budgetBandFor(Number(priceMax)));
+      const planQuery = plan.toString();
+      router.push(`/packages/plan${planQuery ? `?${planQuery}` : ""}`);
+      return;
+    }
+
     const query = params.toString();
     router.push(`/${tab}${query ? `?${query}` : ""}`);
   }
 
   return (
     <div className="w-full">
-      {/* Tabs scroll horizontally on mobile instead of wrapping into two rows. */}
+      {/* All five services visible at once. They used to scroll sideways, which
+          hid "cruises" off the edge of a phone — the one tab a reader would
+          never think to look for, because nothing said it was there. Wrapping
+          costs one extra row and shows the whole offer. */}
       <div
         role="tablist"
         aria-label={t("tabsLabel")}
-        className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0"
+        className="flex flex-wrap justify-center gap-2 pb-3 sm:justify-start"
       >
         {TABS.map(({ id, Icon }) => {
           const active = tab === id;
@@ -162,7 +207,7 @@ export function BookingWidget({
               aria-selected={active}
               onClick={() => { setTab(id); }}
               className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200",
+                "flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all duration-200 sm:px-4",
                 active
                   ? "bg-white text-navy-900 shadow-md"
                   : "bg-white/10 text-white/90 hover:bg-white/20",
@@ -398,34 +443,26 @@ export function BookingWidget({
 
           {tab === "cruises" ? (
             <>
-              <BookingField label={t("destination")} icon={<ShipIcon className={iconClass} />}>
-                {/* Cruise listings are filtered by free text, so a typed region
-                    that is not one of our destinations still has to go through. */}
-                <Combobox
-                  name="search"
-                  variant="widget"
-                  value={cruiseSearch}
-                  onChange={setCruiseSearch}
-                  items={destinationItems}
-                  allowCustom
-                  placeholder={t("anyDestination")}
-                  labels={{
-                    listbox: tPicker("destinationListbox"),
-                    empty: tPicker("empty"),
-                    loading: tPicker("loading"),
-                  }}
-                />
-              </BookingField>
-              <BookingField label={t("depart")} icon={<CalendarIcon className={iconClass} />}>
+              <CruiseRoutePicker
+                ports={cruisePorts}
+                country={cruiseCountry}
+                onCountryChange={setCruiseCountry}
+                port={cruisePort}
+                onPortChange={setCruisePort}
+              />
+              <BookingField label={t("leaving")} icon={<CalendarIcon className={iconClass} />}>
                 <input type="date" name="depart" min={today} className={bookingControlClass} />
               </BookingField>
             </>
           ) : null}
 
           <div className="p-2 lg:flex lg:items-center lg:ps-3">
+            {/* An arrow, not a magnifier: this button does not search an
+                inventory, it carries what has been filled in through to the
+                request form an agent answers. */}
             <Button type="submit" size="lg" className="w-full lg:w-auto">
-              <SearchIcon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
               {t("search")}
+              <ChevronForwardIcon className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
             </Button>
           </div>
         </div>

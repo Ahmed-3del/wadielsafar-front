@@ -12,6 +12,8 @@ import { ReadyMadeRail } from "@/components/packages/ReadyMadeRail";
 import { buttonVariants } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/ui/icons";
 import { PACKAGE_PLAN_FIELDS } from "@/features/requests/fields";
+import { getDestinations } from "@/lib/api/destinations";
+import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
 import type { Locale } from "@/i18n/routing";
 
@@ -35,15 +37,26 @@ export default async function PackagePlanPage({ params, searchParams }: PackageP
   const { destination, budget, travel_date: travelDate } = await searchParams;
   setRequestLocale(locale);
 
-  const [t, hero] = await Promise.all([
+  const [t, destinations, hero] = await Promise.all([
     getTranslations("PackagePlanPage"),
+    safeResults(getDestinations({ page_size: 60 })),
     getPageHero("packages").catch(() => null),
   ]);
 
   // Arriving from a destination page or the hero widget should carry the
   // destination across rather than asking for it twice.
+  //
+  // What arrives is a slug. Printed as it is, an Arabic form opens with
+  // "dubai" in the destination box, so the catalogue is asked for the name
+  // this reader would have typed; an unknown slug falls back to itself with
+  // the hyphens opened out.
   const defaults: Record<string, string> = {};
-  if (destination) defaults.destination = destination.replace(/-/g, " ");
+  if (destination) {
+    const match = destinations.find((row) => row.slug === destination);
+    defaults.destination = match
+      ? (locale === "ar" ? match.name_ar : match.name_en)
+      : destination.replace(/-/g, " ");
+  }
   // Carried over when the homepage explorer found nothing in someone's range —
   // they have already told us the number once.
   if (budget && BUDGET_BANDS.has(budget)) defaults.budget = budget;

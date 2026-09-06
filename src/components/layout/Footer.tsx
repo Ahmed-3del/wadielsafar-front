@@ -6,6 +6,8 @@ import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { resolveNav } from "@/lib/api/resolve-nav";
 import { resolveFooter } from "@/lib/api/resolve-footer";
+import { BranchCard } from "@/components/branches/BranchCard";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { CertificateWall } from "@/components/layout/CertificateWall";
 import type { ResolvedNavItem } from "@/types/nav-item";
 import type { SocialPlatform } from "@/types/company";
@@ -14,7 +16,6 @@ import { Logo } from "@/components/layout/Logo";
 import {
   FacebookIcon,
   MailIcon,
-  PhoneIcon,
   InstagramIcon,
   LinkedinIcon,
   SnapchatIcon,
@@ -237,32 +238,22 @@ export async function Footer() {
           </div>
         </Container>
 
-        {/* Offices get the full width as cards. Squeezed into a quarter-column
-            they were four phone numbers in a stack; a traveller ringing about a
-            booking wants to see which office to call. */}
+        {/* The offices, as the same cards the homepage used to carry: map,
+            written address, a number to ring and a way to navigate. They live
+            here alone now — a section of them on the homepage and a row of
+            them down here was the same content twice, and the footer is where
+            someone looks for an address on every page rather than one. */}
         <Container className="border-t border-sand-200 py-8">
           <p className="text-sm font-semibold text-navy-900">{tFooter("branchesTitle")}</p>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <ScrollGrid
+            label={tFooter("branchesTitle")}
+            gridClassName="sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-4"
+          >
             {footer.branches.map((branch) => (
-              <li key={branch.key}>
-                <a
-                  href={`tel:${branch.phone}`}
-                  className="flex h-full flex-col gap-1 rounded-xl border border-sand-200 bg-white px-4 py-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold-500 hover:shadow-md"
-                >
-                  <span className="text-xs font-semibold uppercase tracking-wider text-sand-500">
-                    {branch.name}
-                  </span>
-                  <span className="flex items-center gap-2 text-base font-bold text-navy-900">
-                    <PhoneIcon className="h-4 w-4 shrink-0 text-gold-600" />
-                    <span dir="ltr">{branch.display}</span>
-                  </span>
-                  {branch.address ? (
-                    <span className="text-xs leading-5 text-sand-600">{branch.address}</span>
-                  ) : null}
-                </a>
-              </li>
+              <BranchCard key={branch.id} branch={branch} />
             ))}
-          </ul>
+          </ScrollGrid>
         </Container>
 
         {/* The registration numbers are the only credentials on this site that

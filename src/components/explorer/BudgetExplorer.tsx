@@ -32,7 +32,7 @@ export async function BudgetExplorer() {
     <Section className="bg-sand-50">
       <Container>
         <SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
-        <div className="mt-10">
+        <div className="mt-6 sm:mt-10">
           <BudgetExplorerPanel packages={packages} min={min} max={max} step={STEP} />
         </div>
       </Container>

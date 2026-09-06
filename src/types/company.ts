@@ -35,8 +35,18 @@ export interface Branch {
   phone: string;
   /** Readable. Blank falls back to `phone`. */
   phone_display: string;
+  /** Neighbourhood, street, city — one readable line, as the branch cards
+   *  and the footer both print it verbatim. */
   address_ar: string;
   address_en: string;
+  /** Decimal degrees, as strings from the API. Null where nobody has dropped
+   *  the pin yet: the card then shows the address without a map rather than a
+   *  map of the wrong place. */
+  latitude: string | null;
+  longitude: string | null;
+  /** The head office. Marked out on the cards, because "which one do I go to"
+   *  is the question a list of four addresses raises. */
+  is_main: boolean;
   order: number;
 }
 

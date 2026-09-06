@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Rail } from "@/components/ui/Rail";
+import { railCardClass } from "@/components/ui/railCard";
 import { Reveal } from "@/components/ui/Reveal";
 import { PackageCard } from "./PackageCard";
 import { getFeaturedPackages } from "@/lib/api/packages";
@@ -39,13 +40,13 @@ export async function ReadyMadeRail() {
           </Link>
         </div>
 
-        <Reveal className="mt-10">
+        <Reveal className="mt-6 sm:mt-10">
           <Rail label={t("title")}>
             {packages.map((pkg) => (
               <PackageCard
                 key={pkg.id}
                 pkg={pkg}
-                className="w-[80vw] shrink-0 snap-start sm:w-72 lg:w-80"
+                className={railCardClass}
               />
             ))}
           </Rail>

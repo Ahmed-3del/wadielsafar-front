@@ -25,7 +25,7 @@ export async function FeaturedFlightDeals() {
     <Section className="bg-sand-50">
       <Container>
         <SectionHeading eyebrow={t("eyebrow")} title={t("dealsTitle")} description={t("dealsDescription")} />
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 sm:mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {deals.map((deal, index) => (
             <Reveal key={deal.id} delay={Math.min(index, 5) * 60}>
               <FlightCard flight={deal} />

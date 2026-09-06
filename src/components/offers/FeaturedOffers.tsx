@@ -28,14 +28,14 @@ export async function FeaturedOffers() {
           <ScrollGrid
             label={t("title")}
             gridClassName="sm:grid-cols-2 lg:grid-cols-4"
-            className="mt-10"
+            className="mt-6 sm:mt-10"
           >
             {offers.map((offer) => (
               <OfferCard key={offer.id} offer={offer} />
             ))}
           </ScrollGrid>
         ) : (
-          <p className="mt-10 text-sand-500">{t("empty")}</p>
+          <p className="mt-6 sm:mt-10 text-sand-500">{t("empty")}</p>
         )}
       </Container>
     </Section>

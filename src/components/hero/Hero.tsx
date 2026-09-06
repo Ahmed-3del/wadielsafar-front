@@ -5,6 +5,7 @@ import { HeroBackground } from "./HeroBackground";
 import { getDestinations } from "@/lib/api/destinations";
 import { getVisaCountries } from "@/lib/api/visas";
 import { getPopularAirports } from "@/lib/api/airports";
+import { getCruisePorts } from "@/lib/api/cruises";
 import { getPageHero } from "@/lib/api/page-heroes";
 import { safeResults } from "@/lib/api/client";
 import { heroCopy } from "@/lib/utils/hero-copy";
@@ -15,15 +16,17 @@ import { heroCopy } from "@/lib/utils/hero-copy";
  * rather than after hydration.
  */
 export async function Hero() {
-  const [t, tBooking, locale, destinations, visaCountries, popularAirports, hero] = await Promise.all([
-    getTranslations("Hero"),
-    getTranslations("Booking"),
-    getLocale(),
-    safeResults(getDestinations({ page_size: 50 })),
-    safeResults(getVisaCountries({ page_size: 50 })),
-    safeResults(getPopularAirports()),
-    getPageHero("home").catch(() => null),
-  ]);
+  const [t, tBooking, locale, destinations, visaCountries, popularAirports, cruisePorts, hero] =
+    await Promise.all([
+      getTranslations("Hero"),
+      getTranslations("Booking"),
+      getLocale(),
+      safeResults(getDestinations({ page_size: 50 })),
+      safeResults(getVisaCountries({ page_size: 50 })),
+      safeResults(getPopularAirports()),
+      safeResults(getCruisePorts()),
+      getPageHero("home").catch(() => null),
+    ]);
 
   const isArabic = locale === "ar";
   const destinationOptions: BookingOption[] = destinations.map((d) => ({
@@ -71,6 +74,7 @@ export async function Hero() {
             destinations={destinationOptions}
             visaCountries={visaOptions}
             popularAirports={popularAirports}
+            cruisePorts={cruisePorts}
             defaultOrigin={defaultOrigin}
           />
         </div>

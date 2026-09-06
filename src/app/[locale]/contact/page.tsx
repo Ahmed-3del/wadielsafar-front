@@ -5,6 +5,7 @@ import { Section } from "@/components/ui/Section";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 import { getDestinations } from "@/lib/api/destinations";
+import { getInquiryFields } from "@/lib/api/inquiry-fields";
 import { safeResults } from "@/lib/api/client";
 import { siteConfig } from "@/config/site";
 import { getPageHero } from "@/lib/api/page-heroes";
@@ -24,10 +25,13 @@ export default async function ContactPage({ params }: ContactPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, tFooter, destinations, hero] = await Promise.all([
+  const [t, tFooter, destinations, fields, hero] = await Promise.all([
     getTranslations("ContactPage"),
     getTranslations("Footer"),
     safeResults(getDestinations({ page_size: 100 })),
+    // What to ask once a service is chosen. An unreachable API leaves the
+    // fixed half of the form, which still reaches an agent.
+    safeResults(getInquiryFields()),
     getPageHero("contact").catch(() => null),
   ]);
 
@@ -55,7 +59,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
             </dl>
           </div>
           <div className="rounded-2xl border border-sand-200 p-6 sm:p-8">
-            <InquiryForm destinations={destinations} />
+            <InquiryForm destinations={destinations} fields={fields} />
           </div>
         </Container>
       </Section>

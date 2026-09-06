@@ -31,21 +31,34 @@ export async function TrustSection() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-400">
             {t("eyebrow")}
           </p>
-          <h2 className="mt-3 text-3xl font-bold text-white sm:text-4xl">{t("title")}</h2>
-          <p className="mt-4 text-base leading-8 text-navy-100">{t("description")}</p>
+          <h2 className="mt-2 text-2xl font-bold text-white sm:mt-3 sm:text-3xl lg:text-4xl">
+            {t("title")}
+          </h2>
+          <p className="mt-2.5 text-base leading-7 text-navy-100 sm:mt-4 sm:leading-8">
+            {t("description")}
+          </p>
         </div>
 
-        <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Four short facts. Stacked as four full-width blocks they ran to
+            more than a screen on a phone, so on a phone the icon sits beside
+            its text instead of above it — the same content in half the height.
+            From sm up it is the original column again. */}
+        <div className="mt-8 grid gap-x-8 gap-y-7 sm:mt-12 sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
           {ITEMS.map(({ key, Icon }, index) => (
             <Reveal key={key} delay={index * 70}>
-              <div className="flex flex-col gap-4">
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/10 text-gold-400 ring-1 ring-white/15">
+              <div className="flex flex-row items-start gap-4 sm:flex-col">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/10 text-gold-400 ring-1 ring-white/15">
                   <Icon className="h-6 w-6" />
                 </span>
-                <h3 className="text-lg font-bold text-white">{t(`items.${key}.title`)}</h3>
-                <p className="text-sm leading-7 text-navy-100">
-                  {t(`items.${key}.body`, { cr: siteConfig.registration.commercialRegistry })}
-                </p>
+                {/* `contents` from sm up, so the desktop column is the one
+                    flex context it always was and the gap-4 between icon,
+                    title and body is unchanged. */}
+                <div className="flex flex-col gap-1.5 sm:contents">
+                  <h3 className="text-lg font-bold text-white">{t(`items.${key}.title`)}</h3>
+                  <p className="text-sm leading-7 text-navy-100">
+                    {t(`items.${key}.body`, { cr: siteConfig.registration.commercialRegistry })}
+                  </p>
+                </div>
               </div>
             </Reveal>
           ))}

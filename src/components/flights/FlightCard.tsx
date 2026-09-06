@@ -56,11 +56,21 @@ export function FlightCard({ flight }: FlightCardProps) {
       </div>
 
       {flight.departure_date ? (
-        <p className="mt-3 text-sm text-sand-500">
-          {t("departure")}: {formatDate(flight.departure_date, locale)}
-          {flight.return_date
-            ? ` · ${t("returnDate")}: ${formatDate(flight.return_date, locale)}`
-            : null}
+        /* Each date is one unbreakable run. Written as a single sentence, a
+           narrow card wrapped between the day and the month — "العودة: 3" on
+           one line and "أكتوبر 2026" on the next, which reads as a bug. The
+           separator stays on the first line, where a trailing "·" reads as
+           "continued". */
+        <p className="mt-3 flex flex-wrap gap-x-1.5 text-sm text-sand-500">
+          <span className="whitespace-nowrap">
+            {t("departure")}: {formatDate(flight.departure_date, locale)}
+            {flight.return_date ? " ·" : null}
+          </span>
+          {flight.return_date ? (
+            <span className="whitespace-nowrap">
+              {t("returnDate")}: {formatDate(flight.return_date, locale)}
+            </span>
+          ) : null}
         </p>
       ) : null}
 

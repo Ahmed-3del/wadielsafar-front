@@ -37,7 +37,7 @@ export async function PopularDestinations() {
            * carries the section and the rest support it, which is what makes
            * the block feel edited instead of dumped from a database.
            */
-          <div className="mt-10 grid gap-4 sm:gap-5 lg:grid-cols-2">
+          <div className="mt-6 sm:mt-10 grid gap-4 sm:gap-5 lg:grid-cols-2">
             <Reveal className="lg:contents">
               <DestinationCard destination={featured} featured className="lg:row-span-2" />
             </Reveal>
@@ -55,7 +55,7 @@ export async function PopularDestinations() {
             ) : null}
           </div>
         ) : (
-          <EmptyState title={t("empty")} className="mt-10" />
+          <EmptyState title={t("empty")} className="mt-6 sm:mt-10" />
         )}
       </Container>
     </Section>

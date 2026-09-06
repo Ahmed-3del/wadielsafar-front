@@ -1,18 +1,7 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { getBranches, getCertificates, getSocialLinks } from "@/lib/api/company";
 import { siteConfig } from "@/config/site";
-import type { Certificate, SocialPlatform } from "@/types/company";
-
-export interface ResolvedBranch {
-  key: string;
-  name: string;
-  /** Dialable, for the tel: href. */
-  phone: string;
-  /** Readable, for the eye. */
-  display: string;
-  /** Shown under the number when the panel has one. */
-  address: string;
-}
+import type { Branch, Certificate, SocialPlatform } from "@/types/company";
 
 export interface ResolvedSocial {
   platform: SocialPlatform;
@@ -40,20 +29,32 @@ const HOST_PLATFORMS: { match: string; platform: SocialPlatform }[] = [
  * than showing nothing.
  */
 export async function resolveFooter(): Promise<{
-  branches: ResolvedBranch[];
+  branches: Branch[];
   socials: ResolvedSocial[];
   certificates: Certificate[];
 }> {
-  const [locale, t] = await Promise.all([getLocale(), getTranslations("Footer")]);
-  const isArabic = locale === "ar";
+  const t = await getTranslations("Footer");
 
-  const shippedBranches = (): ResolvedBranch[] =>
-    siteConfig.branches.map((branch) => ({
-      key: branch.key,
-      name: t(`branches.${branch.key}`),
+  /*
+   * The numbers the site shipped with, shaped as branch records so the footer
+   * renders one kind of card either way. They carry no address and no pin —
+   * the card shows a plain block where the map goes rather than inventing a
+   * location, and the panel is where the real ones are filled in.
+   */
+  const shippedBranches = (): Branch[] =>
+    siteConfig.branches.map((branch, index) => ({
+      // Negative, so a fallback row can never collide with a real id.
+      id: -(index + 1),
+      name_ar: t(`branches.${branch.key}`),
+      name_en: t(`branches.${branch.key}`),
       phone: branch.phone,
-      display: branch.display,
-      address: "",
+      phone_display: branch.display,
+      address_ar: "",
+      address_en: "",
+      latitude: null,
+      longitude: null,
+      is_main: branch.key === "main",
+      order: index,
     }));
 
   const shippedSocials = (): ResolvedSocial[] =>
@@ -78,15 +79,13 @@ export async function resolveFooter(): Promise<{
     // An empty list is treated like a failure: it means nobody has filled the
     // panel in yet, and a footer with no way to reach the company is worse
     // than one showing the numbers it shipped with.
+    // The head office first, whatever its `order`: it is the one a first-time
+    // visitor should read first.
     branches:
       branchRows.length > 0
-        ? branchRows.map((branch) => ({
-            key: String(branch.id),
-            name: isArabic ? branch.name_ar : branch.name_en,
-            phone: branch.phone,
-            display: branch.phone_display || branch.phone,
-            address: isArabic ? branch.address_ar : branch.address_en,
-          }))
+        ? [...branchRows].sort(
+            (a, b) => Number(b.is_main) - Number(a.is_main) || a.order - b.order,
+          )
         : shippedBranches(),
     socials:
       socialRows.length > 0

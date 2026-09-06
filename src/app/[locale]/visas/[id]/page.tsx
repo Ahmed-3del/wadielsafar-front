@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
+import { MediaImage } from "@/components/ui/MediaImage";
 import { Section } from "@/components/ui/Section";
-import { PageHeader } from "@/components/layout/PageHeader";
 import { Accordion } from "@/components/ui/Accordion";
 import { buttonVariants } from "@/components/ui/Button";
 import { CheckIcon, ClockIcon, PassportIcon, WhatsAppIcon } from "@/components/ui/icons";
@@ -13,7 +13,6 @@ import { formatPrice } from "@/lib/utils/format-date";
 import { whatsappLink } from "@/lib/utils/whatsapp";
 import { cn } from "@/lib/utils/cn";
 import { fetchDetail } from "@/lib/api/fetch-detail";
-import { getPageHero } from "@/lib/api/page-heroes";
 import type { Locale } from "@/i18n/routing";
 
 interface VisaDetailPageProps {
@@ -41,12 +40,11 @@ export default async function VisaDetailPage({ params }: VisaDetailPageProps) {
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const [t, tVisas, tWa, visa, hero] = await Promise.all([
+  const [t, tVisas, tWa, visa] = await Promise.all([
     getTranslations("VisaDetailPage"),
     getTranslations("Visas"),
     getTranslations("Whatsapp"),
     fetchVisaType(id),
-    getPageHero("visas").catch(() => null),
   ]);
   if (!visa) notFound();
 
@@ -54,6 +52,8 @@ export default async function VisaDetailPage({ params }: VisaDetailPageProps) {
   const name = isArabic ? visa.name_ar : visa.name_en;
   const country = isArabic ? visa.country.name_ar : visa.country.name_en;
   const requirements = isArabic ? visa.requirements_ar : visa.requirements_en;
+  // This visa's own picture, else the country's — the same order the card uses.
+  const cover = visa.cover_image || visa.country.cover_image;
 
   // Requirements are authored as free text; split them into a checklist so they
   // can be scanned rather than read as a paragraph.
@@ -66,7 +66,37 @@ export default async function VisaDetailPage({ params }: VisaDetailPageProps) {
 
   return (
     <>
-      <PageHeader hero={hero} isArabic={isArabic} title={name} description={country} />
+      {/* The country's own photograph, the way every other detail page opens.
+          This used the shared /visas banner, so eighteen different visas all
+          led to the same picture — a Dubai skyline over an Azerbaijan visa.
+          With no photo on the record MediaImage draws the brand block, which
+          says nothing rather than something untrue; the editor's banner still
+          heads the /visas listing, where it belongs. */}
+      <section className="relative min-h-96 overflow-hidden bg-navy-900">
+        <MediaImage src={cover} alt={country} fill sizes="100vw" priority className="object-cover" />
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 bg-linear-to-t from-navy-950/90 via-navy-950/50 to-navy-950/20"
+        />
+        <Container className="relative flex min-h-96 flex-col justify-end py-12">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-400">
+            {country}
+          </p>
+          <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">{name}</h1>
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-navy-100">
+            <span className="flex items-center gap-2">
+              <ClockIcon className="h-4 w-4 text-gold-400" />
+              {tVisas("workingDays", { days: visa.processing_time_days })}
+            </span>
+            {visa.entry_type ? (
+              <span className="flex items-center gap-2">
+                <PassportIcon className="h-4 w-4 text-gold-400" />
+                {tVisas(`entry.${visa.entry_type}`)}
+              </span>
+            ) : null}
+          </div>
+        </Container>
+      </section>
 
       <Section>
         <Container>
@@ -127,14 +157,24 @@ export default async function VisaDetailPage({ params }: VisaDetailPageProps) {
                     {tVisas("processingLabel")}
                   </dt>
                   <dd className="font-semibold text-navy-900">
-                    {tVisas("days", { days: visa.processing_time_days })}
+                    {tVisas("workingDays", { days: visa.processing_time_days })}
                   </dd>
                 </div>
                 {visa.validity_days ? (
                   <div className="flex items-baseline justify-between gap-3">
                     <dt className="text-sm text-sand-500">{tVisas("validityLabel")}</dt>
+                    {/* Calendar days. Working days belong to the queue at the
+                        embassy, not to how long the visa itself lasts. */}
                     <dd className="font-semibold text-navy-900">
                       {tVisas("days", { days: visa.validity_days })}
+                    </dd>
+                  </div>
+                ) : null}
+                {visa.entry_type ? (
+                  <div className="flex items-baseline justify-between gap-3">
+                    <dt className="text-sm text-sand-500">{tVisas("entryLabel")}</dt>
+                    <dd className="font-semibold text-navy-900">
+                      {tVisas(`entry.${visa.entry_type}`)}
                     </dd>
                   </div>
                 ) : null}

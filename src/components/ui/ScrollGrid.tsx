@@ -40,8 +40,12 @@ export function ScrollGrid({ children, label, gridClassName, className }: Scroll
         // Mobile: a snap scroller that bleeds to the screen edges, so the next
         // card peeks in and the row reads as scrollable without an affordance.
         "no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2",
-        // Children need a width to scroll against; 78% leaves that peek.
-        "[&>*]:w-[78%] [&>*]:shrink-0 [&>*]:snap-start",
+        // Children need a width to scroll against. The same 85vw the Rail
+        // gives its cards, and in the same unit: the scroller bleeds to both
+        // screen edges, so a percentage of it and a percentage of the screen
+        // are the same thing — but only one of them stays equal to the Rail's
+        // when the container padding changes.
+        "[&>*]:w-[85vw] [&>*]:shrink-0 [&>*]:snap-start",
         // From sm up it is an ordinary grid again, and the mobile-only rules
         // are unwound so the cards fill their cells.
         "sm:mx-0 sm:grid sm:snap-none sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0",
