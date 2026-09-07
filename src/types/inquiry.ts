@@ -12,6 +12,9 @@ export interface InquiryPayload {
   email: string;
   phone: string;
   service_type: ServiceType;
+  /** Which of the Services screen's entries this came through, when it came
+   *  through one. `service_type` stays the bucket it is filed under. */
+  service?: number | null;
   destination: number | null;
   travel_date: string | null;
   message: string;

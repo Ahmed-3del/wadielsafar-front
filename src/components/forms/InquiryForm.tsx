@@ -11,8 +11,7 @@ import type { InquiryField } from "@/types/inquiry-field";
 import { createInquiry } from "@/lib/api/inquiries";
 import { ApiError } from "@/lib/api/client";
 import { SERVICE_TYPES } from "@/lib/constants/service-types";
-import type { InquiryServiceType } from "@/types/inquiry-service-type";
-import type { ServiceType } from "@/types/inquiry";
+import { choiceId, type ContactFormService } from "@/types/contact-form-service";
 import { Button } from "@/components/ui/Button";
 import { PhoneField } from "@/components/forms/PhoneField";
 import { TagIcon } from "@/components/ui/icons";
@@ -35,18 +34,45 @@ interface InquiryFormProps {
   /** Every question the panel defines, for every service. The form shows the
    *  ones belonging to whichever service is chosen. */
   fields?: InquiryField[];
-  /** The services on offer, in the panel's order. Empty falls back to the six
-   *  an enquiry can be filed under, named from the message catalogue. */
-  serviceTypes?: InquiryServiceType[];
-  /** What the visitor pressed to get here. The form opens on it. Narrowed
-   *  against the offered list before it reaches here. */
-  initialServiceType?: ServiceType | null;
-  /** The wording they pressed, when it is finer than the service — "Travel
-   *  insurance" under Other. Filed with the enquiry. */
+  /** What the form offers, in the panel's order: the base service types and
+   *  the services switched on for the form. Empty falls back to the six an
+   *  enquiry can be filed under, named from the message catalogue. */
+  services?: ContactFormService[];
+  /** What the visitor pressed to get here — a choice id from the list above.
+   *  The form opens on it. Checked against the list before it reaches here. */
+  initialChoice?: string | null;
+  /** Which particular thing they were looking at — a package's or a cruise's
+   *  own name. Finer than the service, and filed with the enquiry. */
   topic?: string | null;
 }
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
+
+type Choice = { id: string; entry: ContactFormService; label: string };
+
+/**
+ * The questions one choice asks.
+ *
+ * A service asks its own if it has any, and otherwise falls back to the ones
+ * its type asks — so switching a service on for the form never produces a page
+ * that asks nothing, and a service that needs a policy start date can have one
+ * without every other "Other" enquiry being asked for it too.
+ */
+function questionsFor(
+  fields: InquiryField[],
+  options: Choice[],
+  choiceId: string,
+): InquiryField[] {
+  const entry = options.find((option) => option.id === choiceId)?.entry;
+  if (!entry) return [];
+
+  const own =
+    entry.kind === "SERVICE" ? fields.filter((field) => field.service === entry.service_id) : [];
+  const rows = own.length
+    ? own
+    : fields.filter((field) => field.service === null && field.service_type === entry.value);
+  return [...rows].sort((a, b) => a.order - b.order);
+}
 
 const fieldClass =
   "mt-1.5 w-full rounded-lg border border-sand-300 px-3.5 py-2.5 text-sm text-navy-900 focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500";
@@ -54,8 +80,8 @@ const fieldClass =
 export function InquiryForm({
   destinations = [],
   fields = [],
-  serviceTypes = [],
-  initialServiceType = null,
+  services = [],
+  initialChoice = null,
   topic = null,
   claim = null,
 }: InquiryFormProps) {
@@ -74,13 +100,26 @@ export function InquiryForm({
    */
   const options = useMemo(
     () =>
-      serviceTypes.length > 0
-        ? serviceTypes.map((row) => ({
-            value: row.value,
-            label: isArabic ? row.label_ar : row.label_en,
+      services.length > 0
+        ? services.map((entry) => ({
+            id: choiceId(entry),
+            entry,
+            label: isArabic ? entry.label_ar : entry.label_en,
           }))
-        : SERVICE_TYPES.map((value) => ({ value, label: tServiceTypes(value) })),
-    [serviceTypes, isArabic, tServiceTypes],
+        : SERVICE_TYPES.map((value) => ({
+            id: `TYPE:${value}`,
+            entry: {
+              kind: "TYPE" as const,
+              value,
+              service_id: null,
+              slug: "",
+              label_ar: "",
+              label_en: "",
+              order: 0,
+            },
+            label: tServiceTypes(value),
+          })),
+    [services, isArabic, tServiceTypes],
   );
 
   /*
@@ -88,7 +127,7 @@ export function InquiryForm({
    * constant: an entry the panel has switched off is not in the list, and a
    * picker defaulting to something it does not offer shows blank.
    */
-  const defaultServiceType = initialServiceType ?? options[0]?.value ?? "OTHER";
+  const defaultChoice = initialChoice ?? options[0]?.id ?? "TYPE:OTHER";
 
   /*
    * The fixed half of the form is the same whatever the service; the rest is
@@ -98,10 +137,10 @@ export function InquiryForm({
   const schema = useMemo(
     () =>
       inquiryFormSchema
-        .extend({ details: z.record(z.string(), z.string()) })
+        .extend({ choice: z.string(), details: z.record(z.string(), z.string()) })
         .superRefine((values, ctx) => {
-          for (const field of fields) {
-            if (field.service_type !== values.service_type || !field.is_required) continue;
+          for (const field of questionsFor(fields, options, values.choice)) {
+            if (!field.is_required) continue;
             if (!values.details[field.key]?.trim()) {
               ctx.addIssue({
                 code: "custom",
@@ -111,7 +150,7 @@ export function InquiryForm({
             }
           }
         }),
-    [fields],
+    [fields, options],
   );
 
   const {
@@ -126,7 +165,8 @@ export function InquiryForm({
       name: "",
       email: "",
       phone: "",
-      service_type: defaultServiceType,
+      choice: defaultChoice,
+      service_type: "OTHER",
       destination: null,
       travel_date: null,
       message: "",
@@ -135,14 +175,12 @@ export function InquiryForm({
   });
 
   // The chosen service decides which questions are on screen.
-  const serviceType = useWatch({ control, name: "service_type" });
+  const choice = useWatch({ control, name: "choice" });
   const serviceFields = useMemo(
-    () =>
-      fields
-        .filter((field) => field.service_type === serviceType)
-        .sort((a, b) => a.order - b.order),
-    [fields, serviceType],
+    () => questionsFor(fields, options, choice),
+    [fields, options, choice],
   );
+  const chosen = options.find((option) => option.id === choice)?.entry ?? null;
 
   async function onSubmit(values: z.output<typeof schema>) {
     setStatus("submitting");
@@ -164,11 +202,20 @@ export function InquiryForm({
       // the agent on the enquiry rather than only in the visitor's memory.
       if (claim?.offer) details.claimed_offer = claim.offer;
       if (claim?.code) details.promo_code = claim.code;
-      // The add-ons all file under "Other", so without this the agent reads
-      // "Other" and has to guess which of the eight tiles was pressed.
+      // Which package or cruise they were reading, which the service choice
+      // alone does not say.
       if (topic) details.requested_service = topic;
 
-      await createInquiry({ ...values, details, source: "WEBSITE" });
+      await createInquiry({
+        ...values,
+        // The picker carries one value; the enquiry stores two. `service_type`
+        // is the column the panel filters and the CRM reads, `service` is
+        // which of the six things filed under OTHER they actually asked for.
+        service_type: chosen?.value ?? "OTHER",
+        service: chosen?.kind === "SERVICE" ? chosen.service_id : null,
+        details,
+        source: "WEBSITE",
+      });
       setStatus("success");
       reset();
     } catch (error) {
@@ -248,17 +295,16 @@ export function InquiryForm({
           <label htmlFor="service_type" className="block text-sm font-medium text-navy-900">
             {t("serviceType")}
           </label>
-          <select id="service_type" className={fieldClass} {...register("service_type")}>
+          <select id="service_type" className={fieldClass} {...register("choice")}>
             {options.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.id} value={option.id}>
                 {option.label}
               </option>
             ))}
           </select>
           {topic ? (
             /* Said out loud so the reader can see the site remembered what
-               they pressed — and correct it if the tile was not what they
-               meant. */
+               they pressed — and correct it if it was not what they meant. */
             <p className="mt-1.5 text-sm text-sand-600">{t("about", { topic })}</p>
           ) : null}
         </div>

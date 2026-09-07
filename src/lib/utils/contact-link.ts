@@ -1,10 +1,12 @@
-import type { ServiceType } from "@/types/inquiry";
+import type { ContactFormService } from "@/types/contact-form-service";
+import { choiceId } from "@/types/contact-form-service";
 
 export interface ContactLinkParams {
-  /** The entry of the contact form's list the form should open on. */
+  /** Which entry of the contact form's list to open on. A service's slug, or
+   *  one of the base service types. */
   service?: string | null;
   /** The wording the reader actually pressed, when it is finer than the
-   *  service — "Travel insurance" under Other, or a package's own name. */
+   *  service — a package's own name. */
   topic?: string | null;
   /** An offer's name, when the reader arrived by claiming it. */
   offer?: string | null;
@@ -30,13 +32,22 @@ export function contactHref(params: ContactLinkParams = {}): string {
   return search ? `/contact?${search}` : "/contact";
 }
 
-/** Narrow a value off the URL to a service the enquiry can be filed under. */
-export function asServiceType(
+/**
+ * Turn a `?service=` off the URL into the choice the form should open on.
+ *
+ * Matched on a service's slug first and then on a base type, so both
+ * `/contact?service=travel-insurance` and `/contact?service=CRUISE` work — the
+ * first is what a service tile links to, the second what a cruise page does.
+ * Only what the panel is offering: the query string is typed by anyone, and an
+ * entry switched off is not on the list for a reason.
+ */
+export function asFormChoice(
   value: string | undefined,
-  offered: readonly { value: ServiceType }[],
-): ServiceType | null {
+  offered: readonly ContactFormService[],
+): string | null {
   if (!value) return null;
-  // Only what the panel is offering: the query string is typed by anyone, and
-  // an entry switched off is not on the list for a reason.
-  return offered.find((row) => row.value === value)?.value ?? null;
+  const match =
+    offered.find((entry) => entry.kind === "SERVICE" && entry.slug === value) ??
+    offered.find((entry) => entry.kind === "TYPE" && entry.value === value);
+  return match ? choiceId(match) : null;
 }

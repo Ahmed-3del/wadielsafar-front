@@ -6,8 +6,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 import { getDestinations } from "@/lib/api/destinations";
 import { getInquiryFields } from "@/lib/api/inquiry-fields";
-import { getInquiryServiceTypes } from "@/lib/api/inquiry-service-types";
-import { asServiceType } from "@/lib/utils/contact-link";
+import { getContactFormServices } from "@/lib/api/contact-form-services";
+import { asFormChoice } from "@/lib/utils/contact-link";
 import { safeResults } from "@/lib/api/client";
 import { siteConfig } from "@/config/site";
 import { getPageHero } from "@/lib/api/page-heroes";
@@ -31,16 +31,17 @@ export default async function ContactPage({ params, searchParams }: ContactPageP
   const { offer, promo, service, topic } = await searchParams;
   setRequestLocale(locale);
 
-  const [t, tFooter, destinations, fields, serviceTypes, hero] = await Promise.all([
+  const [t, tFooter, destinations, fields, formServices, hero] = await Promise.all([
     getTranslations("ContactPage"),
     getTranslations("Footer"),
     safeResults(getDestinations({ page_size: 100 })),
     // What to ask once a service is chosen. An unreachable API leaves the
     // fixed half of the form, which still reaches an agent.
     safeResults(getInquiryFields()),
-    // What to offer in the first place. Same story: the form has its own
-    // fallback for the six an enquiry can be filed under.
-    safeResults(getInquiryServiceTypes()),
+    // What to offer in the first place: the base types and the services
+    // switched on for the form, merged and ordered by the API. The form has
+    // its own fallback for the six an enquiry can be filed under.
+    getContactFormServices().catch(() => []),
     getPageHero("contact").catch(() => null),
   ]);
 
@@ -58,7 +59,7 @@ export default async function ContactPage({ params, searchParams }: ContactPageP
 
   // Checked against what is actually on offer rather than trusted: an entry
   // the panel switched off must not come back through a hand-edited URL.
-  const initialServiceType = asServiceType(service, serviceTypes);
+  const initialChoice = asFormChoice(service, formServices);
   const requestedTopic = topic ? topic.trim().slice(0, 120) : null;
 
   return (
@@ -88,8 +89,8 @@ export default async function ContactPage({ params, searchParams }: ContactPageP
             <InquiryForm
               destinations={destinations}
               fields={fields}
-              serviceTypes={serviceTypes}
-              initialServiceType={initialServiceType}
+              services={formServices}
+              initialChoice={initialChoice}
               topic={requestedTopic}
               claim={claim}
             />

@@ -23,7 +23,12 @@ export type InquiryFieldType = (typeof INQUIRY_FIELD_TYPES)[number];
  */
 export interface InquiryField {
   id: number;
+  /** The base service type this belongs to, when it belongs to a type rather
+   *  than to one particular service. */
   service_type: string;
+  /** The service from the Services screen this belongs to, when it is one
+   *  service's own question. Null for a type's questions. */
+  service: number | null;
   /** The key the answer is filed under in the inquiry's `details`. */
   key: string;
   label_ar: string;

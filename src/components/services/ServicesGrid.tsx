@@ -112,10 +112,11 @@ export async function ServicesGrid() {
                 // agent, so the contact form is the default — but a tile with
                 // a page of its own should lead there.
                 //
-                // The tile's own service and name travel with it, so a reader
-                // who pressed "Travel insurance" lands on a form that already
-                // says so rather than one asking what they came for.
-                href={service.link || contactHref({ service: service.service_type, topic: name })}
+                // The tile's own slug travels with it, so a reader who pressed
+                // "Travel insurance" lands on a form already set to Travel
+                // insurance — asking that service's own questions, if it has
+                // any — rather than one asking what they came for.
+                href={service.link || contactHref({ service: service.slug })}
                 className="group flex w-52 shrink-0 snap-start flex-col items-center gap-3 overflow-hidden rounded-2xl border border-sand-200 bg-white p-4 text-center transition-all duration-200 hover:-translate-y-1 hover:border-gold-500 hover:shadow-lg sm:w-56 sm:p-5"
               >
                 {/* An uploaded picture where there is one, the icon where
