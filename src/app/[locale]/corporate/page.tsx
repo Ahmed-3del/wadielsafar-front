@@ -9,6 +9,7 @@ import { FeatureGrid } from "@/components/ui/FeatureGrid";
 import { HowItWorks } from "@/components/services/HowItWorks";
 import { FinalCta } from "@/components/layout/FinalCta";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { PassportIcon, PlaneIcon, ShieldIcon, UsersIcon } from "@/components/ui/icons";
 import { getPageHero } from "@/lib/api/page-heroes";
 import type { Locale } from "@/i18n/routing";
@@ -54,7 +55,7 @@ export default async function CorporatePage({ params }: CorporatePageProps) {
         title={t("title")}
         description={t("description")}
       >
-        <Link href="/contact" className={buttonVariants("primary", "lg")}>
+        <Link href={contactHref({ service: "CORPORATE" })} className={buttonVariants("primary", "lg")}>
           {tForm("title")}
         </Link>
       </PageHeader>

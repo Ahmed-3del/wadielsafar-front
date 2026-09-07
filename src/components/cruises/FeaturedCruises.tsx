@@ -8,6 +8,7 @@ import { railCardClass } from "@/components/ui/railCard";
 import { Reveal } from "@/components/ui/Reveal";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { CruiseCard } from "./CruiseCard";
 import { getFeaturedCruises } from "@/lib/api/cruises";
 import { safeArray } from "@/lib/api/client";
@@ -49,7 +50,7 @@ export async function FeaturedCruises() {
             title={t("empty")}
             className="mt-6 sm:mt-10"
             action={
-              <Link href="/contact" className={buttonVariants("primary", "md")}>
+              <Link href={contactHref({ service: "CRUISE" })} className={buttonVariants("primary", "md")}>
                 {t("requestCruise")}
               </Link>
             }

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Itinerary } from "@/components/ui/Itinerary";
 import { InclusionList } from "@/components/ui/InclusionList";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { ClockIcon, PinIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { getPackageBySlug } from "@/lib/api/packages";
 import { fetchDetail } from "@/lib/api/fetch-detail";
@@ -159,7 +160,10 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
               <p className="mt-1 text-xs text-sand-500">{t("priceNote")}</p>
 
               <div className="mt-6 flex flex-col gap-3">
-                <Link href="/contact" className={cn(buttonVariants("primary", "md"), "w-full")}>
+                <Link
+                  href={contactHref({ service: "PACKAGE", topic: title })}
+                  className={cn(buttonVariants("primary", "md"), "w-full")}
+                >
                   {t("bookNow")}
                 </Link>
                 <a
@@ -188,7 +192,10 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
               {formatPrice(pkg.price_from, locale)}
             </p>
           </div>
-          <Link href="/contact" className={buttonVariants("primary", "md")}>
+          <Link
+            href={contactHref({ service: "PACKAGE", topic: title })}
+            className={buttonVariants("primary", "md")}
+          >
             {t("bookNow")}
           </Link>
         </Container>

@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { getDestinations } from "@/lib/api/destinations";
 import { safeResults } from "@/lib/api/client";
@@ -52,7 +53,7 @@ export default async function DestinationsPage({ params }: DestinationsPageProps
               title={t("empty")}
               description={t("emptyBody")}
               action={
-                <Link href="/contact" className={buttonVariants("primary", "md")}>
+                <Link href={contactHref({ service: "PACKAGE" })} className={buttonVariants("primary", "md")}>
                   {tCommon("bookNow")}
                 </Link>
               }

@@ -7,9 +7,11 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { CruiseCard } from "@/components/cruises/CruiseCard";
 import { ServiceRequestForm } from "@/components/forms/ServiceRequestForm";
-import { CRUISE_FIELDS } from "@/features/requests/fields";
+import { toRequestFields } from "@/features/requests/fields";
+import { getInquiryFields } from "@/lib/api/inquiry-fields";
 import { getCruisePorts, getCruises } from "@/lib/api/cruises";
 import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
@@ -45,7 +47,7 @@ export default async function CruisesPage({ params, searchParams }: CruisesPageP
   const { destination, search, depart, country, port } = await searchParams;
   setRequestLocale(locale);
 
-  const [t, tCruises, tForm, cruises, ports, hero] = await Promise.all([
+  const [t, tCruises, tForm, cruises, ports, hero, inquiryFields] = await Promise.all([
     getTranslations("CruisesPage"),
     getTranslations("Cruises"),
     getTranslations("RequestForm"),
@@ -62,6 +64,7 @@ export default async function CruisesPage({ params, searchParams }: CruisesPageP
     ),
     safeResults(getCruisePorts()),
     getPageHero("cruises").catch(() => null),
+      safeResults(getInquiryFields({ service_type: "CRUISE" })),
   ]);
 
   /*
@@ -79,6 +82,11 @@ export default async function CruisesPage({ params, searchParams }: CruisesPageP
 
   const isFiltered = Boolean(destination ?? search ?? country ?? port ?? isIsoDate(depart));
 
+  // What to ask for this service, as the panel defines it. An
+  // unreachable API leaves the contact half of the form, which still
+  // reaches an agent.
+  const requestFields = toRequestFields(inquiryFields, locale === "ar");
+
   return (
     <>
       <PageHeader
@@ -95,7 +103,7 @@ export default async function CruisesPage({ params, searchParams }: CruisesPageP
         <Container className="max-w-4xl">
           <ServiceRequestForm
             serviceType="CRUISE"
-            fields={CRUISE_FIELDS}
+            fields={requestFields}
             defaults={defaults}
             title={t("formTitle")}
             notice={arrivedFromSearch ? tForm("prefilledNotice") : undefined}
@@ -126,7 +134,7 @@ export default async function CruisesPage({ params, searchParams }: CruisesPageP
               title={tCruises("empty")}
               description={t("noResultsBody")}
               action={
-                <Link href="/contact" className={buttonVariants("primary", "md")}>
+                <Link href={contactHref({ service: "CRUISE" })} className={buttonVariants("primary", "md")}>
                   {tCruises("requestCruise")}
                 </Link>
               }

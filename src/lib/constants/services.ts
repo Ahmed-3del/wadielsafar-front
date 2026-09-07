@@ -70,8 +70,10 @@ export const FALLBACK_ADDON_SERVICES = [
   description_en: "",
   image: null,
   // The fallback exists for an unreachable API, so it leads where every
-  // service leads by default: the contact form.
+  // service leads by default: the contact form, asking about whatever is on
+  // the tile.
   link: "",
+  service_type: "OTHER" as const,
   order,
   is_active: true,
 }));

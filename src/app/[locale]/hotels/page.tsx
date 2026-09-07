@@ -8,7 +8,9 @@ import { ServiceAssurance } from "@/components/services/ServiceAssurance";
 import { HowItWorks } from "@/components/services/HowItWorks";
 import { FaqSection } from "@/components/ui/FaqSection";
 import { FeaturedHotels } from "@/components/hotels/FeaturedHotels";
-import { HOTEL_FIELDS } from "@/features/requests/fields";
+import { toRequestFields } from "@/features/requests/fields";
+import { getInquiryFields } from "@/lib/api/inquiry-fields";
+import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
 import type { Locale } from "@/i18n/routing";
 
@@ -33,10 +35,11 @@ export default async function HotelsPage({ params, searchParams }: HotelsPagePro
   const query = await searchParams;
   setRequestLocale(locale);
 
-  const [t, tForm, hero] = await Promise.all([
+  const [t, tForm, hero, inquiryFields] = await Promise.all([
     getTranslations("HotelsPage"),
     getTranslations("RequestForm"),
     getPageHero("hotels").catch(() => null),
+      safeResults(getInquiryFields({ service_type: "HOTEL" })),
   ]);
 
   const defaults: Record<string, string> = {};
@@ -61,6 +64,11 @@ export default async function HotelsPage({ params, searchParams }: HotelsPagePro
 
   const arrivedFromSearch = Object.keys(defaults).length > 0;
 
+  // What to ask for this service, as the panel defines it. An
+  // unreachable API leaves the contact half of the form, which still
+  // reaches an agent.
+  const requestFields = toRequestFields(inquiryFields, locale === "ar");
+
   return (
     <>
       <PageHeader hero={hero} isArabic={locale === "ar"} title={t("title")} description={t("description")} />
@@ -73,7 +81,7 @@ export default async function HotelsPage({ params, searchParams }: HotelsPagePro
         <Container className="max-w-4xl">
           <ServiceRequestForm
             serviceType="HOTEL"
-            fields={HOTEL_FIELDS}
+            fields={requestFields}
             defaults={defaults}
             title={t("formTitle")}
             notice={arrivedFromSearch ? tForm("prefilledNotice") : undefined}

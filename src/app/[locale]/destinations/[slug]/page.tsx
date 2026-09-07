@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MediaImage } from "@/components/ui/MediaImage";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { PackageCard } from "@/components/packages/PackageCard";
 import { HotelCard } from "@/components/hotels/HotelCard";
 import { CruiseCard } from "@/components/cruises/CruiseCard";
@@ -97,7 +98,10 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
             <p className="mt-4 max-w-2xl text-base leading-8 text-navy-100">{description}</p>
           ) : null}
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link href="/contact" className={buttonVariants("primary", "lg")}>
+            <Link
+              href={contactHref({ service: "PACKAGE", topic: name })}
+              className={buttonVariants("primary", "lg")}
+            >
               {t("planTrip")}
             </Link>
             <a
@@ -173,7 +177,10 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
               title={tPackages("empty")}
               description={t("noPackagesBody")}
               action={
-                <Link href="/contact" className={buttonVariants("primary", "md")}>
+                <Link
+                  href={contactHref({ service: "PACKAGE", topic: name })}
+                  className={buttonVariants("primary", "md")}
+                >
                   {tPackages("requestTrip")}
                 </Link>
               }

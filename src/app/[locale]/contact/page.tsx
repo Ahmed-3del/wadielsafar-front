@@ -6,6 +6,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 import { getDestinations } from "@/lib/api/destinations";
 import { getInquiryFields } from "@/lib/api/inquiry-fields";
+import { getInquiryServiceTypes } from "@/lib/api/inquiry-service-types";
+import { asServiceType } from "@/lib/utils/contact-link";
 import { safeResults } from "@/lib/api/client";
 import { siteConfig } from "@/config/site";
 import { getPageHero } from "@/lib/api/page-heroes";
@@ -13,6 +15,9 @@ import type { Locale } from "@/i18n/routing";
 
 interface ContactPageProps {
   params: Promise<{ locale: Locale }>;
+  /** `offer`/`promo` when someone arrives by claiming an offer; `service` and
+   *  `topic` when they arrive by pressing a service anywhere on the site. */
+  searchParams: Promise<{ offer?: string; promo?: string; service?: string; topic?: string }>;
 }
 
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
@@ -21,19 +26,40 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
   return { title: t("title"), description: t("description") };
 }
 
-export default async function ContactPage({ params }: ContactPageProps) {
+export default async function ContactPage({ params, searchParams }: ContactPageProps) {
   const { locale } = await params;
+  const { offer, promo, service, topic } = await searchParams;
   setRequestLocale(locale);
 
-  const [t, tFooter, destinations, fields, hero] = await Promise.all([
+  const [t, tFooter, destinations, fields, serviceTypes, hero] = await Promise.all([
     getTranslations("ContactPage"),
     getTranslations("Footer"),
     safeResults(getDestinations({ page_size: 100 })),
     // What to ask once a service is chosen. An unreachable API leaves the
     // fixed half of the form, which still reaches an agent.
     safeResults(getInquiryFields()),
+    // What to offer in the first place. Same story: the form has its own
+    // fallback for the six an enquiry can be filed under.
+    safeResults(getInquiryServiceTypes()),
     getPageHero("contact").catch(() => null),
   ]);
+
+  /*
+   * Trimmed and length-capped: these arrive in a URL anyone can edit, and they
+   * are shown on the page and filed on the enquiry.
+   */
+  const claim =
+    offer || promo
+      ? {
+          offer: (offer ?? "").trim().slice(0, 120),
+          code: (promo ?? "").trim().slice(0, 30),
+        }
+      : null;
+
+  // Checked against what is actually on offer rather than trusted: an entry
+  // the panel switched off must not come back through a hand-edited URL.
+  const initialServiceType = asServiceType(service, serviceTypes);
+  const requestedTopic = topic ? topic.trim().slice(0, 120) : null;
 
   return (
     <>
@@ -59,7 +85,14 @@ export default async function ContactPage({ params }: ContactPageProps) {
             </dl>
           </div>
           <div className="rounded-2xl border border-sand-200 p-6 sm:p-8">
-            <InquiryForm destinations={destinations} fields={fields} />
+            <InquiryForm
+              destinations={destinations}
+              fields={fields}
+              serviceTypes={serviceTypes}
+              initialServiceType={initialServiceType}
+              topic={requestedTopic}
+              claim={claim}
+            />
           </div>
         </Container>
       </Section>

@@ -220,6 +220,11 @@ export function BookingWidget({
                 className={cn(
                   iconClass,
                   "transition-all duration-200 ease-out-soft",
+                  // Hidden on the narrowest phones, where the five tabs
+                  // otherwise take three rows. The pill behind the label still
+                  // marks the open tab; the icon is the second signal, and the
+                  // row it costs is worth more at 320px.
+                  "max-[359px]:hidden",
                   active && "scale-110 text-gold-600",
                 )}
               />

@@ -8,6 +8,6 @@ import type { InquiryField } from "@/types/inquiry-field";
  * rows, and switching the service picker has to be instant — a request on
  * every change would leave the form blank while it loaded.
  */
-export function getInquiryFields() {
-  return apiList<InquiryField>("/inquiries/fields/", { page_size: 200 });
+export function getInquiryFields(params?: { service_type?: string }) {
+  return apiList<InquiryField>("/inquiries/fields/", { page_size: 200, ...params });
 }

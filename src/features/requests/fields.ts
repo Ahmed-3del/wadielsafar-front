@@ -1,38 +1,21 @@
-import type { ServiceType } from "@/types/inquiry";
-
-/* Keys are unions rather than plain strings so next-intl's strict message-key
- * typing can verify every label at build time instead of failing at runtime. */
-export type RequestLabelKey =
-  | "tripType" | "cabinClass" | "from" | "to" | "depart" | "return" | "passengers"
-  | "city" | "stars" | "checkIn" | "checkOut" | "rooms" | "guests"
-  | "travellers" | "travellersCount" | "travelDate" | "name" | "phone" | "email" | "notes"
-  | "departurePort" | "sailDate" | "cabinType"
-  | "cityPlaceholder" | "destination" | "nights" | "hotelLevel" | "services"
-  | "budget" | "destinationPlaceholder";
-
-export type RequestOptionKey =
-  | "roundTrip" | "oneWay" | "anyStars" | "anyBudget"
-  | "cabin.ECONOMY" | "cabin.PREMIUM_ECONOMY" | "cabin.BUSINESS" | "cabin.FIRST"
-  | "hotelLevels.3" | "hotelLevels.4" | "hotelLevels.5" | "hotelLevels.any"
-  | "budgets.under5k" | "budgets.5to10k" | "budgets.10to20k" | "budgets.over20k"
-  | "services.flights" | "services.hotel" | "services.transfers"
-  | "services.tours" | "services.visa" | "services.insurance" | "services.meals"
-  | "cabins.any" | "cabins.inside" | "cabins.oceanView" | "cabins.balcony" | "cabins.suite";
-
-/* Optional section headings inside a long form. Only the planner uses them so
- * far; every other request form is short enough to read as one block. */
-export type RequestGroupKey = "trip" | "style" | "services";
+import type { InquiryField } from "@/types/inquiry-field";
 
 export interface SelectOption {
+  /** What is stored on the enquiry, and what an agent reads: the option in the
+   *  visitor's own language. */
   value: string;
-  /** A message key in the request form namespace, or a bare numeric label. */
-  label: RequestOptionKey | `${number}`;
+  /** The same option in English, whatever the visitor is reading. Rules like
+   *  "show the return date on a round trip" are written against this, so one
+   *  rule covers both languages. */
+  match: string;
 }
 
 export interface RequestFieldDef {
   name: string;
-  /** Key inside the "RequestForm" message namespace. */
-  labelKey: RequestLabelKey;
+  /** Already in the reader's language — these come from rows an agent edits,
+   *  not from a message catalogue. */
+  label: string;
+  placeholder?: string;
   // "checkbox" renders a multi-select group. Its value reaches the API as a
   // joined string, not an array: the inquiry `details` field accepts flat
   // scalars only.
@@ -55,7 +38,8 @@ export interface RequestFieldDef {
     | "stepper"
     | "segmented"
     | "airport"
-    | "city";
+    | "city"
+    | "number";
   /** Bounds for a stepper. Its value stays a string, like every other field. */
   min?: number;
   max?: number;
@@ -67,180 +51,61 @@ export interface RequestFieldDef {
   notBefore?: string;
   required?: boolean;
   options?: SelectOption[];
-  placeholderKey?: RequestLabelKey;
   /** Full width on the two-column desktop grid. */
   wide?: boolean;
-  /** Only render when another field has this value (e.g. return date). */
+  /** Only render while another field holds this answer, compared in English. */
   showWhen?: { field: string; equals: string };
-  /** Groups consecutive fields under a heading. Omit for an ungrouped form. */
-  group?: RequestGroupKey;
+  /** Consecutive fields sharing this heading become one titled block. */
+  group?: string;
 }
 
-/*
- * Field definitions per service. These are request forms, not searches: Wadi Al
- * Safar has no live inventory, so the job is to capture exactly what an agent
- * needs to quote and then hand off to a human.
- */
-export const FLIGHT_FIELDS: RequestFieldDef[] = [
-  {
-    name: "trip_type",
-    labelKey: "tripType",
-    type: "segmented",
-    required: true,
-    options: [
-      { value: "ROUND_TRIP", label: "roundTrip" },
-      { value: "ONE_WAY", label: "oneWay" },
-    ],
-  },
-  {
-    name: "cabin_class",
-    labelKey: "cabinClass",
-    type: "select",
-    options: [
-      { value: "ECONOMY", label: "cabin.ECONOMY" },
-      { value: "PREMIUM_ECONOMY", label: "cabin.PREMIUM_ECONOMY" },
-      { value: "BUSINESS", label: "cabin.BUSINESS" },
-      { value: "FIRST", label: "cabin.FIRST" },
-    ],
-  },
-  { name: "from", labelKey: "from", type: "airport", required: true },
-  { name: "to", labelKey: "to", type: "airport", required: true },
-  { name: "depart", labelKey: "depart", type: "date", required: true, notPast: true },
-  {
-    name: "return",
-    labelKey: "return",
-    type: "date",
-    notPast: true,
-    notBefore: "depart",
-    showWhen: { field: "trip_type", equals: "ROUND_TRIP" },
-  },
-  { name: "passengers", labelKey: "passengers", type: "stepper", min: 1, max: 9 },
-];
-
-export const HOTEL_FIELDS: RequestFieldDef[] = [
-  { name: "city", labelKey: "city", type: "city", required: true },
-  {
-    name: "stars",
-    labelKey: "stars",
-    type: "segmented",
-    options: [
-      { value: "", label: "anyStars" },
-      ...[5, 4, 3].map((n) => ({ value: String(n), label: String(n) as `${number}` })),
-    ],
-  },
-  { name: "check_in", labelKey: "checkIn", type: "date", required: true, notPast: true },
-  {
-    name: "check_out",
-    labelKey: "checkOut",
-    type: "date",
-    required: true,
-    notPast: true,
-    notBefore: "check_in",
-  },
-  { name: "rooms", labelKey: "rooms", type: "stepper", min: 1, max: 6 },
-  { name: "guests", labelKey: "guests", type: "stepper", min: 1, max: 9 },
-];
-
-export const VISA_FIELDS: RequestFieldDef[] = [
-  { name: "travellers", labelKey: "travellers", type: "stepper", min: 1, max: 9 },
-  { name: "travel_date", labelKey: "travelDate", type: "date", notPast: true },
-];
-
-/*
- * A cruise is quoted from the port, the sailing and the cabin — the ship and
- * the fare code are the agent's job, not the traveller's. The port is a plain
- * text field rather than the catalogue picker: the homepage fills it in from
- * the port that was chosen, and anyone arriving here directly can name a port
- * the catalogue has not got yet.
- */
-export const CRUISE_FIELDS: RequestFieldDef[] = [
-  { name: "departure_port", labelKey: "departurePort", type: "text", required: true },
-  { name: "sail_date", labelKey: "sailDate", type: "date", notPast: true },
-  { name: "nights", labelKey: "nights", type: "stepper", min: 2, max: 21 },
-  { name: "travellers", labelKey: "travellersCount", type: "stepper", min: 1, max: 9 },
-  {
-    name: "cabin_type",
-    labelKey: "cabinType",
-    type: "select",
-    options: [
-      { value: "", label: "cabins.any" },
-      { value: "INSIDE", label: "cabins.inside" },
-      { value: "OCEAN_VIEW", label: "cabins.oceanView" },
-      { value: "BALCONY", label: "cabins.balcony" },
-      { value: "SUITE", label: "cabins.suite" },
-    ],
-  },
-];
-
-export const SERVICE_FIELDS: Partial<Record<ServiceType, RequestFieldDef[]>> = {
-  FLIGHT: FLIGHT_FIELDS,
-  HOTEL: HOTEL_FIELDS,
-  VISA: VISA_FIELDS,
-  CRUISE: CRUISE_FIELDS,
+/* How a row's type maps onto a control. The five plain types mean the same
+ * thing on the contact form and the service pages; the richer ones are what
+ * the service pages add. */
+const TYPES: Record<InquiryField["field_type"], RequestFieldDef["type"]> = {
+  TEXT: "text",
+  TEXTAREA: "textarea",
+  NUMBER: "number",
+  DATE: "date",
+  SELECT: "select",
+  STEPPER: "stepper",
+  SEGMENTED: "segmented",
+  CHECKBOX: "checkbox",
+  AIRPORT: "airport",
+  CITY: "city",
 };
 
 /*
- * "Plan your own trip" — for travellers whose trip is not one of the ready-made
- * packages. It asks only what an agent needs to price a custom itinerary, and
- * nothing that would be guesswork at this stage.
+ * Rows from the panel, as the form renderer wants them.
+ *
+ * These definitions used to be a table in this file, which meant changing a
+ * question was a deployment. The labels are resolved here, once, so the
+ * renderer never has to know that a question is a row rather than a constant.
  */
-export const PACKAGE_PLAN_FIELDS: RequestFieldDef[] = [
-  {
-    name: "destination",
-    labelKey: "destination",
-    type: "city",
-    required: true,
-    group: "trip",
-  },
-  { name: "travel_date", labelKey: "travelDate", type: "date", notPast: true, group: "trip" },
-  { name: "nights", labelKey: "nights", type: "stepper", min: 1, max: 21, group: "trip" },
-  {
-    name: "travellers",
-    labelKey: "travellersCount",
-    type: "stepper",
-    min: 1,
-    max: 12,
-    group: "trip",
-  },
-  {
-    name: "hotel_level",
-    labelKey: "hotelLevel",
-    type: "segmented",
-    group: "style",
-    options: [
-      { value: "", label: "hotelLevels.any" },
-      { value: "5", label: "hotelLevels.5" },
-      { value: "4", label: "hotelLevels.4" },
-      { value: "3", label: "hotelLevels.3" },
-    ],
-  },
-  {
-    name: "budget",
-    labelKey: "budget",
-    type: "select",
-    group: "style",
-    options: [
-      { value: "", label: "anyBudget" },
-      { value: "under5k", label: "budgets.under5k" },
-      { value: "5to10k", label: "budgets.5to10k" },
-      { value: "10to20k", label: "budgets.10to20k" },
-      { value: "over20k", label: "budgets.over20k" },
-    ],
-  },
-  {
-    name: "services",
-    labelKey: "services",
-    type: "checkbox",
-    wide: true,
-    group: "services",
-    options: [
-      { value: "flights", label: "services.flights" },
-      { value: "hotel", label: "services.hotel" },
-      { value: "transfers", label: "services.transfers" },
-      { value: "tours", label: "services.tours" },
-      { value: "visa", label: "services.visa" },
-      { value: "insurance", label: "services.insurance" },
-      { value: "meals", label: "services.meals" },
-    ],
-  },
-];
+export function toRequestFields(rows: InquiryField[], isArabic: boolean): RequestFieldDef[] {
+  return [...rows]
+    .sort((a, b) => a.order - b.order)
+    .map((row) => ({
+      name: row.key,
+      label: isArabic ? row.label_ar : row.label_en,
+      placeholder: (isArabic ? row.placeholder_ar : row.placeholder_en) || undefined,
+      type: TYPES[row.field_type] ?? "text",
+      min: row.min_value ?? undefined,
+      max: row.max_value ?? undefined,
+      notPast: row.not_past || undefined,
+      notBefore: row.not_before || undefined,
+      required: row.is_required || undefined,
+      wide: row.is_wide || undefined,
+      options:
+        row.options.length > 0
+          ? row.options.map((option) => ({
+              value: isArabic ? option.ar : option.en,
+              match: option.en,
+            }))
+          : undefined,
+      showWhen: row.show_when_key
+        ? { field: row.show_when_key, equals: row.show_when_value }
+        : undefined,
+      group: (isArabic ? row.group_ar : row.group_en) || undefined,
+    }));
+}

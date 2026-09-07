@@ -6,7 +6,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { VisaExplorer } from "@/components/visas/VisaExplorer";
 import { VisaSteps } from "@/components/visas/VisaSteps";
 import { ServiceRequestForm } from "@/components/forms/ServiceRequestForm";
-import { VISA_FIELDS } from "@/features/requests/fields";
+import { toRequestFields } from "@/features/requests/fields";
+import { getInquiryFields } from "@/lib/api/inquiry-fields";
 import { getVisaCountries, getVisaTypes } from "@/lib/api/visas";
 import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
@@ -36,36 +37,33 @@ export default async function VisasPage({ params, searchParams }: VisasPageProps
   const { country, purpose } = await searchParams;
   setRequestLocale(locale);
 
-  const [t, tVisas, tForm, visas, countries, hero] = await Promise.all([
+  const [t, tVisas, tForm, visas, countries, hero, inquiryFields] = await Promise.all([
     getTranslations("VisasPage"),
     getTranslations("Visas"),
     getTranslations("RequestForm"),
     safeResults(getVisaTypes({ page: 1 })),
     safeResults(getVisaCountries({ page_size: 60 })),
     getPageHero("visas").catch(() => null),
+      safeResults(getInquiryFields({ service_type: "VISA" })),
   ]);
 
   /*
-   * What the traveller already told the homepage, carried across as fixed
-   * context rather than as editable fields: they answered these questions on
-   * the way here, and an agent needs the answers to quote. Anything the
-   * catalogue cannot resolve is simply left out.
+   * What the traveller already told the homepage, used to fill in the matching
+   * questions rather than repeated beside them. The country and the purpose
+   * are rows on this form now, so passing them as fixed context as well would
+   * have asked twice and answered once.
    */
   const isArabic = locale === "ar";
   const chosenPurpose = toPurpose(purpose);
   const chosenCountry = countries.find((row) => String(row.id) === country);
-  const context = [
-    chosenCountry
-      ? {
-          key: "country",
-          label: tVisas("countryLabel"),
-          value: isArabic ? chosenCountry.name_ar : chosenCountry.name_en,
-        }
-      : null,
-    chosenPurpose
-      ? { key: "purpose", label: tVisas("purposeLabel"), value: tVisas(`purposes.${chosenPurpose}`) }
-      : null,
-  ].filter((entry) => entry !== null);
+  const defaults: Record<string, string> = {};
+  if (chosenCountry) {
+    defaults.visa_country = isArabic ? chosenCountry.name_ar : chosenCountry.name_en;
+  }
+  if (chosenPurpose) defaults.purpose = tVisas(`purposes.${chosenPurpose}`);
+
+  // What to ask for this service, as the panel defines it.
+  const requestFields = toRequestFields(inquiryFields, isArabic);
 
   return (
     <>
@@ -78,10 +76,10 @@ export default async function VisasPage({ params, searchParams }: VisasPageProps
         <Container className="max-w-4xl">
           <ServiceRequestForm
             serviceType="VISA"
-            fields={VISA_FIELDS}
-            context={context}
+            fields={requestFields}
+            defaults={defaults}
             title={t("formTitle")}
-            notice={context.length > 0 ? tForm("prefilledNotice") : undefined}
+            notice={Object.keys(defaults).length > 0 ? tForm("prefilledNotice") : undefined}
           />
         </Container>
       </Section>

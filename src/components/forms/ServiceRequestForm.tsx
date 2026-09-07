@@ -61,11 +61,21 @@ export function ServiceRequestForm({
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
-      trip_type: "ROUND_TRIP",
-      passengers: "1",
-      guests: "2",
-      rooms: "1",
-      travellers: "1",
+      /*
+       * The opening answer for anything that has one: the first option of a
+       * list, the floor of a count. These used to be written out by name
+       * ("trip_type: ROUND_TRIP"), which stopped being possible once the
+       * options became rows an agent can rename.
+       */
+      ...Object.fromEntries(
+        fields.flatMap((field) => {
+          if (field.type === "stepper") return [[field.name, String(field.min ?? 1)]];
+          if (field.options && field.options.length > 0 && field.type !== "checkbox") {
+            return [[field.name, field.options[0].value]];
+          }
+          return [];
+        }),
+      ),
       ...defaults,
     },
   });
@@ -73,14 +83,26 @@ export function ServiceRequestForm({
   // useWatch rather than watch(): subscribing through the hook keeps this
   // compatible with the React Compiler, which flags reads of `watch` in render.
   const values = useWatch({ control });
+  /*
+   * A rule like "show the return date on a round trip" is written against the
+   * English option, because the answer in form state is in whichever language
+   * the visitor is reading. So the chosen answer is resolved back to its
+   * English twin before comparing.
+   */
+  const matchOf = (fieldName: string): string => {
+    const source = fields.find((item) => item.name === fieldName);
+    const chosen = values[fieldName];
+    const value = Array.isArray(chosen) ? chosen[0] : chosen;
+    return source?.options?.find((option) => option.value === value)?.match ?? String(value ?? "");
+  };
   const visibleFields = fields.filter(
-    (field) => !field.showWhen || values[field.showWhen.field] === field.showWhen.equals,
+    (field) => !field.showWhen || matchOf(field.showWhen.field) === field.showWhen.equals,
   );
 
   /* Consecutive fields sharing a group become one titled block. Consecutive,
    * not collected: the field order in the config is the reading order, and
    * regrouping would silently reorder someone's form. */
-  const blocks: { key: RequestFieldDef["group"] | null; fields: RequestFieldDef[] }[] = [];
+  const blocks: { key: string | null; fields: RequestFieldDef[] }[] = [];
   for (const field of visibleFields) {
     const key = field.group ?? null;
     const last = blocks.at(-1);
@@ -109,13 +131,10 @@ export function ServiceRequestForm({
       // Selects and checkboxes carry enum values; an agent reading this on
       // WhatsApp should see the label, not ROUND_TRIP. `details` keeps the raw
       // value so the panel stays machine-readable.
-      const labelFor = (item: string) => {
-        const option = field.options?.find((o) => o.value === item);
-        if (!option || /^[0-9]+$/.test(option.label)) return item;
-        return t(`options.${option.label as Exclude<typeof option.label, `${number}`>}`);
-      };
-      const display = Array.isArray(raw) ? raw.map(labelFor).join("، ") : labelFor(value);
-      lines.push(`• ${t(`labels.${field.labelKey}`)}: ${display}`);
+      // The answer is already the words the visitor chose, in their own
+      // language, so an agent reads it as written.
+      const display = Array.isArray(raw) ? raw.join("، ") : value;
+      lines.push(`• ${field.label}: ${display}`);
     }
     if (values.notes) lines.push(`• ${t("labels.notes")}: ${flatten(values.notes)}`);
     lines.push(`• ${t("labels.name")}: ${flatten(values.name)}`);
@@ -183,7 +202,7 @@ export function ServiceRequestForm({
       const other = String(values[field.notBefore] ?? "");
       const otherField = fields.find((item) => item.name === field.notBefore);
       if (other && isBeforeIso(value, other) && otherField) {
-        return tDates("notBefore", { field: t(`labels.${otherField.labelKey}`) });
+        return tDates("notBefore", { field: otherField.label });
       }
     }
     return true;
@@ -193,7 +212,7 @@ export function ServiceRequestForm({
    *  grouped and ungrouped forms cannot drift apart. */
   function renderField(field: RequestFieldDef) {
     const id = `field-${field.name}`;
-    const label = t(`labels.${field.labelKey}`);
+    const label = field.label;
     const error = errors[field.name]?.message;
 
     return (
@@ -270,9 +289,7 @@ export function ServiceRequestForm({
                           : "border-sand-200 text-sand-600 hover:border-navy-300 hover:text-navy-900",
                       )}
                     >
-                      {/^[0-9]+$/.test(option.label)
-                        ? option.label
-                        : t(`options.${option.label as Exclude<typeof option.label, `${number}`>}`)}
+                      {option.value}
                     </button>
                   );
                 })}
@@ -295,9 +312,7 @@ export function ServiceRequestForm({
                   className="h-4 w-4 shrink-0 rounded border-sand-300 accent-gold-500"
                   {...register(field.name)}
                 />
-                {/^[0-9]+$/.test(option.label)
-                  ? option.label
-                  : t(`options.${option.label as Exclude<typeof option.label, `${number}`>}`)}
+                {option.value}
               </label>
             ))}
           </div>
@@ -328,9 +343,7 @@ export function ServiceRequestForm({
           >
             {field.options?.map((option) => (
               <option key={option.value} value={option.value}>
-                {/^[0-9]+$/.test(option.label)
-                  ? option.label
-                  : t(`options.${option.label as Exclude<typeof option.label, `${number}`>}`)}
+                {option.value}
               </option>
             ))}
           </select>
@@ -355,8 +368,10 @@ export function ServiceRequestForm({
         ) : (
           <input
             id={id}
-            type="text"
-            placeholder={field.placeholderKey ? t(`labels.${field.placeholderKey}`) : undefined}
+            type={field.type === "number" ? "number" : "text"}
+            min={field.type === "number" ? (field.min ?? 1) : undefined}
+            max={field.type === "number" ? field.max : undefined}
+            placeholder={field.placeholder}
             className={controlClass}
             {...register(field.name, {
               required: field.required ? t("required") : false,
@@ -418,7 +433,7 @@ export function ServiceRequestForm({
           )}
         >
           {block.key ? (
-            <h3 className="mb-5 text-base font-bold text-navy-900">{t(`groups.${block.key}`)}</h3>
+            <h3 className="mb-5 text-base font-bold text-navy-900">{block.key}</h3>
           ) : null}
           <div className="grid gap-5 sm:grid-cols-2">{block.fields.map(renderField)}</div>
         </div>

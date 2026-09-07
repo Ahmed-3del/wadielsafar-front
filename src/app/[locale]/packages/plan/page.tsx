@@ -11,7 +11,8 @@ import { PlanIncludes } from "@/components/packages/PlanIncludes";
 import { ReadyMadeRail } from "@/components/packages/ReadyMadeRail";
 import { buttonVariants } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/ui/icons";
-import { PACKAGE_PLAN_FIELDS } from "@/features/requests/fields";
+import { toRequestFields } from "@/features/requests/fields";
+import { getInquiryFields } from "@/lib/api/inquiry-fields";
 import { getDestinations } from "@/lib/api/destinations";
 import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
@@ -37,10 +38,11 @@ export default async function PackagePlanPage({ params, searchParams }: PackageP
   const { destination, budget, travel_date: travelDate } = await searchParams;
   setRequestLocale(locale);
 
-  const [t, destinations, hero] = await Promise.all([
+  const [t, destinations, hero, inquiryFields] = await Promise.all([
     getTranslations("PackagePlanPage"),
     safeResults(getDestinations({ page_size: 60 })),
     getPageHero("packages").catch(() => null),
+      safeResults(getInquiryFields({ service_type: "PACKAGE" })),
   ]);
 
   // Arriving from a destination page or the hero widget should carry the
@@ -82,6 +84,11 @@ export default async function PackagePlanPage({ params, searchParams }: PackageP
     answer: t(`faq.items.${id}.a`),
   }));
 
+  // What to ask for this service, as the panel defines it. An
+  // unreachable API leaves the contact half of the form, which still
+  // reaches an agent.
+  const requestFields = toRequestFields(inquiryFields, locale === "ar");
+
   return (
     <>
       <PageHeader
@@ -104,7 +111,7 @@ export default async function PackagePlanPage({ params, searchParams }: PackageP
         <Container className="max-w-4xl">
           <ServiceRequestForm
             serviceType="PACKAGE"
-            fields={PACKAGE_PLAN_FIELDS}
+            fields={requestFields}
             defaults={defaults}
             title={t("formTitle")}
           />

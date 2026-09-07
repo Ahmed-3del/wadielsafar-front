@@ -62,7 +62,27 @@ export function InquiryDetailFields<TValues extends FieldValues>({
               {field.is_required ? <span aria-hidden="true" className="text-gold-700"> *</span> : null}
             </label>
 
-            {field.field_type === "SELECT" ? (
+            {field.field_type === "CHECKBOX" ? (
+              /* Several answers at once. The service pages draw these as a
+                 button grid; here they are plain checkboxes, which is the
+                 same question asked more simply. */
+              <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
+                {field.options.map((option) => {
+                  const value = isArabic ? option.ar : option.en;
+                  return (
+                    <label key={option.en} className="flex items-center gap-2 text-sm text-navy-900">
+                      <input
+                        type="checkbox"
+                        value={value}
+                        className="h-4 w-4 rounded border-sand-300"
+                        {...register(`details.${field.key}` as Path<TValues>)}
+                      />
+                      {value}
+                    </label>
+                  );
+                })}
+              </div>
+            ) : field.field_type === "SELECT" || field.field_type === "SEGMENTED" ? (
               <select id={id} className={fieldClass} defaultValue="" {...register(`details.${field.key}` as Path<TValues>)}>
                 <option value="">{placeholder || t("chooseOption")}</option>
                 {field.options.map((option) => (
@@ -82,16 +102,27 @@ export function InquiryDetailFields<TValues extends FieldValues>({
             ) : (
               <input
                 id={id}
+                /* A count and a search box both come through as their
+                   nearest plain input here: the stepper and the airport
+                   picker are the service pages' controls, and this form asks
+                   the same question without them. */
                 type={
                   field.field_type === "DATE"
                     ? "date"
-                    : field.field_type === "NUMBER"
+                    : field.field_type === "NUMBER" || field.field_type === "STEPPER"
                       ? "number"
                       : "text"
                 }
                 // A trip that starts yesterday is a typo, and the API refuses
                 // it too — greying the days out is kinder than a rejection.
-                min={field.field_type === "DATE" ? todayIso() : field.field_type === "NUMBER" ? 1 : undefined}
+                min={
+                  field.field_type === "DATE"
+                    ? field.not_past
+                      ? todayIso()
+                      : undefined
+                    : (field.min_value ?? undefined)
+                }
+                max={field.max_value ?? undefined}
                 placeholder={placeholder}
                 className={fieldClass}
                 {...register(`details.${field.key}` as Path<TValues>)}

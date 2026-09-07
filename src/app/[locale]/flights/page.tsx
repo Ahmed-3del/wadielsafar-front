@@ -8,7 +8,9 @@ import { ServiceAssurance } from "@/components/services/ServiceAssurance";
 import { HowItWorks } from "@/components/services/HowItWorks";
 import { FaqSection } from "@/components/ui/FaqSection";
 import { FeaturedFlightDeals } from "@/components/flights/FeaturedFlightDeals";
-import { FLIGHT_FIELDS } from "@/features/requests/fields";
+import { toRequestFields } from "@/features/requests/fields";
+import { getInquiryFields } from "@/lib/api/inquiry-fields";
+import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
 import type { Locale } from "@/i18n/routing";
 
@@ -34,10 +36,11 @@ export default async function FlightsPage({ params, searchParams }: FlightsPageP
   const query = await searchParams;
   setRequestLocale(locale);
 
-  const [t, tForm, hero] = await Promise.all([
+  const [t, tForm, hero, inquiryFields] = await Promise.all([
     getTranslations("FlightsPage"),
     getTranslations("RequestForm"),
     getPageHero("flights").catch(() => null),
+      safeResults(getInquiryFields({ service_type: "FLIGHT" })),
   ]);
 
   // The hero widget hands its answers over as query params so the traveller
@@ -63,6 +66,11 @@ export default async function FlightsPage({ params, searchParams }: FlightsPageP
 
   const arrivedFromSearch = Object.keys(defaults).length > 0;
 
+  // What to ask for this service, as the panel defines it. An
+  // unreachable API leaves the contact half of the form, which still
+  // reaches an agent.
+  const requestFields = toRequestFields(inquiryFields, locale === "ar");
+
   return (
     <>
       <PageHeader hero={hero} isArabic={locale === "ar"} title={t("title")} description={t("description")} />
@@ -75,7 +83,7 @@ export default async function FlightsPage({ params, searchParams }: FlightsPageP
         <Container className="max-w-4xl">
           <ServiceRequestForm
             serviceType="FLIGHT"
-            fields={FLIGHT_FIELDS}
+            fields={requestFields}
             defaults={defaults}
             title={t("formTitle")}
             notice={arrivedFromSearch ? tForm("prefilledNotice") : undefined}

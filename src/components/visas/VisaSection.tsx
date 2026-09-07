@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { VisaCard } from "./VisaCard";
 import { getVisaTypes } from "@/lib/api/visas";
 import { safeResults } from "@/lib/api/client";
@@ -54,7 +55,7 @@ export async function VisaSection() {
             title={t("empty")}
             className="mt-6 sm:mt-10"
             action={
-              <Link href="/contact" className={buttonVariants("primary", "md")}>
+              <Link href={contactHref({ service: "VISA" })} className={buttonVariants("primary", "md")}>
                 {t("apply")}
               </Link>
             }

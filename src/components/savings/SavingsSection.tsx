@@ -13,6 +13,7 @@ import { getPromotions } from "@/lib/api/company";
 import { safeResults } from "@/lib/api/client";
 import { cn } from "@/lib/utils/cn";
 import { livePromotions } from "@/lib/utils/promotions";
+import { contactHref } from "@/lib/utils/contact-link";
 import type { PromotionIcon } from "@/types/promotion";
 
 const ICONS: Record<PromotionIcon, typeof TagIcon> = {
@@ -62,6 +63,16 @@ export async function SavingsSection() {
           {live.map((promotion) => {
             const Icon = ICONS[promotion.icon] ?? TagIcon;
             const badge = isArabic ? promotion.badge_ar : promotion.badge_en;
+            const title = isArabic ? promotion.title_ar : promotion.title_en;
+            /*
+             * Claiming has to carry the offer with it. Left as a bare link to
+             * the contact form, someone clicking "claim" on WELCOME15 arrived
+             * at a form that knew nothing about it — and the agent reading the
+             * enquiry had no idea a discount had been promised.
+             */
+            const claimHref =
+              promotion.link || contactHref({ offer: title, promo: promotion.code });
+            const ctaLabel = (isArabic ? promotion.cta_label_ar : promotion.cta_label_en) || t("cta");
 
             const card = (
               <article
@@ -109,10 +120,10 @@ export async function SavingsSection() {
                     up whatever each card holds above them. */}
                 <div className="mt-auto pt-5">
                   <Link
-                    href="/contact"
+                    href={claimHref}
                     className={cn(buttonVariants("primary", "md"), "w-full")}
                   >
-                    {t("cta")}
+                    {ctaLabel}
                   </Link>
                 </div>
               </article>

@@ -10,6 +10,7 @@ import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { Badge } from "@/components/ui/Badge";
 import { OfferCard } from "@/components/offers/OfferCard";
 import { buttonVariants } from "@/components/ui/Button";
+import { contactHref } from "@/lib/utils/contact-link";
 import { CalendarIcon, ClockIcon, TagIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { getOfferBySlug, getOffers } from "@/lib/api/offers";
 import { safeResults } from "@/lib/api/client";
@@ -209,7 +210,10 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
               ) : null}
 
               <div className="mt-6 flex flex-col gap-3">
-                <Link href="/contact" className={cn(buttonVariants("primary", "md"), "w-full")}>
+                <Link
+                  href={contactHref({ service: offer.service_type, offer: title })}
+                  className={cn(buttonVariants("primary", "md"), "w-full")}
+                >
                   {t("claim")}
                 </Link>
                 <a
@@ -257,7 +261,10 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
               {pricing.current ?? t("priceOnRequest")}
             </p>
           </div>
-          <Link href="/contact" className={buttonVariants("primary", "md")}>
+          <Link
+            href={contactHref({ service: offer.service_type, offer: title })}
+            className={buttonVariants("primary", "md")}
+          >
             {t("claim")}
           </Link>
         </Container>
