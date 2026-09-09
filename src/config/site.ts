@@ -8,6 +8,14 @@ export const siteConfig = {
   descriptionAr:
     "وادي السفر شركة سعودية متخصصة في السياحة والسفر، تقدم خدمات الطيران والفنادق والتأشيرات والباقات السياحية والرحلات البحرية لأكثر من ٧٠ وجهة.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  /*
+   * The loyalty programme is a separate product (Orbit), not a page on this
+   * site — signing in, joining, and adding the card to Apple/Google Wallet
+   * all already work there today. Points are awarded from Orbit's own panel
+   * when a service is delivered, so this site only needs to send customers
+   * there, not reimplement any of it.
+   */
+  orbitLoyaltyUrl: "https://orbit.daysam.co/stores/wadi-al-safar-travel",
   contactPhone: "+966115602558",
   contactPhoneDisplay: "+966 11 560 2558",
   contactEmail: "info@wadialsafar.com",

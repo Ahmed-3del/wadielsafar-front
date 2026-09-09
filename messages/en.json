@@ -605,6 +605,10 @@
     "short": "WhatsApp",
     "message": "Hello, I'd like to ask about Wadi Al Safar's services."
   },
+  "Loyalty": {
+    "cta": "Loyalty Program",
+    "menuHint": "Earn points and add your card to Apple/Google Wallet"
+  },
   "DestinationsPage": {
     "title": "Destinations",
     "description": "Choose your next destination from our curated list.",

@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { CloseIcon, MenuIcon, WhatsAppIcon } from "@/components/ui/icons";
+import { CloseIcon, GiftIcon, MenuIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { whatsappLink } from "@/lib/utils/whatsapp";
 import { cn } from "@/lib/utils/cn";
+import { siteConfig } from "@/config/site";
 import type { ResolvedNavItem } from "@/types/nav-item";
 
 interface HeaderMenuProps {
@@ -27,6 +28,7 @@ export function HeaderMenu({ primary, secondary }: HeaderMenuProps) {
   const t = useTranslations("Nav");
   const tCommon = useTranslations("Common2");
   const tWa = useTranslations("Whatsapp");
+  const tLoyalty = useTranslations("Loyalty");
   const tLocale = useTranslations("LocaleSwitcher");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -141,15 +143,29 @@ export function HeaderMenu({ primary, secondary }: HeaderMenuProps) {
                 <LocaleSwitcher />
               </div>
 
-              <a
-                href={whatsappLink(tWa("message"))}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-full bg-whatsapp px-4 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
-              >
-                <WhatsAppIcon className="h-5 w-5" />
-                {tWa("cta")}
-              </a>
+              <div className="flex flex-col gap-2">
+                {/* Leaves the site — Orbit is where sign-in, joining, and the
+                    wallet card actually live, not a page here. */}
+                <a
+                  href={siteConfig.orbitLoyaltyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-full bg-navy-900 px-4 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  <GiftIcon className="h-5 w-5" />
+                  {tLoyalty("cta")}
+                </a>
+
+                <a
+                  href={whatsappLink(tWa("message"))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-full bg-whatsapp px-4 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  <WhatsAppIcon className="h-5 w-5" />
+                  {tWa("cta")}
+                </a>
+              </div>
             </div>
           </div>
         </div>,
