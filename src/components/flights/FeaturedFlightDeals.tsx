@@ -25,7 +25,11 @@ export async function FeaturedFlightDeals() {
     <Section className="bg-sand-50">
       <Container>
         <SectionHeading eyebrow={t("eyebrow")} title={t("dealsTitle")} description={t("dealsDescription")} />
-        <div className="mt-6 sm:mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Left single-column on a phone, unlike the hotel grid beside it: a
+            flight card carries a route, up to three badges and two dates, and
+            two of those side by side on a phone is the badges wrapping onto a
+            third line rather than a card that reads at a glance. */}
+        <div className="mt-6 sm:mt-10 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {deals.map((deal, index) => (
             <Reveal key={deal.id} delay={Math.min(index, 5) * 60}>
               <FlightCard flight={deal} />

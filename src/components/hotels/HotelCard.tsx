@@ -31,13 +31,13 @@ export function HotelCard({ hotel }: HotelCardProps) {
           className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
         />
       </div>
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4">
         <StarRating
           value={hotel.star_rating}
           label={t("starRating", { count: hotel.star_rating })}
           className="text-sm"
         />
-        <h3 className="mt-1 text-lg font-semibold text-navy-900">{name}</h3>
+        <h3 className="mt-1 text-base font-semibold text-navy-900">{name}</h3>
         <p className="mt-1 text-sm text-sand-500">
           {destination}
           {isArabic ? "، " : ", "}
@@ -45,7 +45,7 @@ export function HotelCard({ hotel }: HotelCardProps) {
         </p>
         {/* mt-auto keeps the price on the same line across a row of cards
             whose names and locations wrap to different heights. */}
-        <p className="mt-auto pt-3 text-base font-semibold text-gold-700">
+        <p className="mt-auto pt-2.5 text-base font-semibold text-gold-700">
           {t("priceFrom", {
             price: formatPrice(hotel.price_per_night_from, locale, hotel.currency),
           })}

@@ -61,7 +61,7 @@ export function SearchResults({ tab, results, heading, description, href }: Sear
       {content.length > 0 ? (
         <ScrollGrid
           label={heading}
-          gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+          gridClassName="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           className="mt-5"
         >
           {content}

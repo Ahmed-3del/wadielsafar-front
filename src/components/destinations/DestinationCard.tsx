@@ -24,7 +24,10 @@ export function DestinationCard({ destination, featured, className }: Destinatio
       href={`/destinations/${destination.slug}`}
       className={cn(
         "group relative block overflow-hidden rounded-2xl bg-navy-900",
-        featured ? "min-h-88 lg:min-h-full" : "min-h-64",
+        // Regular tiles dropped from min-h-64 to min-h-52: they carry a name
+        // and a country, nothing that needs the extra headroom the featured
+        // tile's larger heading does.
+        featured ? "min-h-88 lg:min-h-full" : "min-h-52",
         className,
       )}
     >
@@ -42,14 +45,14 @@ export function DestinationCard({ destination, featured, className }: Destinatio
         className="absolute inset-0 bg-linear-to-t from-navy-950/85 via-navy-950/25 to-transparent"
       />
 
-      <div className="relative flex h-full flex-col justify-end p-5 sm:p-6">
+      <div className="relative flex h-full flex-col justify-end p-4 sm:p-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-gold-400">
           {country}
         </p>
         <h3
           className={cn(
-            "mt-1.5 font-bold text-white",
-            featured ? "text-2xl sm:text-3xl" : "text-lg sm:text-xl",
+            "mt-1 font-bold text-white",
+            featured ? "text-2xl sm:text-3xl" : "text-base sm:text-lg",
           )}
         >
           {name}

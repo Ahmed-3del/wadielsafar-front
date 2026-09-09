@@ -55,12 +55,12 @@ function dismissPromo() {
 export function PromoBar() {
   const t = useTranslations("Promo");
   const dismissed = useSyncExternalStore(subscribe, isDismissed, isDismissedOnServer);
-  const dismiss = useCallback(() => { dismissPromo(); }, []);
+  // const dismiss = useCallback(() => { dismissPromo(); }, []);
 
   if (dismissed) return null;
 
   return (
-    <div className="relative z-[60] bg-linear-to-r from-navy-900 via-navy-700 to-navy-900 text-white">
+    <div className="relative z-60 bg-linear-to-r from-navy-900 via-navy-700 to-navy-900 text-white">
       <Container className="flex min-h-11 flex-wrap items-center justify-center gap-x-3 gap-y-1 py-2 pe-9 text-center text-xs sm:text-sm">
         <TagIcon aria-hidden="true" className="hidden h-4 w-4 shrink-0 text-gold-400 sm:block" />
 
@@ -87,14 +87,14 @@ export function PromoBar() {
       </Container>
 
       {/* Absolute so the button never reflows the message on a narrow screen. */}
-      <button
+      {/* <button
         type="button"
         onClick={dismiss}
         aria-label={t("dismiss")}
         className="absolute inset-y-0 end-1 my-auto grid h-8 w-8 place-items-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
       >
         <CloseIcon className="h-4 w-4" />
-      </button>
+      </button> */}
     </div>
   );
 }

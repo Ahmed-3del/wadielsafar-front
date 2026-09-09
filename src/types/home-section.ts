@@ -1,4 +1,5 @@
 export const HOME_SECTION_KEYS = [
+  "RECOMMENDATIONS",
   "SERVICES",
   "SAVINGS",
   "EXPLORER",

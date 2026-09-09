@@ -1,67 +1,66 @@
 import Image from "next/image";
+import lockupArt from "@/assets/brand/logo-horizontal.png";
 import markArt from "@/assets/brand/logo-mark.png";
-import wordsArt from "@/assets/brand/logo-words.png";
-import fullArt from "@/assets/brand/logo-full.png";
 import { cn } from "@/lib/utils/cn";
 
 interface LogoProps {
-  /** Localized company name. The supplied wordmark is Arabic-only, so the name
+  /** Localized company name. The wordmark is Arabic-only artwork, so the name
       travels as the image's text alternative rather than as visible text. */
   name: string;
   /**
-   * `stacked` is the supplied artwork as drawn — mark over wordmark over
-   * tagline. `horizontal` is the same three pieces laid side by side, for bars
-   * that are wider than they are tall.
+   * `bar` fits a header: the mark alone on a narrow phone, the whole lockup
+   * from 480px up. `full` is the lockup at the size a footer can afford.
    */
-  variant?: "horizontal" | "stacked";
+  variant?: "bar" | "full";
   /** Preload. Worth it in the header, wasteful in the footer. */
   priority?: boolean;
   className?: string;
 }
 
 /*
- * Every piece here is cut from the one supplied file, so the mark in the header
- * and the lockup in the footer cannot drift apart. See src/assets/brand/.
+ * One image, not a composition.
  *
- * The header uses the horizontal arrangement because the artwork as drawn is a
- * vertical stack of near-square proportion: fitted into the 64/80px bar it puts
- * the wordmark at ~10px and the tagline at ~3px, which is a smudge. Laid out
- * horizontally the same bar gives the wordmark ~20px and the tagline ~9px.
+ * The previous artwork was a vertical stack, so the header cut it into a mark
+ * and a wordmark and laid them side by side to get something that fitted a
+ * bar. The delivered lockup is already horizontal — and its words sit on both
+ * sides of the mark, so there is nothing to lay out even if we wanted to. See
+ * docs/brand/.
+ *
+ * At 2.7:1 the whole lockup is 118px wide in a phone's header, which is what
+ * pushed the phone number into wrapping the last time this was tuned. Below
+ * 480px the mark goes in alone and the link's own label carries the name.
  */
-export function Logo({ name, variant = "horizontal", priority = false, className }: LogoProps) {
-  if (variant === "stacked") {
+export function Logo({ name, variant = "bar", priority = false, className }: LogoProps) {
+  if (variant === "full") {
     return (
       <Image
-        src={fullArt}
+        src={lockupArt}
         alt={name}
         priority={priority}
-        sizes="(min-width: 640px) 107px, 92px"
-        className={cn("h-24 w-auto sm:h-28", className)}
+        /* Not larger: at 2.7:1 an h-28 lockup is 301px wide, and the footer
+           column it sits in is 299px at the width the grid first goes to four
+           columns — flush against both edges. */
+        sizes="(min-width: 640px) 215px, 172px"
+        className={cn("h-16 w-auto sm:h-20", className)}
       />
     );
   }
 
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
+    <span className={cn("inline-flex items-center", className)}>
       <Image
         src={markArt}
-        alt=""
-        aria-hidden="true"
-        priority={priority}
-        sizes="(min-width: 640px) 66px, 49px"
-        className="h-9 w-auto sm:h-12"
-      />
-      {/* The wordmark image *is* the company name set in the brand face, so it
-          carries the text alternative rather than being decorative. */}
-      <Image
-        src={wordsArt}
         alt={name}
         priority={priority}
-        sizes="(min-width: 640px) 116px, 89px"
-        /* Dropped on phones, where those 89px are the difference between a
-           header that fits and a phone number that wraps mid-sentence. The
-           mark still reads as the brand, and the link carries the name. */
-        className="h-6.5 w-auto max-[479px]:hidden sm:h-8.5"
+        sizes="53px"
+        className="h-10 w-auto min-[480px]:hidden"
+      />
+      <Image
+        src={lockupArt}
+        alt={name}
+        priority={priority}
+        sizes="(min-width: 1024px) 151px, 118px"
+        className="hidden h-11 w-auto min-[480px]:block lg:h-14"
       />
     </span>
   );

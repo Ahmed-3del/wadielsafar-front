@@ -27,10 +27,25 @@ interface BudgetExplorerPanelProps {
 }
 
 /* Shared by every chip in the bar, so trip type and trip length read as one
-   control rather than two that happen to sit near each other. */
-const CHIP = "h-11 rounded-full border px-4 text-sm font-semibold transition-all duration-200 ease-out-soft";
+   control rather than two that happen to sit near each other. h-10 rather
+   than the h-11 this used to be — it matches the purpose chips on /visas,
+   and on a phone four or five of these used to wrap into two full rows per
+   group; shaved height times two groups was real scroll saved. */
+const CHIP = "h-10 shrink-0 rounded-full border px-3.5 text-sm font-semibold transition-all duration-200 ease-out-soft";
 const CHIP_ON = "border-gold-500 bg-gold-50 text-navy-900";
 const CHIP_OFF = "border-sand-200 text-sand-600 hover:border-navy-300 hover:text-navy-900";
+
+/*
+ * A chip row that scrolls on a phone instead of wrapping.
+ *
+ * Four nights-bands and five trip-types both used to `flex-wrap`, which on a
+ * 360px phone meant two full rows each — the two groups alone ran past 200px
+ * before the results ever came into view. Scrolling keeps every option
+ * reachable in the height of one chip; `sm` and up have the width to spare,
+ * so they go back to wrapping, which shows every option without a swipe.
+ */
+const CHIP_ROW =
+  "-mx-4 flex snap-x gap-2 overflow-x-auto px-4 pb-1 no-scrollbar sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0";
 
 /*
  * The interactive half. It filters a catalogue the server already fetched
@@ -71,14 +86,17 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
 
   return (
     <div>
-      <div className="rounded-2xl border border-sand-200 bg-white p-6 shadow-sm sm:p-8">
+      <div className="rounded-2xl border border-sand-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
         {/* Both columns open with a label row of the same height and the grid
             aligns to the top, so "Budget per person" and "Trip length" sit on
             one line. Bottom-aligning them, as this did, lines up the feet of
-            two blocks that are not the same height and nothing else. */}
-        <div className="grid items-start gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_auto]">
+            two blocks that are not the same height and nothing else.
+            `sm:grid-cols-2` a step before the `lg` two-up split: a phone in
+            landscape or a small tablet has the width for two columns before
+            it has the width for the wider auto-sized second one. */}
+        <div className="grid items-start gap-x-8 gap-y-5 sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto]">
           <div>
-            <div className="flex h-8 items-center justify-between gap-4">
+            <div className="flex h-7 items-center justify-between gap-4">
               <label htmlFor="budget" className="text-sm font-medium text-navy-900">
                 {t("budgetLabel")}
               </label>
@@ -94,7 +112,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
             <input
               id="budget"
               type="range"
-              className="range-gold mt-4"
+              className="range-gold mt-3"
               min={min}
               max={max}
               step={step}
@@ -113,14 +131,10 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
           </div>
 
           <div className="lg:border-s lg:border-sand-200 lg:ps-10">
-            <p className="flex h-8 items-center text-sm font-medium text-navy-900">
+            <p className="flex h-7 items-center text-sm font-medium text-navy-900">
               {t("nightsLabel")}
             </p>
-            <div
-              role="radiogroup"
-              aria-label={t("nightsLabel")}
-              className="mt-4 flex flex-wrap gap-2"
-            >
+            <div role="radiogroup" aria-label={t("nightsLabel")} className={cn("mt-3", CHIP_ROW)}>
               {NIGHTS_BANDS.map((band) => {
                 const selected = band === nights;
                 return (
@@ -137,8 +151,6 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
                 );
               })}
             </div>
-            {/* Keeps this column's foot level with the budget column's scale. */}
-            <div aria-hidden="true" className="mt-2 hidden h-4 lg:block" />
           </div>
         </div>
 
@@ -147,12 +159,12 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
             Hidden when the catalogue only holds one kind: a filter with a
             single option filters nothing. */}
         {tripTypes.length > 1 ? (
-          <div className="mt-7 border-t border-sand-200 pt-6">
+          <div className="mt-5 border-t border-sand-200 pt-4">
             <p className="text-sm font-medium text-navy-900">{t("tripTypeLabel")}</p>
             <div
               role="radiogroup"
               aria-label={t("tripTypeLabel")}
-              className="mt-4 flex flex-wrap gap-2"
+              className={cn("mt-3", CHIP_ROW)}
             >
               <button
                 type="button"
@@ -185,7 +197,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
         {/* The count belongs to the filters, not to the results: it is the
             answer to the last thing the reader touched, and it was sitting
             outside the card where a change to a chip left it unnoticed. */}
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-sand-200 pt-5">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-sand-200 pt-4">
           <p aria-live="polite" className="text-sm font-semibold text-navy-900">
             {t("count", { count: results.length })}
           </p>
@@ -205,7 +217,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
       {results.length > 0 ? (
         <ScrollGrid
           label={t("title")}
-          gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+          gridClassName="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           className="mt-6"
         >
           {results.slice(0, 6).map((pkg) => (

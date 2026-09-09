@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Fragment, type ReactNode } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SearchBand } from "@/components/search/SearchBand";
+import { Recommendations } from "@/components/search/Recommendations";
+import { SearchTabProvider } from "@/components/search/search-tab-context";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
 import { SavingsSection } from "@/components/savings/SavingsSection";
 import { BudgetExplorer } from "@/components/explorer/BudgetExplorer";
@@ -15,6 +17,7 @@ import { PartnersWall } from "@/components/partners/PartnersWall";
 import { Testimonials } from "@/components/testimonials/Testimonials";
 import { FinalCta } from "@/components/layout/FinalCta";
 import { resolveHomeSections } from "@/lib/api/resolve-home-sections";
+import { getSearchResults } from "@/lib/api/home-search";
 import type { HomeSectionKey } from "@/types/home-section";
 import type { Locale } from "@/i18n/routing";
 
@@ -31,45 +34,54 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
   return { description: t("description") };
 }
 
-/*
- * Every block the homepage can show, keyed to what the panel calls it.
- *
- * The search band is not in here: it carries the tabs, the results and the
- * cross-sell, which is the point of the page, so it is always first and
- * cannot be switched off. The order and
- * the on/off state of everything else are an editorial decision, not a
- * deployment — see apps/pages HomeSection.
- */
-const SECTIONS: Record<HomeSectionKey, () => ReactNode> = {
-  SERVICES: () => <ServicesGrid />,
-  SAVINGS: () => <SavingsSection />,
-  EXPLORER: () => <BudgetExplorer />,
-  DESTINATIONS: () => <PopularDestinations />,
-  PACKAGES: () => <FeaturedPackages />,
-  OFFERS: () => <FeaturedOffers />,
-  VISAS: () => <VisaSection />,
-  CRUISES: () => <FeaturedCruises />,
-  TRUST: () => <TrustSection />,
-  PARTNERS: () => <PartnersWall />,
-  TESTIMONIALS: () => <Testimonials />,
-  CTA: () => <FinalCta />,
-};
-
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const sections = await resolveHomeSections();
+  const [sections, results] = await Promise.all([resolveHomeSections(), getSearchResults()]);
+
+  /*
+   * Every block the homepage can show, keyed to what the panel calls it.
+   *
+   * Defined here rather than at module scope so RECOMMENDATIONS — the search's
+   * "you might also like" rail — can close over this request's `results`; it
+   * used to be hard-coded directly under the search band with no row in the
+   * panel's table and nothing an editor could do about its place on the page.
+   * Every other section's order and on/off state, and now this one's too, is
+   * an editorial decision rather than a deployment — see apps/pages
+   * HomeSection.
+   *
+   * The hero itself still is not in here: the search widget is the point of
+   * the page, so it is always first and cannot be switched off.
+   */
+  const SECTIONS: Record<HomeSectionKey, () => ReactNode> = {
+    RECOMMENDATIONS: () => <Recommendations results={results} />,
+    SERVICES: () => <ServicesGrid />,
+    SAVINGS: () => <SavingsSection />,
+    EXPLORER: () => <BudgetExplorer />,
+    DESTINATIONS: () => <PopularDestinations />,
+    PACKAGES: () => <FeaturedPackages />,
+    OFFERS: () => <FeaturedOffers />,
+    VISAS: () => <VisaSection />,
+    CRUISES: () => <FeaturedCruises />,
+    TRUST: () => <TrustSection />,
+    PARTNERS: () => <PartnersWall />,
+    TESTIMONIALS: () => <Testimonials />,
+    CTA: () => <FinalCta />,
+  };
 
   return (
-    <>
-      <SearchBand />
+    // The provider wraps the whole page, not just the search band: the
+    // recommendations rail reads the open tab from here, and it is rendered
+    // as one of `sections` below — a sibling of the search band, not a child.
+    <SearchTabProvider>
+      <SearchBand results={results} />
       {/* Fragment, not a wrapper div: each section owns its own full-bleed
           background, and an extra block element between them and the page
           would be one more thing to keep out of the way. */}
       {sections.map((key) => (
         <Fragment key={key}>{SECTIONS[key]()}</Fragment>
       ))}
-    </>
+    </SearchTabProvider>
   );
 }

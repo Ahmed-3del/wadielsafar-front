@@ -24,12 +24,15 @@ export function CruiseCard({ cruise, className }: { cruise: Cruise; className?: 
         className,
       )}
     >
-      <div className="relative aspect-4/3 overflow-hidden">
+      {/* aspect-video rather than the taller 4:3 this used to be — see
+          PackageCard, which had the identical image and got the identical
+          fix. */}
+      <div className="relative aspect-video overflow-hidden">
         <MediaImage
           src={cruise.cover_image}
           alt={title}
           fill
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 85vw"
+          sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 50vw, 85vw"
           className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
         />
         {cruise.is_featured ? (
@@ -39,36 +42,36 @@ export function CruiseCard({ cruise, className }: { cruise: Cruise; className?: 
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4">
         {line ? (
           <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-gold-700">
             <ShipIcon className="h-3.5 w-3.5" />
             {line}
           </p>
         ) : null}
-        <h3 className="mt-1.5 line-clamp-2 text-lg font-bold leading-snug text-navy-900">
+        <h3 className="mt-1 line-clamp-2 text-base font-bold leading-snug text-navy-900">
           <Link href={`/cruises/${cruise.slug}`} className="after:absolute after:inset-0">
             {title}
           </Link>
         </h3>
 
-        <p className="mt-2 text-sm text-sand-600">
+        <p className="mt-1.5 text-sm text-sand-600">
           {t("durationNights", { days, nights: cruise.duration_nights })}
         </p>
-        {port ? <p className="mt-1 text-sm text-sand-500">{t("departsFrom", { port })}</p> : null}
+        {port ? <p className="mt-0.5 text-sm text-sand-500">{t("departsFrom", { port })}</p> : null}
         {/* The sail date is what a cruise is actually sold on, so it reads as
             a fact about the trip rather than as small print. */}
         {cruise.departure_date ? (
-          <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-navy-900">
+          <p className="mt-0.5 flex items-center gap-1.5 text-sm font-medium text-navy-900">
             <CalendarIcon className="h-4 w-4 text-gold-600" />
             {t("departsOn", { date: formatDate(cruise.departure_date, locale) })}
           </p>
         ) : null}
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+        <div className="mt-auto flex items-end justify-between gap-3 pt-3">
           <div>
             <p className="text-xs text-sand-500">{t("startingFrom")}</p>
-            <p className="text-xl font-bold text-navy-900">
+            <p className="text-lg font-bold text-navy-900">
               {formatPrice(cruise.price_from, locale)}
             </p>
           </div>

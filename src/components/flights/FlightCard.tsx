@@ -9,7 +9,7 @@ interface FlightCardProps {
   flight: FlightDeal;
 }
 
-const badgeClass = "rounded-full bg-sand-100 px-3 py-1 text-xs font-medium text-sand-700";
+const badgeClass = "rounded-full bg-sand-100 px-2.5 py-0.5 text-xs font-medium text-sand-700";
 
 export function FlightCard({ flight }: FlightCardProps) {
   const locale = useLocale();
@@ -22,7 +22,7 @@ export function FlightCard({ flight }: FlightCardProps) {
   return (
     <Link
       href={`/flights/${flight.slug}`}
-      className="card-lift flex h-full flex-col rounded-2xl border border-sand-200 bg-white p-5"
+      className="card-lift flex h-full flex-col rounded-2xl border border-sand-200 bg-white p-4"
     >
       {airline ? (
         <div className="flex items-center gap-2">
@@ -30,8 +30,8 @@ export function FlightCard({ flight }: FlightCardProps) {
             <Image
               src={flight.airline_logo}
               alt={airline}
-              width={28}
-              height={28}
+              width={24}
+              height={24}
               className="rounded object-contain"
             />
           ) : null}
@@ -39,15 +39,18 @@ export function FlightCard({ flight }: FlightCardProps) {
         </div>
       ) : null}
 
+      {/* text-base rather than text-lg: at the old size the two city names
+          plus their codes routinely wrapped to a second line on a card this
+          narrow, which cost as much height as one of the badges below. */}
       <FlightRoute
         origin={isArabic ? flight.origin_city_ar : flight.origin_city_en}
         originCode={flight.origin_airport_code}
         destination={isArabic ? flight.destination_city_ar : flight.destination_city_en}
         destinationCode={flight.destination_airport_code}
-        className="mt-3 text-lg"
+        className="mt-2.5 text-base"
       />
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
         <span className={badgeClass}>{t(`tripTypes.${flight.trip_type}`)}</span>
         <span className={badgeClass}>{t(`cabinClasses.${flight.cabin_class}`)}</span>
         {flight.baggage_allowance_kg !== null ? (
@@ -61,7 +64,7 @@ export function FlightCard({ flight }: FlightCardProps) {
            one line and "أكتوبر 2026" on the next, which reads as a bug. The
            separator stays on the first line, where a trailing "·" reads as
            "continued". */
-        <p className="mt-3 flex flex-wrap gap-x-1.5 text-sm text-sand-500">
+        <p className="mt-2 flex flex-wrap gap-x-1.5 text-sm text-sand-500">
           <span className="whitespace-nowrap">
             {t("departure")}: {formatDate(flight.departure_date, locale)}
             {flight.return_date ? " ·" : null}
@@ -74,7 +77,7 @@ export function FlightCard({ flight }: FlightCardProps) {
         </p>
       ) : null}
 
-      <p className="mt-auto pt-3 text-base font-semibold text-gold-700">
+      <p className="mt-auto pt-2.5 text-base font-semibold text-gold-700">
         {t("priceFrom", { price: formatPrice(flight.price_from, locale, flight.currency) })}
       </p>
     </Link>

@@ -2,14 +2,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/Button";
 import { MediaImage } from "@/components/ui/MediaImage";
-import {
-  BagIcon,
-  BookIcon,
-  ClockIcon,
-  GlobeIcon,
-  MosqueIcon,
-  PassportIcon,
-} from "@/components/ui/icons";
+import { BagIcon, BookIcon, GlobeIcon, MosqueIcon, PassportIcon } from "@/components/ui/icons";
 import { formatPrice } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils/cn";
 import type { VisaPurpose, VisaType } from "@/types/visa";
@@ -56,7 +49,12 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
         className,
       )}
     >
-      <div className="relative aspect-video overflow-hidden">
+      {/* A fixed h-32 rather than the aspect-video this used to be. Package
+          and cruise photos are what sells the trip; a visa's picture is
+          branding on top of a decision the stats below actually carry, so it
+          does not need the same headroom — and at aspect-video it was over
+          half the card's height on its own. */}
+      <div className="relative h-32 overflow-hidden">
         <MediaImage
           src={cover}
           alt={country}
@@ -67,18 +65,18 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
         {/* The country reads off the picture, so it needs its own ground —
             a caption over open photography is legible until the day someone
             uploads a pale sky. */}
-        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-navy-900/85 to-transparent p-4 pt-10">
+        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-navy-900/85 to-transparent p-3 pt-8">
           <p className="text-xs font-semibold uppercase tracking-widest text-gold-300">
             {country}
           </p>
         </div>
-        <span className="absolute end-3 top-3 grid h-10 w-10 place-items-center rounded-xl bg-white/90 text-navy-800 shadow-sm backdrop-blur-sm">
-          <Icon className="h-5 w-5" />
+        <span className="absolute end-2.5 top-2.5 grid h-8 w-8 place-items-center rounded-lg bg-white/90 text-navy-800 shadow-sm backdrop-blur-sm">
+          <Icon className="h-4 w-4" />
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-6 pt-5">
-        <h3 className="text-lg font-bold leading-snug text-navy-900">
+      <div className="flex flex-1 flex-col p-3">
+        <h3 className="line-clamp-2 text-sm font-bold leading-snug text-navy-900">
           {/* Stretched link: the whole card is the target, but only the visa
               name is announced. The apply button below sits above it. */}
           <Link href={`/visas/${visa.id}`} className="after:absolute after:inset-0">
@@ -86,28 +84,33 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
           </Link>
         </h3>
 
-        <dl className="mb-5 mt-4 grid grid-cols-2 gap-4 border-y border-sand-200 py-4">
-          <div>
-            <dt className="text-xs text-sand-500">{t("price")}</dt>
-            <dd className="mt-0.5 text-lg font-bold text-navy-900">
-              {formatPrice(visa.price, locale)}
-            </dd>
+        {/* Still all four facts a traveller asks — price, processing,
+            validity, entry type — just label and value on one line each
+            instead of stacked in a bordered box per fact. Two stacked lines
+            per cell was most of this card's height for information a phone
+            reads fine as one. */}
+        <dl className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 border-t border-sand-200 pt-2 text-xs">
+          <div className="flex flex-wrap items-baseline gap-x-1">
+            <dt className="text-sand-500">{t("price")}</dt>
+            <dd className="font-bold text-navy-900">{formatPrice(visa.price, locale)}</dd>
           </div>
-          <div>
-            <dt className="flex items-center gap-1 text-xs text-sand-500">
-              <ClockIcon className="h-3.5 w-3.5" />
-              {t("processingLabel")}
-            </dt>
+          {/* No clock icon here, unlike the old stacked layout: at a rail
+              card's width the icon was the difference between the value
+              fitting and "10 أيام عم…" — a cut-off number reads as broken in
+              a way a wrapped line never does, so wrapping is the fallback now
+              rather than a truncated ellipsis. */}
+          <div className="flex flex-wrap items-baseline gap-x-1">
+            <dt className="text-sand-500">{t("processingLabel")}</dt>
             {/* Working days here and only here: an embassy counts its own
                 opening hours, but the visa itself is valid over calendar days. */}
-            <dd className="mt-0.5 text-lg font-bold text-navy-900">
+            <dd className="font-bold text-navy-900">
               {t("workingDays", { days: visa.processing_time_days })}
             </dd>
           </div>
           {visa.validity_days ? (
-            <div className="border-t border-sand-200 pt-3">
-              <dt className="text-xs text-sand-500">{t("validityLabel")}</dt>
-              <dd className="mt-0.5 font-semibold text-navy-900">
+            <div className="flex flex-wrap items-baseline gap-x-1">
+              <dt className="text-sand-500">{t("validityLabel")}</dt>
+              <dd className="font-semibold text-navy-900">
                 {t("days", { days: visa.validity_days })}
               </dd>
             </div>
@@ -115,18 +118,16 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
           {/* Shown only when the record says so. Guessing "single entry" is how
               someone books a side trip they are not allowed to take. */}
           {visa.entry_type ? (
-            <div className="border-t border-sand-200 pt-3">
-              <dt className="text-xs text-sand-500">{t("entryLabel")}</dt>
-              <dd className="mt-0.5 font-semibold text-navy-900">
-                {t(`entry.${visa.entry_type}`)}
-              </dd>
+            <div className="flex flex-wrap items-baseline gap-x-1">
+              <dt className="text-sand-500">{t("entryLabel")}</dt>
+              <dd className="font-semibold text-navy-900">{t(`entry.${visa.entry_type}`)}</dd>
             </div>
           ) : null}
         </dl>
 
         <Link
           href={`/visas/${visa.id}`}
-          className={cn(buttonVariants("primary", "md"), "relative mt-auto w-full")}
+          className={cn(buttonVariants("primary", "sm"), "relative mt-2.5 w-full")}
         >
           {t("apply")}
         </Link>

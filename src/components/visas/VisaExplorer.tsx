@@ -106,7 +106,7 @@ export function VisaExplorer({
       </div>
 
       {filtered.length > 0 ? (
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((visa) => (
             <VisaCard key={visa.id} visa={visa} />
           ))}

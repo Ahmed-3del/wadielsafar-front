@@ -27,7 +27,7 @@ export async function FeaturedOffers() {
         {offers.length > 0 ? (
           <ScrollGrid
             label={t("title")}
-            gridClassName="sm:grid-cols-2 lg:grid-cols-4"
+            gridClassName="sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
             className="mt-6 sm:mt-10"
           >
             {offers.map((offer) => (

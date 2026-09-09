@@ -10,8 +10,11 @@ import { HOME_SECTION_KEYS, type HomeSectionKey } from "@/types/home-section";
  * failure for the same reason the footer treats an empty branch list as one.
  */
 const SHIPPED_ORDER: HomeSectionKey[] = [
+  "RECOMMENDATIONS",
   "SERVICES",
-  "EXPLORER",
+  // EXPLORER switched off here too — see the pages.0008 migration on the
+  // backend. Kept out of the fallback rather than the key list itself, so
+  // switching it back on in the panel needs no deploy.
   "DESTINATIONS",
   "OFFERS",
   "VISAS",

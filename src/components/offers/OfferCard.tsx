@@ -41,9 +41,9 @@ export function OfferCard({ offer }: OfferCardProps) {
         ) : null}
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-base font-semibold text-navy-900">{title}</h3>
+        <h3 className="line-clamp-2 text-base font-semibold text-navy-900">{title}</h3>
         {pricing.current ? (
-          <p className="mt-2 flex flex-wrap items-baseline gap-2">
+          <p className="mt-1.5 flex flex-wrap items-baseline gap-2">
             <span className="text-base font-semibold text-gold-700">{pricing.current}</span>
             {pricing.strikethrough ? (
               <>

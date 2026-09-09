@@ -41,7 +41,7 @@ export default async function DestinationsPage({ params }: DestinationsPageProps
       <Section>
         <Container>
           {destinations.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
               {destinations.map((destination, index) => (
                 <Reveal key={destination.id} delay={Math.min(index, 6) * 60}>
                   <DestinationCard destination={destination} />

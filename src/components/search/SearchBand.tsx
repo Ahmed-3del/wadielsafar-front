@@ -5,8 +5,8 @@ import { getDestinations } from "@/lib/api/destinations";
 import { getVisaCountries } from "@/lib/api/visas";
 import { getPopularAirports } from "@/lib/api/airports";
 import { getCruisePorts } from "@/lib/api/cruises";
-import { getSearchResults } from "@/lib/api/home-search";
 import { safeResults } from "@/lib/api/client";
+import type { SearchResultSets } from "@/types/search";
 
 /*
  * Server half of the homepage search: it loads the option lists and all five
@@ -15,9 +15,14 @@ import { safeResults } from "@/lib/api/client";
  * This replaced the full-height hero. The hero's photograph was the first
  * thing on the page and the search the second, which is the wrong way round
  * for a site people arrive at with a trip in mind.
+ *
+ * `results` arrives as a prop rather than a fetch of its own: the
+ * recommendations rail (see Recommendations.tsx) needs the same five lists,
+ * and it is a sibling of this component now that both can be positioned
+ * independently — page.tsx fetches once and hands the same object to both.
  */
-export async function SearchBand() {
-  const [locale, tBooking, destinations, visaCountries, popularAirports, cruisePorts, results] =
+export async function SearchBand({ results }: { results: SearchResultSets }) {
+  const [locale, tBooking, destinations, visaCountries, popularAirports, cruisePorts] =
     await Promise.all([
       getLocale(),
       getTranslations("Booking"),
@@ -25,7 +30,6 @@ export async function SearchBand() {
       safeResults(getVisaCountries({ page_size: 50 })),
       safeResults(getPopularAirports()),
       safeResults(getCruisePorts()),
-      getSearchResults(),
     ]);
 
   const isArabic = locale === "ar";

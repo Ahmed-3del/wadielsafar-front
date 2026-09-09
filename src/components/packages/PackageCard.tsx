@@ -29,12 +29,16 @@ export function PackageCard({ pkg, className }: PackageCardProps) {
         className,
       )}
     >
-      <div className="relative aspect-4/3 overflow-hidden">
+      {/* aspect-video rather than the taller 4:3 this used to be — on a
+          358px-wide mobile card that alone gives back about 65px, and a row
+          of these no longer ran two-thirds of the way down a phone screen
+          before the reader saw a price. */}
+      <div className="relative aspect-video overflow-hidden">
         <MediaImage
           src={pkg.cover_image}
           alt={title}
           fill
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 85vw"
+          sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 50vw, 85vw"
           className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
         />
         {pkg.is_featured ? (
@@ -44,11 +48,11 @@ export function PackageCard({ pkg, className }: PackageCardProps) {
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4">
         <p className="text-xs font-semibold uppercase tracking-widest text-gold-700">
           {destination}
         </p>
-        <h3 className="mt-1.5 line-clamp-2 text-lg font-bold leading-snug text-navy-900">
+        <h3 className="mt-1 line-clamp-2 text-base font-bold leading-snug text-navy-900">
           {/* Stretched link: the whole card is the target, but only the title
               is announced as the link. */}
           <Link href={`/packages/${pkg.slug}`} className="after:absolute after:inset-0">
@@ -56,14 +60,14 @@ export function PackageCard({ pkg, className }: PackageCardProps) {
           </Link>
         </h3>
 
-        <p className="mt-2 text-sm text-sand-600">
+        <p className="mt-1.5 text-sm text-sand-600">
           {t("durationNights", { days: pkg.duration_days, nights })}
         </p>
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+        <div className="mt-auto flex items-end justify-between gap-3 pt-3">
           <div>
             <p className="text-xs text-sand-500">{t("startingFrom")}</p>
-            <p className="text-xl font-bold text-navy-900">{formatPrice(pkg.price_from, locale)}</p>
+            <p className="text-lg font-bold text-navy-900">{formatPrice(pkg.price_from, locale)}</p>
           </div>
           <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-700 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
             {t("discover")}

@@ -154,7 +154,7 @@ export async function Footer() {
             contact column cramped. */}
         <Container className="grid grid-cols-2 gap-x-8 gap-y-10 pb-10 lg:grid-cols-12">
           <div className="col-span-2 lg:col-span-4">
-            <Logo name={tBrand("name")} variant="stacked" />
+            <Logo name={tBrand("name")} variant="full" />
             <p className="mt-3 max-w-xs text-sm leading-6 text-sand-600">
               {tFooter("description")}
             </p>

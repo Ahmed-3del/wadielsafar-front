@@ -122,7 +122,7 @@ export default async function CruisesPage({ params, searchParams }: CruisesPageP
             </p>
           ) : null}
           {cruises.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
               {cruises.map((cruise, index) => (
                 <Reveal key={cruise.id} delay={Math.min(index, 5) * 60}>
                   <CruiseCard cruise={cruise} />
