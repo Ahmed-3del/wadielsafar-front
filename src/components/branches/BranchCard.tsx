@@ -117,7 +117,7 @@ export async function BranchCard({ branch }: { branch: Branch }) {
 
           {/* New tab, because leaving the site to open a map should not cost
               the reader the page they were on. */}
-          <a
+          {/* <a
             href={mapUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -125,7 +125,7 @@ export async function BranchCard({ branch }: { branch: Branch }) {
           >
             {t("viewOnMap")}
             <ExternalLinkIcon className="h-3.5 w-3.5" />
-          </a>
+          </a> */}
         </div>
       </div>
     </article>
