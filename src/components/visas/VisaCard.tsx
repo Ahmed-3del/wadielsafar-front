@@ -73,13 +73,14 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
             own proportions as the card's width changes across a rail's fixed
             breakpoints and a listing grid's fluid columns alike — a fixed
             height either cropped tighter than intended on a wide card or ran
-            taller than the rest of the row on a narrow one. 4:3 is short
-            enough that this stays a compact card, tall enough that the photo
-            reads as a place rather than a strip of colour. Rounded on its own
-            top corners rather than relying on the card's overflow-hidden to
-            do it — the card is no longer clipping, on purpose, so the badge
+            taller than the rest of the row on a narrow one. aspect-video
+            rather than the 4:3 this first shipped as: 4:3 read as too tall
+            once every other card on the site had settled on 16:9, and this
+            one was meant to match them, not stand out. Rounded on its own top
+            corners rather than relying on the card's overflow-hidden to do
+            it — the card is no longer clipping, on purpose, so the badge
             below is not cut off along with whatever else would have been. */}
-        <div className="relative aspect-4/3 w-full overflow-hidden rounded-t-2xl">
+        <div className="relative aspect-video w-full overflow-hidden rounded-t-2xl">
           <MediaImage
             src={cover}
             alt={country}
@@ -87,37 +88,35 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
             sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 28vw, (min-width: 640px) 45vw, 72vw"
             className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
           />
-          {/* Fades the foot of the photo toward the card's own white, so the
-              badge's ring sits on a soft edge whatever colour the photo ends
-              on, rather than a hard seam. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-14 bg-linear-to-t from-white to-transparent"
-          />
         </div>
 
         {/* Stamped over the seam: `bottom-0` puts this box's own bottom edge
             exactly on the photo's, and translating it down by half its height
             centres the badge on that line — half over the photo, half over
-            the card body, wherever the card's own height ends up. */}
+            the card body, wherever the card's own height ends up. No shadow
+            on the ring: against a photograph a drop shadow read as a smear of
+            grey rather than depth, especially where the photo was pale or a
+            solid colour (a flag standing in for a missing cover photo, say) —
+            the white ring itself already separates the badge from the photo
+            without one. */}
         <div className="absolute inset-x-0 bottom-0 flex translate-y-1/2 justify-center">
-          <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full border-[3px] border-white bg-sand-100 shadow-md">
+          <span className="grid h-12 w-12 place-items-center overflow-hidden rounded-full border-[3px] border-white bg-sand-100">
             {flag ? (
               <Image
                 src={flag}
                 alt=""
-                width={56}
-                height={56}
+                width={48}
+                height={48}
                 className="h-full w-full object-cover"
               />
             ) : (
-              <Icon className="h-6 w-6 text-navy-700" />
+              <Icon className="h-5 w-5 text-navy-700" />
             )}
           </span>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col items-center px-3 pb-3 pt-8 text-center">
+      <div className="flex flex-1 flex-col items-center px-3 pb-2.5 pt-7 text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-gold-700">{country}</p>
         <h3 className="mt-1 line-clamp-2 text-sm font-bold leading-snug text-navy-900">
           {/* Stretched link: the whole card is the target, but only the visa
@@ -128,13 +127,16 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
         </h3>
 
         {/* Still all four facts a traveller asks — price, processing,
-            validity, entry type — just label and value on one line each
-            instead of stacked in a bordered box per fact. Two stacked lines
-            per cell was most of this card's height for information a phone
-            reads fine as one. */}
-        <dl className="mt-2 grid w-full grid-cols-2 gap-x-2 gap-y-1 border-t border-sand-200 pt-2 text-start text-xs">
-          <div className="flex flex-wrap items-baseline gap-x-1">
-            <dt className="text-sand-500">{t("price")}</dt>
+            validity, entry type — but as a row of small stat blocks, label
+            over value, each centred in its own cell. The label-then-value
+            pairs this replaced were start-aligned inside a centred card: two
+            different alignments arguing on the same few square centimetres,
+            and a fact with nothing in the cell beside it read as adrift
+            rather than as one stat among several. Centred, every cell reads
+            the same way whether its neighbour is filled or not. */}
+        <dl className="mt-2 grid w-full grid-cols-2 gap-x-2 gap-y-2 border-t border-sand-200 pt-2.5 text-xs">
+          <div className="flex flex-col items-center gap-0.5">
+            <dt className="text-[11px] text-sand-500">{t("price")}</dt>
             <dd className="font-bold text-navy-900">{formatPrice(visa.price, locale)}</dd>
           </div>
           {/* No clock icon here, unlike an earlier pass at this card: at a
@@ -142,8 +144,8 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
               fitting and "10 أيام عم…" — a cut-off number reads as broken in
               a way a wrapped line never does, so wrapping is the fallback now
               rather than a truncated ellipsis. */}
-          <div className="flex flex-wrap items-baseline gap-x-1">
-            <dt className="text-sand-500">{t("processingLabel")}</dt>
+          <div className="flex flex-col items-center gap-0.5">
+            <dt className="text-[11px] text-sand-500">{t("processingLabel")}</dt>
             {/* Working days here and only here: an embassy counts its own
                 opening hours, but the visa itself is valid over calendar days. */}
             <dd className="font-bold text-navy-900">
@@ -151,8 +153,8 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
             </dd>
           </div>
           {visa.validity_days ? (
-            <div className="flex flex-wrap items-baseline gap-x-1">
-              <dt className="text-sand-500">{t("validityLabel")}</dt>
+            <div className="flex flex-col items-center gap-0.5">
+              <dt className="text-[11px] text-sand-500">{t("validityLabel")}</dt>
               <dd className="font-semibold text-navy-900">
                 {t("days", { days: visa.validity_days })}
               </dd>
@@ -161,8 +163,8 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
           {/* Shown only when the record says so. Guessing "single entry" is how
               someone books a side trip they are not allowed to take. */}
           {visa.entry_type ? (
-            <div className="flex flex-wrap items-baseline gap-x-1">
-              <dt className="text-sand-500">{t("entryLabel")}</dt>
+            <div className="flex flex-col items-center gap-0.5">
+              <dt className="text-[11px] text-sand-500">{t("entryLabel")}</dt>
               <dd className="font-semibold text-navy-900">{t(`entry.${visa.entry_type}`)}</dd>
             </div>
           ) : null}
