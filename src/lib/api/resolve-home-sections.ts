@@ -10,6 +10,7 @@ import { HOME_SECTION_KEYS, type HomeSectionKey } from "@/types/home-section";
  * failure for the same reason the footer treats an empty branch list as one.
  */
 const SHIPPED_ORDER: HomeSectionKey[] = [
+  "LOYALTY",
   "RECOMMENDATIONS",
   "SERVICES",
   // EXPLORER switched off here too — see the pages.0008 migration on the

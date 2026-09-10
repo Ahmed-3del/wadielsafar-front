@@ -607,7 +607,18 @@
   },
   "Loyalty": {
     "cta": "برنامج الولاء",
-    "menuHint": "اجمع النقاط وأضف بطاقتك إلى Apple/Google Wallet"
+    "menuHint": "اجمع النقاط وأضف بطاقتك إلى Apple/Google Wallet",
+    "eyebrow": "برنامج الولاء",
+    "title": "اجمع النقاط مع كل رحلة، واستبدلها في رحلتك القادمة",
+    "description": "انضم إلى برنامج مكافآت وادي السفر مجانًا. اجمع نقاطًا مع حجوزات الطيران والفنادق والباقات، ثم استبدلها بخصومات وترقيات — واحمل بطاقتك في Apple Wallet أو Google Wallet.",
+    "bullet1": "اجمع نقاطًا مع كل حجز",
+    "bullet2": "استبدل نقاطك بخصومات وترقيات",
+    "bullet3": "أضف بطاقتك إلى Apple و Google Wallet",
+    "cardEyebrow": "بطاقة العضوية",
+    "cardPointsUnit": "نقطة",
+    "cardPointsCaption": "رصيد توضيحي",
+    "cardTier": "عضو المكافآت",
+    "cardCta": "الانضمام مجاني"
   },
   "DestinationsPage": {
     "title": "الوجهات",

@@ -607,7 +607,18 @@
   },
   "Loyalty": {
     "cta": "Loyalty Program",
-    "menuHint": "Earn points and add your card to Apple/Google Wallet"
+    "menuHint": "Earn points and add your card to Apple/Google Wallet",
+    "eyebrow": "Loyalty Program",
+    "title": "Earn on every trip. Redeem on the next one.",
+    "description": "Join Wadi Al Safar Rewards for free. Earn points on flights, hotels, and packages, then redeem them for discounts and upgrades — and carry your card in Apple or Google Wallet.",
+    "bullet1": "Earn points on every booking",
+    "bullet2": "Redeem for discounts & upgrades",
+    "bullet3": "Add your card to Apple & Google Wallet",
+    "cardEyebrow": "Member Card",
+    "cardPointsUnit": "pts",
+    "cardPointsCaption": "Example balance",
+    "cardTier": "Rewards Member",
+    "cardCta": "Free to join"
   },
   "DestinationsPage": {
     "title": "Destinations",

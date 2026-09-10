@@ -16,6 +16,7 @@ import { TrustSection } from "@/components/services/TrustSection";
 import { PartnersWall } from "@/components/partners/PartnersWall";
 import { Testimonials } from "@/components/testimonials/Testimonials";
 import { FinalCta } from "@/components/layout/FinalCta";
+import { LoyaltyBanner } from "@/components/loyalty/LoyaltyBanner";
 import { resolveHomeSections } from "@/lib/api/resolve-home-sections";
 import { getSearchResults } from "@/lib/api/home-search";
 import type { HomeSectionKey } from "@/types/home-section";
@@ -44,18 +45,19 @@ export default async function HomePage({ params }: HomePageProps) {
    * Every block the homepage can show, keyed to what the panel calls it.
    *
    * Defined here rather than at module scope so RECOMMENDATIONS — the search's
-   * "you might also like" rail — can close over this request's `results`; it
-   * used to be hard-coded directly under the search band with no row in the
-   * panel's table and nothing an editor could do about its place on the page.
-   * Every other section's order and on/off state, and now this one's too, is
-   * an editorial decision rather than a deployment — see apps/pages
-   * HomeSection.
+   * "you might also like" rail — can close over this request's `results`. Both
+   * it and LOYALTY (the Orbit membership banner) used to be hard-coded at a
+   * fixed point on the page, with no row in the panel's table and nothing an
+   * editor could do about where they sat. Every section's order and on/off
+   * state is an editorial decision rather than a deployment now — see
+   * apps/pages HomeSection.
    *
    * The hero itself still is not in here: the search widget is the point of
    * the page, so it is always first and cannot be switched off.
    */
   const SECTIONS: Record<HomeSectionKey, () => ReactNode> = {
     RECOMMENDATIONS: () => <Recommendations results={results} />,
+    LOYALTY: () => <LoyaltyBanner />,
     SERVICES: () => <ServicesGrid />,
     SAVINGS: () => <SavingsSection />,
     EXPLORER: () => <BudgetExplorer />,
