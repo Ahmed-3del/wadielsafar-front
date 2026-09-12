@@ -243,11 +243,18 @@ export async function Footer() {
             here alone now — a section of them on the homepage and a row of
             them down here was the same content twice, and the footer is where
             someone looks for an address on every page rather than one. */}
-        <Container className="border-t border-sand-200 py-8 justify-center ">
+        <Container className="border-t border-sand-200 py-8">
           <p className="text-sm font-semibold text-navy-900">{tFooter("branchesTitle")}</p>
+          {/* auto-fit + a capped track width, rather than a fixed
+              sm:grid-cols-2 lg:grid-cols-4: with fractional columns, fewer
+              branches than columns still stretched to fill every column,
+              leaving the row pinned to the start with empty tracks trailing
+              it instead of sitting centered. auto-fit collapses the tracks
+              nobody needs and justify-center centers what's left, at every
+              width, with no per-breakpoint column count to keep in sync. */}
           <ScrollGrid
             label={tFooter("branchesTitle")}
-            gridClassName="sm:grid-cols-2 lg:grid-cols-4"
+            gridClassName="sm:grid-cols-[repeat(auto-fit,minmax(240px,300px))] sm:justify-center"
             className="mt-4"
           >
             {footer.branches.map((branch) => (
@@ -284,7 +291,7 @@ export async function Footer() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-sand-600 sm:justify-end">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-base text-sand-600 sm:justify-end">
               <span>
                 {tFooter("taxNumber")}:{" "}
                 <span dir="ltr" className="font-semibold text-navy-900">
