@@ -45,7 +45,7 @@ export function FlightCard({ flight }: FlightCardProps) {
           />
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 flex translate-y-1/2 justify-center">
+        {/* <div className="absolute inset-x-0 bottom-0 flex translate-y-1/2 justify-center">
           <span className="grid h-12 w-12 place-items-center overflow-hidden rounded-full border-[3px] border-white bg-sand-100">
             {flight.airline_logo ? (
               <Image
@@ -59,7 +59,7 @@ export function FlightCard({ flight }: FlightCardProps) {
               <PlaneIcon className="h-5 w-5 text-navy-700" />
             )}
           </span>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-1 flex-col p-4 pt-7">
