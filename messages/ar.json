@@ -1027,7 +1027,9 @@
     "crossSellHint": "{service} تناسب ما تبحث عنه."
   },
   "Branches": {
+    "eyebrow": "زورونا شخصيًا",
     "mainBadge": "الفرع الرئيسي",
+    "sectionDescription": "مرّوا على أحد فروعنا وفريقنا يساعدكم في تخطيط رحلتكم.",
     "hoursLabel": "ساعات العمل",
     "viewOnMap": "عرض على الخريطة",
     "mapTitle": "خريطة {branch}",

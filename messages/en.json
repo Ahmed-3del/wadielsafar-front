@@ -1027,7 +1027,9 @@
     "crossSellHint": "{service} that pair well with what you're looking at."
   },
   "Branches": {
+    "eyebrow": "Visit us in person",
     "mainBadge": "Main branch",
+    "sectionDescription": "Stop by one of our branches and our team will help plan your trip.",
     "hoursLabel": "Hours",
     "viewOnMap": "View on map",
     "mapTitle": "Map of {branch}",

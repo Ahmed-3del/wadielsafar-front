@@ -51,6 +51,7 @@ export async function resolveFooter(): Promise<{
       phone_display: branch.display,
       address_ar: "",
       address_en: "",
+      cover_image: null,
       working_hours_ar: "",
       working_hours_en: "",
       latitude: null,
