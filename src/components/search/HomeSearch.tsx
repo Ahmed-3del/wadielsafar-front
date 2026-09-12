@@ -80,14 +80,16 @@ export function HomeSearch({
 
   const [hotelsFilter, setHotelsFilter] = useState({ destination: "" });
   const hotelsEnabled = !!hotelsFilter.destination;
-  const hotels = useLiveFilter(
-    hotelsEnabled,
-    () => searchHotelsAction(hotelsFilter.destination),
-    [hotelsFilter.destination],
-  );
+  const hotels = useLiveFilter(hotelsEnabled, () => searchHotelsAction(hotelsFilter.destination), [
+    hotelsFilter.destination,
+  ]);
 
   const [cruisesFilter, setCruisesFilter] = useState({ country: "", port: "", departAfter: "" });
-  const cruisesEnabled = !!(cruisesFilter.country || cruisesFilter.port || cruisesFilter.departAfter);
+  const cruisesEnabled = !!(
+    cruisesFilter.country ||
+    cruisesFilter.port ||
+    cruisesFilter.departAfter
+  );
   const cruises = useLiveFilter(
     cruisesEnabled,
     () => searchCruisesAction(cruisesFilter.country, cruisesFilter.port, cruisesFilter.departAfter),
@@ -107,45 +109,45 @@ export function HomeSearch({
   // up with the one results key it is allowed to replace.
   function liveResultsFor(): SearchResultSets {
     switch (tab) {
-      case "flights":
-        return flightsEnabled && flights.results !== null
-          ? { ...results, flights: flights.results }
+      case "packages":
+        return packagesEnabled && packages.results !== null
+          ? { ...results, packages: packages.results }
+          : results;
+
+      case "visas":
+        return visasEnabled && visas.results !== null
+          ? { ...results, visas: visas.results }
+          : results;
+
+      case "cruises":
+        return cruisesEnabled && cruises.results !== null
+          ? { ...results, cruises: cruises.results }
           : results;
       case "hotels":
         return hotelsEnabled && hotels.results !== null
           ? { ...results, hotels: hotels.results }
           : results;
 
-     case "cruises":
-        return cruisesEnabled && cruises.results !== null
-          ? { ...results, cruises: cruises.results }
+      case "flights":
+        return flightsEnabled && flights.results !== null
+          ? { ...results, flights: flights.results }
           : results;
-
-    case "visas":
-        return visasEnabled && visas.results !== null
-          ? { ...results, visas: visas.results }
-          : results;
-   
-      case "packages":
-        return packagesEnabled && packages.results !== null
-          ? { ...results, packages: packages.results }
-          : results;
- 
     }
   }
 
   function isLoadingNow(): boolean {
     switch (tab) {
-      case "flights":
-        return flightsEnabled && flights.isLoading;
-      case "hotels":
-        return hotelsEnabled && hotels.isLoading;
       case "packages":
         return packagesEnabled && packages.isLoading;
       case "visas":
         return visasEnabled && visas.isLoading;
       case "cruises":
         return cruisesEnabled && cruises.isLoading;
+      case "hotels":
+        return hotelsEnabled && hotels.isLoading;
+
+      case "flights":
+        return flightsEnabled && flights.isLoading;
     }
   }
 
@@ -158,14 +160,12 @@ export function HomeSearch({
           always had, so an editor who never touches it changes nothing — and
           its own overlay_opacity scrim is what keeps the title readable over
           a photo, same as every other page's hero. */}
-      <section className="relative overflow-hidden bg-navy-900">
+      <section className="bg-navy-900 relative overflow-hidden">
         <HeroBackground hero={hero} priority />
 
         <Container className="relative py-7 sm:py-9">
           <div className="mb-5 text-center lg:text-start">
-            <h1 className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">
-              {t("title")}
-            </h1>
+            <h1 className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">{t("title")}</h1>
             <p className="mt-1.5 text-sm text-white/70">{t("subtitle")}</p>
           </div>
 
