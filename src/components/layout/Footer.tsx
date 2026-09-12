@@ -243,7 +243,7 @@ export async function Footer() {
             here alone now — a section of them on the homepage and a row of
             them down here was the same content twice, and the footer is where
             someone looks for an address on every page rather than one. */}
-        <Container className="border-t border-sand-200 py-8">
+        <Container className="border-t border-sand-200 py-8 justify-center ">
           <p className="text-sm font-semibold text-navy-900">{tFooter("branchesTitle")}</p>
           <ScrollGrid
             label={tFooter("branchesTitle")}
