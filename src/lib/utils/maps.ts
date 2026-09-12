@@ -35,15 +35,15 @@ export function mapEmbedSrc(lat: string, lng: string, locale: string): string {
 }
 
 /*
- * Coordinates when we have them, the written address when we do not: a search
- * for the address still lands the reader in the right neighbourhood, whereas
- * a missing pin would send them nowhere at all.
+ * A branch's own Share link when one is set — the only way "view on map" can
+ * open its real listing, with its own name, photo and rating, rather than a
+ * generic result. Otherwise a name-and-address search: Google resolves that
+ * to the matching indexed business the same way typing it into Maps by hand
+ * would, which a bare "lat,lng" query never does — that only ever drops an
+ * anonymous pin labelled with the coordinates themselves.
  */
-export function mapSearchUrl(
-  lat: string | null,
-  lng: string | null,
-  address: string,
-): string {
-  const query = lat && lng ? `${lat},${lng}` : address;
+export function mapSearchUrl(name: string, address: string, googleMapsUrl: string): string {
+  if (googleMapsUrl) return googleMapsUrl;
+  const query = address ? `${name}, ${address}` : name;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }

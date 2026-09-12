@@ -1,4 +1,5 @@
 import type { SearchTab } from "@/types/search";
+import type { ServiceType } from "@/types/inquiry";
 
 /*
  * What the recommendations rail shows next to a given tab.
@@ -26,4 +27,14 @@ export const SEE_ALL: Record<SearchTab, string> = {
   packages: "/packages",
   visas: "/visas",
   cruises: "/cruises",
+};
+
+/** Which contact-form bucket a tab's own "send us a request" fallback files
+ *  under — see SearchResults' empty state. */
+export const SERVICE_TYPE: Record<SearchTab, ServiceType> = {
+  flights: "FLIGHT",
+  hotels: "HOTEL",
+  packages: "PACKAGE",
+  visas: "VISA",
+  cruises: "CRUISE",
 };

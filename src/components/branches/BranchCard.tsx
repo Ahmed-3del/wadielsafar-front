@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { ExternalLinkIcon, MapIcon, PhoneIcon, PinIcon } from "@/components/ui/icons";
+import { MapIcon, PhoneIcon, PinIcon } from "@/components/ui/icons";
 import { mapEmbedSrc, mapSearchUrl, usesGoogleEmbed } from "@/lib/utils/maps";
 import { cn } from "@/lib/utils/cn";
 import type { Branch } from "@/types/company";
@@ -19,7 +19,7 @@ export async function BranchCard({ branch }: { branch: Branch }) {
   const name = isArabic ? branch.name_ar : branch.name_en;
   const address = isArabic ? branch.address_ar : branch.address_en;
   const phoneDisplay = branch.phone_display || branch.phone;
-  const mapUrl = mapSearchUrl(branch.latitude, branch.longitude, address);
+  const mapUrl = mapSearchUrl(name, address, branch.google_maps_url);
   // Kept as a pair so the embed never has to assert one of them away.
   const pin =
     branch.latitude && branch.longitude
@@ -114,18 +114,6 @@ export async function BranchCard({ branch }: { branch: Branch }) {
             <PhoneIcon className="h-4 w-4 text-gold-700" />
             <span dir="ltr">{phoneDisplay}</span>
           </a>
-
-          {/* New tab, because leaving the site to open a map should not cost
-              the reader the page they were on. */}
-          {/* <a
-            href={mapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-sand-200 px-3.5 py-2 text-sm font-semibold text-navy-900 transition-colors hover:border-navy-300 hover:bg-sand-50"
-          >
-            {t("viewOnMap")}
-            <ExternalLinkIcon className="h-3.5 w-3.5" />
-          </a> */}
         </div>
       </div>
     </article>

@@ -53,6 +53,7 @@ export async function resolveFooter(): Promise<{
       address_en: "",
       latitude: null,
       longitude: null,
+      google_maps_url: "",
       is_main: branch.key === "main",
       order: index,
     }));

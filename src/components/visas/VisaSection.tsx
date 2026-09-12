@@ -10,17 +10,16 @@ import { EmptyState } from "@/components/ui/States";
 import { buttonVariants } from "@/components/ui/Button";
 import { contactHref } from "@/lib/utils/contact-link";
 import { VisaCard } from "./VisaCard";
-import { getVisaTypes } from "@/lib/api/visas";
+import { getFeaturedVisaTypes } from "@/lib/api/visas";
 import { safeResults } from "@/lib/api/client";
 
 export async function VisaSection() {
-  const [t, visaTypes] = await Promise.all([
+  // Which visas show here is an editor's pick — see VisaType.is_featured —
+  // not whatever the catalogue's default ordering happened to put first.
+  const [t, featured] = await Promise.all([
     getTranslations("Visas"),
-    safeResults(getVisaTypes({ page: 1 })),
+    safeResults(getFeaturedVisaTypes()),
   ]);
-  // Eight rather than three: the row scrolls now, so the limit is what a
-  // reader will flick through rather than what fits across the page.
-  const featured = visaTypes.slice(0, 8);
 
   return (
     <Section className="bg-sand-50">

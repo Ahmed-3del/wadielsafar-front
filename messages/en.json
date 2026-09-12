@@ -1001,16 +1001,14 @@
     "notBefore": "Cannot be earlier than {field}."
   },
   "Promo": {
-    "headline": "15% off for new Wadi Al Safar customers on your first booking",
-    "codeLabel": "Code",
-    "code": "WELCOME15",
-    "cta": "Book now"
+    "codeLabel": "Code"
   },
   "Search": {
     "title": "Where would you like to go?",
     "subtitle": "Flights, hotels, packages, visas and cruises — send us the details and our team plans it with you.",
     "seeAll": "See all",
     "empty": "Nothing matches this search yet. Try another tab, or send us a request and we'll look for you.",
+    "emptyCta": "Send us a request",
     "results": {
       "flights": "Flight deals",
       "hotels": "Hotels we recommend",

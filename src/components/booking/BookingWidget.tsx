@@ -50,6 +50,11 @@ interface BookingWidgetProps {
    *  that way. */
   tab?: SearchTab;
   onTabChange?: (tab: SearchTab) => void;
+  /** Fires as soon as a real country (or purpose) is chosen on the visas tab
+   *  — not on every keystroke, and not on free text that matched nothing —
+   *  so the homepage can show matching visas immediately instead of waiting
+   *  for "complete request" to be pressed. Empty country means "cleared". */
+  onVisaFilterChange?: (filter: { country: string; purpose: string }) => void;
 }
 
 const TABS: { id: SearchTab; Icon: typeof PlaneIcon }[] = [
@@ -89,6 +94,7 @@ export function BookingWidget({
   defaultOrigin,
   tab: controlledTab,
   onTabChange,
+  onVisaFilterChange,
 }: BookingWidgetProps) {
   const t = useTranslations("Booking");
   const tPicker = useTranslations("Picker");
@@ -111,6 +117,12 @@ export function BookingWidget({
   const [arrival, setArrival] = useState("");
   const [destination, setDestination] = useState("");
   const [visaCountry, setVisaCountry] = useState("");
+  const [visaPurpose, setVisaPurpose] = useState("");
+  // The last *confirmed* country — a real pick from the list, never the raw
+  // text of a free-typed search that matched nothing. That distinction only
+  // matters for the live filter: the form field below still submits whatever
+  // was typed, same as before.
+  const [visaFilterCountry, setVisaFilterCountry] = useState("");
   // Country first, then one of its ports — the cruise search's two halves.
   const [cruiseCountry, setCruiseCountry] = useState("");
   const [cruisePort, setCruisePort] = useState("");
@@ -423,7 +435,15 @@ export function BookingWidget({
                   name="country"
                   variant="widget"
                   value={visaCountry}
-                  onChange={setVisaCountry}
+                  onChange={(value, item) => {
+                    setVisaCountry(value);
+                    // Only a genuine pick from the list narrows the results
+                    // below — free text that matched nothing is not a country
+                    // id the API filter could use.
+                    const confirmed = item ? value : "";
+                    setVisaFilterCountry(confirmed);
+                    onVisaFilterChange?.({ country: confirmed, purpose: visaPurpose });
+                  }}
                   items={visaItems}
                   placeholder={t("chooseCountry")}
                   labels={{
@@ -434,7 +454,16 @@ export function BookingWidget({
                 />
               </BookingField>
               <BookingField label={t("visaFor")} icon={<PassportIcon className={iconClass} />}>
-                <select name="purpose" className={bookingControlClass} defaultValue="">
+                <select
+                  name="purpose"
+                  className={bookingControlClass}
+                  value={visaPurpose}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setVisaPurpose(value);
+                    onVisaFilterChange?.({ country: visaFilterCountry, purpose: value });
+                  }}
+                >
                   <option value="">{t("anyVisaType")}</option>
                   {(["tourism", "business", "study"] as const).map((p) => (
                     <option key={p} value={p}>

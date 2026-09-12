@@ -44,6 +44,9 @@ export interface Branch {
    *  map of the wrong place. */
   latitude: string | null;
   longitude: string | null;
+  /** This branch's own Google Maps listing, pasted from its Share button.
+   *  Blank means "view on map" searches by name and address instead. */
+  google_maps_url: string;
   /** The head office. Marked out on the cards, because "which one do I go to"
    *  is the question a list of four addresses raises. */
   is_main: boolean;
