@@ -6,7 +6,8 @@ import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { resolveNav } from "@/lib/api/resolve-nav";
 import { resolveFooter } from "@/lib/api/resolve-footer";
-import { BranchesSection } from "@/components/branches/BranchesSection";
+import { BranchCard } from "@/components/branches/BranchCard";
+import { ScrollGrid } from "@/components/ui/ScrollGrid";
 import { CertificateWall } from "@/components/layout/CertificateWall";
 import type { ResolvedNavItem } from "@/types/nav-item";
 import type { SocialPlatform } from "@/types/company";
@@ -237,13 +238,23 @@ export async function Footer() {
           </div>
         </Container>
 
-        {/* The offices: where the homepage's branches section used to live,
-            before this replaced both it and the small grid this footer had
-            in its place — a section of them on the homepage and a row of
-            them down here was the same content twice, and the footer is
-            where someone looks for an address on every page rather than one.
-            Full-bleed on purpose, see BranchesSection's own comment. */}
-        <BranchesSection branches={footer.branches} />
+        {/* The offices, as the same cards the homepage used to carry: map,
+            written address, a number to ring and a way to navigate. They live
+            here alone now — a section of them on the homepage and a row of
+            them down here was the same content twice, and the footer is where
+            someone looks for an address on every page rather than one. */}
+        <Container className="border-t border-sand-200 py-8">
+          <p className="text-sm font-semibold text-navy-900">{tFooter("branchesTitle")}</p>
+          <ScrollGrid
+            label={tFooter("branchesTitle")}
+            gridClassName="sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-4"
+          >
+            {footer.branches.map((branch) => (
+              <BranchCard key={branch.id} branch={branch} />
+            ))}
+          </ScrollGrid>
+        </Container>
 
         {/* The registration numbers are the only credentials on this site that
             anyone can actually check, so they read as credentials rather than
