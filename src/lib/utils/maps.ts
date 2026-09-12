@@ -31,7 +31,10 @@ export function mapEmbedSrc(lat: string, lng: string, locale: string): string {
     latitude + SPAN,
   ].join(",");
 
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${encodeURIComponent(`${latitude},${longitude}`)}`;
+  // No `marker` param: OSM draws its own pin in a fixed green it does not let
+  // a caller recolour, so BranchCard draws its own on top instead — a plain
+  // bbox here is just the tiles underneath it.
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik`;
 }
 
 /*

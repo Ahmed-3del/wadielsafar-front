@@ -101,7 +101,7 @@ export function HomeSearch({
     () => searchFlightsAction(flightsFilter.originCode, flightsFilter.destinationCode),
     [flightsFilter.originCode, flightsFilter.destinationCode],
   );
-
+  // 1- الباقات 2- التاشيرات 3- الكروز 4- الفنادق 5- الطيران
   // A switch rather than a lookup keyed by `tab`: each tab's live list is a
   // different element type, and only a literal case here lets that type line
   // up with the one results key it is allowed to replace.
@@ -115,18 +115,22 @@ export function HomeSearch({
         return hotelsEnabled && hotels.results !== null
           ? { ...results, hotels: hotels.results }
           : results;
+
+     case "cruises":
+        return cruisesEnabled && cruises.results !== null
+          ? { ...results, cruises: cruises.results }
+          : results;
+
+    case "visas":
+        return visasEnabled && visas.results !== null
+          ? { ...results, visas: visas.results }
+          : results;
+   
       case "packages":
         return packagesEnabled && packages.results !== null
           ? { ...results, packages: packages.results }
           : results;
-      case "visas":
-        return visasEnabled && visas.results !== null
-          ? { ...results, visas: visas.results }
-          : results;
-      case "cruises":
-        return cruisesEnabled && cruises.results !== null
-          ? { ...results, cruises: cruises.results }
-          : results;
+ 
     }
   }
 

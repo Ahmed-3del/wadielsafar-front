@@ -1028,6 +1028,7 @@
   },
   "Branches": {
     "mainBadge": "الفرع الرئيسي",
+    "hoursLabel": "ساعات العمل",
     "viewOnMap": "عرض على الخريطة",
     "mapTitle": "خريطة {branch}",
     "viewOnMapNamed": "عرض {branch} على الخريطة"

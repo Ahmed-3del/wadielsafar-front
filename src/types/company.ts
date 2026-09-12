@@ -39,6 +39,9 @@ export interface Branch {
    *  and the footer both print it verbatim. */
   address_ar: string;
   address_en: string;
+  /** Free text, e.g. "Sat–Thu: 9am–9pm". Blank hides the row on the card. */
+  working_hours_ar: string;
+  working_hours_en: string;
   /** Decimal degrees, as strings from the API. Null where nobody has dropped
    *  the pin yet: the card then shows the address without a map rather than a
    *  map of the wrong place. */

@@ -17,6 +17,9 @@ export interface FlightDeal {
   airline_name_ar: string;
   airline_name_en: string;
   airline_logo: string | null;
+  /** A photo of the route — the destination, usually. Null shows the card's
+   *  own brand-coloured block instead of a picture. */
+  cover_image: string | null;
   trip_type: TripType;
   cabin_class: CabinClass;
   price_from: string;

@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { MapIcon, PhoneIcon, PinIcon } from "@/components/ui/icons";
+import { ClockIcon, MapIcon, PhoneIcon, PinIcon } from "@/components/ui/icons";
 import { mapEmbedSrc, mapSearchUrl, usesGoogleEmbed } from "@/lib/utils/maps";
 import { cn } from "@/lib/utils/cn";
 import type { Branch } from "@/types/company";
@@ -18,6 +18,7 @@ export async function BranchCard({ branch }: { branch: Branch }) {
 
   const name = isArabic ? branch.name_ar : branch.name_en;
   const address = isArabic ? branch.address_ar : branch.address_en;
+  const hours = isArabic ? branch.working_hours_ar : branch.working_hours_en;
   const phoneDisplay = branch.phone_display || branch.phone;
   const mapUrl = mapSearchUrl(name, address, branch.google_maps_url);
   // Kept as a pair so the embed never has to assert one of them away.
@@ -65,6 +66,19 @@ export async function BranchCard({ branch }: { branch: Branch }) {
               )}
             />
 
+            {/* OSM's own embed carries a marker param, but its pin is a fixed
+                green it does not let a caller recolour — see mapEmbedSrc,
+                which asks for the bare tiles instead. This is drawn over
+                them, in the site's own colour, pointing at the same spot
+                Google's place marker already sits on when that path is used
+                instead. */}
+            {usesGoogleEmbed ? null : (
+              <PinIcon
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-9 w-9 -translate-x-1/2 -translate-y-full fill-red-600 text-red-700 drop-shadow-[0_2px_3px_rgba(0,0,0,0.35)]"
+              />
+            )}
+
             {/* The whole map opens the real one. Without this the embed is a
                 picture with dead zoom buttons painted on it. */}
             <a
@@ -106,15 +120,27 @@ export async function BranchCard({ branch }: { branch: Branch }) {
           </p>
         ) : null}
 
-        <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
-          <a
-            href={`tel:${branch.phone}`}
-            className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-50 px-3.5 py-2 text-sm font-bold text-navy-900 transition-colors hover:border-gold-500 hover:bg-gold-100"
-          >
-            <PhoneIcon className="h-4 w-4 text-gold-700" />
-            <span dir="ltr">{phoneDisplay}</span>
-          </a>
-        </div>
+        {/* The label and the hours are two different colours on purpose —
+            "Hours" is a constant every card repeats, and the actual times are
+            the one fact that changes card to card, so the two need to read
+            as different kinds of text rather than one run-on sentence. */}
+        {hours ? (
+          <p className="flex items-start gap-2 text-sm leading-6">
+            <ClockIcon className="mt-0.5 h-4 w-4 shrink-0 text-gold-600" />
+            <span>
+              <span className="font-semibold text-gold-700">{t("hoursLabel")}</span>{" "}
+              <span className="text-navy-800">{hours}</span>
+            </span>
+          </p>
+        ) : null}
+
+        <a
+          href={`tel:${branch.phone}`}
+          className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-full border border-gold-500/40 bg-gold-50 px-3.5 py-2.5 text-sm font-bold text-navy-900 transition-colors hover:border-gold-500 hover:bg-gold-100"
+        >
+          <PhoneIcon className="h-4 w-4 text-gold-700" />
+          <span dir="ltr">{phoneDisplay}</span>
+        </a>
       </div>
     </article>
   );

@@ -1028,6 +1028,7 @@
   },
   "Branches": {
     "mainBadge": "Main branch",
+    "hoursLabel": "Hours",
     "viewOnMap": "View on map",
     "mapTitle": "Map of {branch}",
     "viewOnMapNamed": "View {branch} on the map"
