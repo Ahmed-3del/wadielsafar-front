@@ -1,7 +1,8 @@
 export type HeroMediaType = "NONE" | "IMAGE" | "VIDEO";
 
+// "home" is deliberately absent: the homepage's hero is the search band, not
+// a page hero — nothing here ever fetches getPageHero("home").
 export type PageKey =
-  | "home"
   | "destinations"
   | "packages"
   | "visas"
