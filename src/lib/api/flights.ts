@@ -11,6 +11,7 @@ export type FlightDealParams = {
   price_max?: number;
   search?: string;
   page?: number;
+  page_size?: number;
 };
 
 export function getFlightDeals(params?: FlightDealParams) {

@@ -11,6 +11,7 @@ export type HotelParams = {
   price_max?: number;
   search?: string;
   page?: number;
+  page_size?: number;
 };
 
 export function getHotels(params?: HotelParams) {

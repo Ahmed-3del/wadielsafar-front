@@ -15,6 +15,7 @@ export function getCruises(params?: {
   price_max?: number;
   nights_min?: number;
   page?: number;
+  page_size?: number;
 }) {
   return apiList<Cruise>("/cruises/", params);
 }

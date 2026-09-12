@@ -66,7 +66,10 @@ function toItems(airports: Airport[], isArabic: boolean, mode: PickerMode): Comb
 interface AirportPickerProps {
   name?: string;
   value: string;
-  onChange: (value: string) => void;
+  /** `item` is the picked row itself — its `badge` carries the IATA code —
+   *  or null on free text that matched nothing. Most callers only need the
+   *  display value and can ignore the second argument. */
+  onChange: (value: string, item: ComboboxItem | null) => void;
   /** Rendered before the traveller types. Fetched on the server so the first
    *  open needs no round trip. */
   popular?: Airport[];
@@ -125,7 +128,7 @@ export function AirportPicker({
       name={name}
       id={id}
       value={value}
-      onChange={(next) => { onChange(next); }}
+      onChange={(next, item) => { onChange(next, item); }}
       loadItems={loadItems}
       initialItems={initialItems}
       variant={variant}

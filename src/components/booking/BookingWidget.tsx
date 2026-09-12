@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
@@ -50,11 +50,24 @@ interface BookingWidgetProps {
    *  that way. */
   tab?: SearchTab;
   onTabChange?: (tab: SearchTab) => void;
-  /** Fires as soon as a real country (or purpose) is chosen on the visas tab
-   *  — not on every keystroke, and not on free text that matched nothing —
-   *  so the homepage can show matching visas immediately instead of waiting
-   *  for "complete request" to be pressed. Empty country means "cleared". */
+  /*
+   * Each of these fires as soon as a field that actually narrows a search on
+   * the homepage changes — not on every keystroke, and not on free text that
+   * matched nothing — so the results below can update immediately instead of
+   * waiting for "complete request" to be pressed. An empty value in any of
+   * them means "cleared", not "unset the whole filter": whichever fields are
+   * still filled keep narrowing the results.
+   *
+   * Not every field on every tab can drive this: hotel and flight dates have
+   * no matching filter on the catalogue itself (see search-hotels.ts and
+   * search-flights.ts), so only the fields the API can actually answer are
+   * wired up here.
+   */
   onVisaFilterChange?: (filter: { country: string; purpose: string }) => void;
+  onPackagesFilterChange?: (filter: { destination: string; priceMax: string }) => void;
+  onHotelsFilterChange?: (filter: { destination: string }) => void;
+  onCruisesFilterChange?: (filter: { country: string; port: string; departAfter: string }) => void;
+  onFlightsFilterChange?: (filter: { originCode: string; destinationCode: string }) => void;
 }
 
 const TABS: { id: SearchTab; Icon: typeof PlaneIcon }[] = [
@@ -95,6 +108,10 @@ export function BookingWidget({
   tab: controlledTab,
   onTabChange,
   onVisaFilterChange,
+  onPackagesFilterChange,
+  onHotelsFilterChange,
+  onCruisesFilterChange,
+  onFlightsFilterChange,
 }: BookingWidgetProps) {
   const t = useTranslations("Booking");
   const tPicker = useTranslations("Picker");
@@ -115,7 +132,13 @@ export function BookingWidget({
   // have to retype where they are flying from.
   const [origin, setOrigin] = useState(defaultOrigin);
   const [arrival, setArrival] = useState("");
+  // The last *confirmed* airport codes — a real pick from the list, never the
+  // raw text of a free-typed search that matched nothing. Only these drive
+  // the live filter; the fields above still submit whatever was typed.
+  const [originCode, setOriginCode] = useState("");
+  const [destinationCode, setDestinationCode] = useState("");
   const [destination, setDestination] = useState("");
+  const [packagesBudget, setPackagesBudget] = useState("");
   const [visaCountry, setVisaCountry] = useState("");
   const [visaPurpose, setVisaPurpose] = useState("");
   // The last *confirmed* country — a real pick from the list, never the raw
@@ -126,6 +149,7 @@ export function BookingWidget({
   // Country first, then one of its ports — the cruise search's two halves.
   const [cruiseCountry, setCruiseCountry] = useState("");
   const [cruisePort, setCruisePort] = useState("");
+  const [cruiseDepart, setCruiseDepart] = useState("");
 
   /* Dates are held here rather than left to the DOM because the return field's
      floor is the departure the traveller just chose, and a bare `min={today}`
@@ -135,6 +159,42 @@ export function BookingWidget({
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [dateError, setDateError] = useState<string | null>(null);
+
+  /*
+   * One effect per tab that can narrow a search, notifying the homepage
+   * whenever that tab's own filter state settles — rather than a call inlined
+   * into each field's own onChange. Cruises is why: choosing a country there
+   * also clears the port in the same tick (see CruiseRoutePicker), and a
+   * notification built inline from this render's other field values would
+   * have carried the port's *old* country alongside it, since React had not
+   * yet re-rendered with the country's own update. An effect only ever reads
+   * state after both updates have landed, so it cannot see that half-applied
+   * moment.
+   */
+  useEffect(() => {
+    onVisaFilterChange?.({ country: visaFilterCountry, purpose: visaPurpose });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onVisaFilterChange is the parent's setState setter, stable across renders.
+  }, [visaFilterCountry, visaPurpose]);
+
+  useEffect(() => {
+    onPackagesFilterChange?.({ destination, priceMax: packagesBudget });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onPackagesFilterChange is the parent's setState setter, stable across renders.
+  }, [destination, packagesBudget]);
+
+  useEffect(() => {
+    onHotelsFilterChange?.({ destination });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onHotelsFilterChange is the parent's setState setter, stable across renders.
+  }, [destination]);
+
+  useEffect(() => {
+    onCruisesFilterChange?.({ country: cruiseCountry, port: cruisePort, departAfter: cruiseDepart });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onCruisesFilterChange is the parent's setState setter, stable across renders.
+  }, [cruiseCountry, cruisePort, cruiseDepart]);
+
+  useEffect(() => {
+    onFlightsFilterChange?.({ originCode, destinationCode });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onFlightsFilterChange is the parent's setState setter, stable across renders.
+  }, [originCode, destinationCode]);
 
   const today = todayIso();
 
@@ -285,7 +345,10 @@ export function BookingWidget({
                   name="from"
                   variant="widget"
                   value={origin}
-                  onChange={setOrigin}
+                  onChange={(value, item) => {
+                    setOrigin(value);
+                    setOriginCode(item?.badge ?? "");
+                  }}
                   popular={popularAirports}
                 />
               </BookingField>
@@ -294,7 +357,10 @@ export function BookingWidget({
                   name="search"
                   variant="widget"
                   value={arrival}
-                  onChange={setArrival}
+                  onChange={(value, item) => {
+                    setArrival(value);
+                    setDestinationCode(item?.badge ?? "");
+                  }}
                   popular={popularAirports}
                   placeholder={t("toPlaceholder")}
                 />
@@ -413,7 +479,12 @@ export function BookingWidget({
                 />
               </BookingField>
               <BookingField label={t("budget")} icon={<GlobeIcon className={iconClass} />}>
-                <select name="price_max" className={bookingControlClass} defaultValue="">
+                <select
+                  name="price_max"
+                  className={bookingControlClass}
+                  value={packagesBudget}
+                  onChange={(event) => { setPackagesBudget(event.target.value); }}
+                >
                   <option value="">{t("anyBudget")}</option>
                   {[5000, 10000, 20000].map((v) => (
                     <option key={v} value={v}>
@@ -440,9 +511,7 @@ export function BookingWidget({
                     // Only a genuine pick from the list narrows the results
                     // below — free text that matched nothing is not a country
                     // id the API filter could use.
-                    const confirmed = item ? value : "";
-                    setVisaFilterCountry(confirmed);
-                    onVisaFilterChange?.({ country: confirmed, purpose: visaPurpose });
+                    setVisaFilterCountry(item ? value : "");
                   }}
                   items={visaItems}
                   placeholder={t("chooseCountry")}
@@ -458,11 +527,7 @@ export function BookingWidget({
                   name="purpose"
                   className={bookingControlClass}
                   value={visaPurpose}
-                  onChange={(event) => {
-                    const value = event.target.value;
-                    setVisaPurpose(value);
-                    onVisaFilterChange?.({ country: visaFilterCountry, purpose: value });
-                  }}
+                  onChange={(event) => { setVisaPurpose(event.target.value); }}
                 >
                   <option value="">{t("anyVisaType")}</option>
                   {(["tourism", "business", "study"] as const).map((p) => (
@@ -485,7 +550,14 @@ export function BookingWidget({
                 onPortChange={setCruisePort}
               />
               <BookingField label={t("leaving")} icon={<CalendarIcon className={iconClass} />}>
-                <input type="date" name="depart" min={today} className={bookingControlClass} />
+                <input
+                  type="date"
+                  name="depart"
+                  min={today}
+                  value={cruiseDepart}
+                  onChange={(event) => { setCruiseDepart(event.target.value); }}
+                  className={bookingControlClass}
+                />
               </BookingField>
             </>
           ) : null}

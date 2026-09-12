@@ -1,19 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/Container";
 import { BookingWidget, type BookingOption } from "@/components/booking/BookingWidget";
 import { SearchResults } from "./SearchResults";
 import { useSearchTab } from "./search-tab-context";
+import { useLiveFilter } from "./useLiveFilter";
 import { HeroBackground } from "@/components/hero/HeroBackground";
 import { SEE_ALL } from "@/lib/constants/search-cross-sell";
 import { searchVisasAction } from "@/lib/actions/search-visas";
+import { searchPackagesAction } from "@/lib/actions/search-packages";
+import { searchHotelsAction } from "@/lib/actions/search-hotels";
+import { searchCruisesAction } from "@/lib/actions/search-cruises";
+import { searchFlightsAction } from "@/lib/actions/search-flights";
 import type { Airport } from "@/types/airport";
 import type { CruisePort } from "@/types/cruise";
 import type { SearchResultSets } from "@/types/search";
 import type { PageHero } from "@/types/page-hero";
-import type { VisaType } from "@/types/visa";
 
 interface HomeSearchProps {
   destinations: BookingOption[];
@@ -50,49 +54,96 @@ export function HomeSearch({
   const t = useTranslations("Search");
   const { tab, setTab } = useSearchTab();
 
-  // Chosen in the widget's visas tab. `country` empty means nothing has been
-  // picked yet, and the preloaded sample below keeps showing as it always did.
+  /*
+   * One filter, one live-fetch hook, per tab that has a field the catalogue
+   * can actually narrow by — see useLiveFilter and each search-*Action for
+   * why a fetch only ever fires once a real value is chosen, and why hotel
+   * and flight dates are absent here (no matching filter exists server-side).
+   * `enabled` also gates the merge below, so clearing every field on a tab
+   * falls straight back to the preloaded sample rather than a stale answer.
+   */
   const [visaFilter, setVisaFilter] = useState({ country: "", purpose: "" });
-  const [liveVisas, setLiveVisas] = useState<VisaType[] | null>(null);
-  const [isFilteringVisas, setIsFilteringVisas] = useState(false);
+  const visasEnabled = !!visaFilter.country;
+  const visas = useLiveFilter(
+    visasEnabled,
+    () => searchVisasAction(visaFilter.country, visaFilter.purpose),
+    [visaFilter.country, visaFilter.purpose],
+  );
 
-  useEffect(() => {
-    // Nothing to fetch with an empty country — the guard below on
-    // `visaFilter.country` is what stops a stale answer from a previous
-    // selection being shown once this one is cleared, so there is nothing
-    // to reset here.
-    if (!visaFilter.country) return;
-    let cancelled = false;
-    // Deferred a tick rather than called straight from the effect body — same
-    // shape as Combobox's own debounce, minus the delay: a discrete pick from
-    // a list is one request, not keystrokes to throttle.
-    const timer = setTimeout(() => {
-      setIsFilteringVisas(true);
-      searchVisasAction(visaFilter.country, visaFilter.purpose)
-        .then((matches) => {
-          if (!cancelled) setLiveVisas(matches);
-        })
-        .catch(() => {
-          if (!cancelled) setLiveVisas([]);
-        })
-        .finally(() => {
-          if (!cancelled) setIsFilteringVisas(false);
-        });
-    }, 0);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [visaFilter.country, visaFilter.purpose]);
+  const [packagesFilter, setPackagesFilter] = useState({ destination: "", priceMax: "" });
+  const packagesEnabled = !!(packagesFilter.destination || packagesFilter.priceMax);
+  const packages = useLiveFilter(
+    packagesEnabled,
+    () => searchPackagesAction(packagesFilter.destination, packagesFilter.priceMax),
+    [packagesFilter.destination, packagesFilter.priceMax],
+  );
 
-  // Only the visas tab ever narrows like this — swapped in wholesale rather
-  // than merged, since the other four keys are untouched either way. Gated on
-  // `visaFilter.country` too, not just `liveVisas`, so a cleared selection
-  // falls straight back to the preloaded sample rather than a stale answer to
-  // a country that is no longer chosen.
-  const effectiveResults: SearchResultSets =
-    visaFilter.country && liveVisas !== null ? { ...results, visas: liveVisas } : results;
-  const isFilteringVisibleVisas = !!visaFilter.country && isFilteringVisas;
+  const [hotelsFilter, setHotelsFilter] = useState({ destination: "" });
+  const hotelsEnabled = !!hotelsFilter.destination;
+  const hotels = useLiveFilter(
+    hotelsEnabled,
+    () => searchHotelsAction(hotelsFilter.destination),
+    [hotelsFilter.destination],
+  );
+
+  const [cruisesFilter, setCruisesFilter] = useState({ country: "", port: "", departAfter: "" });
+  const cruisesEnabled = !!(cruisesFilter.country || cruisesFilter.port || cruisesFilter.departAfter);
+  const cruises = useLiveFilter(
+    cruisesEnabled,
+    () => searchCruisesAction(cruisesFilter.country, cruisesFilter.port, cruisesFilter.departAfter),
+    [cruisesFilter.country, cruisesFilter.port, cruisesFilter.departAfter],
+  );
+
+  const [flightsFilter, setFlightsFilter] = useState({ originCode: "", destinationCode: "" });
+  const flightsEnabled = !!(flightsFilter.originCode || flightsFilter.destinationCode);
+  const flights = useLiveFilter(
+    flightsEnabled,
+    () => searchFlightsAction(flightsFilter.originCode, flightsFilter.destinationCode),
+    [flightsFilter.originCode, flightsFilter.destinationCode],
+  );
+
+  // A switch rather than a lookup keyed by `tab`: each tab's live list is a
+  // different element type, and only a literal case here lets that type line
+  // up with the one results key it is allowed to replace.
+  function liveResultsFor(): SearchResultSets {
+    switch (tab) {
+      case "flights":
+        return flightsEnabled && flights.results !== null
+          ? { ...results, flights: flights.results }
+          : results;
+      case "hotels":
+        return hotelsEnabled && hotels.results !== null
+          ? { ...results, hotels: hotels.results }
+          : results;
+      case "packages":
+        return packagesEnabled && packages.results !== null
+          ? { ...results, packages: packages.results }
+          : results;
+      case "visas":
+        return visasEnabled && visas.results !== null
+          ? { ...results, visas: visas.results }
+          : results;
+      case "cruises":
+        return cruisesEnabled && cruises.results !== null
+          ? { ...results, cruises: cruises.results }
+          : results;
+    }
+  }
+
+  function isLoadingNow(): boolean {
+    switch (tab) {
+      case "flights":
+        return flightsEnabled && flights.isLoading;
+      case "hotels":
+        return hotelsEnabled && hotels.isLoading;
+      case "packages":
+        return packagesEnabled && packages.isLoading;
+      case "visas":
+        return visasEnabled && visas.isLoading;
+      case "cruises":
+        return cruisesEnabled && cruises.isLoading;
+    }
+  }
 
   return (
     <>
@@ -123,6 +174,10 @@ export function HomeSearch({
             tab={tab}
             onTabChange={setTab}
             onVisaFilterChange={setVisaFilter}
+            onPackagesFilterChange={setPackagesFilter}
+            onHotelsFilterChange={setHotelsFilter}
+            onCruisesFilterChange={setCruisesFilter}
+            onFlightsFilterChange={setFlightsFilter}
           />
         </Container>
       </section>
@@ -131,11 +186,11 @@ export function HomeSearch({
         <Container>
           <SearchResults
             tab={tab}
-            results={effectiveResults}
+            results={liveResultsFor()}
             heading={t(`results.${tab}`)}
             description={t(`resultsHint.${tab}`)}
             href={SEE_ALL[tab]}
-            isLoading={tab === "visas" && isFilteringVisibleVisas}
+            isLoading={isLoadingNow()}
           />
         </Container>
       </section>
