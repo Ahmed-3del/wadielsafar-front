@@ -256,65 +256,65 @@ export async function Footer() {
           </ScrollGrid>
         </Container>
 
-        {/* The registration numbers are the only credentials on this site that
-            anyone can actually check, so they read as credentials rather than
-            as small print at the bottom. Numbers and licences run as one
-            strip: on their own rows they read as two stranded groups with a
-            band of empty page between them. */}
-        <Container className="border-t border-sand-200 py-8">
-          <p className="text-sm font-semibold text-navy-900">{tFooter("credentialsTitle")}</p>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            {/* <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-xl border border-sand-200 bg-white px-4 py-2.5 text-sm text-sand-600">
-                {tFooter("commercialRegistry")}:{" "}
-                <span dir="ltr" className="font-semibold text-navy-900">
-                  {siteConfig.registration.commercialRegistry}
-                </span>
-              </span>
-              <span className="rounded-xl border border-sand-200 bg-white px-4 py-2.5 text-sm text-sand-600">
-                {tFooter("taxNumber")}:{" "}
-                <span dir="ltr" className="font-semibold text-navy-900">
-                  {siteConfig.registration.taxNumber}
-                </span>
-              </span>
-            </div> */}
-
-            {/* Each badge opens the document behind it. A trust mark nobody can
-                check is decoration. */}
-            <CertificateWall certificates={footer.certificates} />
-          </div>
-        </Container>
-
-        <div className="border-t border-sand-200 py-6">
-          <Container className="text-center text-xs gap-0.5 flex-col sm:flex-row sm:gap-3  font-light flex items-center md:justify-center leading-6 text-sand-500">
-              <div className="flex flex-wrap items-center gap-3">
-              <span className="text-sm text-sand-600">
-                {tFooter("commercialRegistry")}:{" "}
-                <span dir="ltr" className="font-semibold text-navy-900">
-                  {siteConfig.registration.commercialRegistry}
-                </span>
-              </span>
-              {/* <span className="text-sm text-sand-600">
-                {tFooter("taxNumber")}:{" "}
-                <span dir="ltr" className="font-semibold text-navy-900">
-                  {siteConfig.registration.taxNumber}
-                </span>
-              </span> */}
+        {/* Trust marks only take a row when the panel actually has some —
+            the heading used to render unconditionally and sat over an empty
+            strip whenever certificates were empty. */}
+        {footer.certificates.length > 0 ? (
+          <Container className="border-t border-sand-200 py-8">
+            <p className="text-sm font-semibold text-navy-900">{tFooter("credentialsTitle")}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <CertificateWall certificates={footer.certificates} />
             </div>
-            {/* The registered entity, not just the trading name. A licensed
-                travel agency is expected to say who it legally is. */}
-            <p className="font-medium text-sand-600">
-              {isArabic ? siteConfig.legalNameAr : siteConfig.legalNameEn}
-            </p>
-            <p>
-              &copy; {year} {tBrand("name")}. {tFooter("rights")}
-            </p>
-                <span className="text-sm text-sand-600">
+          </Container>
+        ) : null}
+
+        {/* One strip: the brand and its copyright on one side, the licence
+            numbers a Saudi travel agency is required to publish on the
+            other. A vertical divider between each number reads as one row of
+            credentials rather than a wrapped paragraph of them. */}
+        <div className="border-t border-sand-200 py-6">
+          <Container className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-start">
+            <div>
+              <p className="flex items-center justify-center gap-2 text-base font-semibold text-navy-900 sm:justify-start">
+                <span aria-hidden="true" className="h-4 w-1 rounded-full bg-gold-500" />
+                {tBrand("name")}
+              </p>
+              <p className="mt-1 text-xs text-sand-500">
+                &copy; {year} {tFooter("rights")}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-sand-600 sm:justify-end">
+              <span>
                 {tFooter("taxNumber")}:{" "}
                 <span dir="ltr" className="font-semibold text-navy-900">
                   {siteConfig.registration.taxNumber}
                 </span>
               </span>
+              <span aria-hidden="true" className="hidden h-3 w-px bg-sand-300 sm:inline-block" />
+              <span>
+                {tFooter("commercialRegistry")}:{" "}
+                <span dir="ltr" className="font-semibold text-navy-900">
+                  {siteConfig.registration.commercialRegistry}
+                </span>
+              </span>
+              <span aria-hidden="true" className="hidden h-3 w-px bg-sand-300 sm:inline-block" />
+              <span>
+                {tFooter("licenseCategory")}:{" "}
+                <span className="font-semibold text-navy-900">
+                  {isArabic
+                    ? siteConfig.registration.licenseCategoryAr
+                    : siteConfig.registration.licenseCategoryEn}
+                </span>
+              </span>
+              <span aria-hidden="true" className="hidden h-3 w-px bg-sand-300 sm:inline-block" />
+              <span>
+                {tFooter("tourismLicense")}:{" "}
+                <span dir="ltr" className="font-semibold text-navy-900">
+                  {siteConfig.registration.tourismLicense}
+                </span>
+              </span>
+            </div>
           </Container>
         </div>
       </div>

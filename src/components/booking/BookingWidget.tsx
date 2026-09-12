@@ -71,11 +71,11 @@ interface BookingWidgetProps {
 }
 
 const TABS: { id: SearchTab; Icon: typeof PlaneIcon }[] = [
-  { id: "flights", Icon: PlaneIcon },
-  { id: "hotels", Icon: BedIcon },
   { id: "packages", Icon: GlobeIcon },
   { id: "visas", Icon: PassportIcon },
   { id: "cruises", Icon: ShipIcon },
+  { id: "hotels", Icon: BedIcon },
+  { id: "flights", Icon: PlaneIcon },
 ];
 
 const iconClass = "h-5 w-5";
@@ -187,7 +187,11 @@ export function BookingWidget({
   }, [destination]);
 
   useEffect(() => {
-    onCruisesFilterChange?.({ country: cruiseCountry, port: cruisePort, departAfter: cruiseDepart });
+    onCruisesFilterChange?.({
+      country: cruiseCountry,
+      port: cruisePort,
+      departAfter: cruiseDepart,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- onCruisesFilterChange is the parent's setState setter, stable across renders.
   }, [cruiseCountry, cruisePort, cruiseDepart]);
 
@@ -277,11 +281,13 @@ export function BookingWidget({
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => { setTab(id); }}
+              onClick={() => {
+                setTab(id);
+              }}
               className={cn(
                 "flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all duration-200 sm:px-4",
                 active
-                  ? "bg-white text-navy-900 shadow-md"
+                  ? "text-navy-900 bg-white shadow-md"
                   : "bg-white/10 text-white/90 hover:bg-white/20",
               )}
             >
@@ -291,13 +297,13 @@ export function BookingWidget({
               <Icon
                 className={cn(
                   iconClass,
-                  "transition-all duration-200 ease-out-soft",
+                  "ease-out-soft transition-all duration-200",
                   // Hidden on the narrowest phones, where the five tabs
                   // otherwise take three rows. The pill behind the label still
                   // marks the open tab; the icon is the second signal, and the
                   // row it costs is worth more at 320px.
                   "max-[359px]:hidden",
-                  active && "scale-110 text-gold-600",
+                  active && "text-gold-600 scale-110",
                 )}
               />
               {t(`tabs.${id}`)}
@@ -317,12 +323,14 @@ export function BookingWidget({
         key={tab}
       >
         {tab === "flights" ? (
-          <div className="flex flex-wrap gap-2 px-2 pb-1 pt-2">
+          <div className="flex flex-wrap gap-2 px-2 pt-2 pb-1">
             {([true, false] as const).map((isRound) => (
               <button
                 key={String(isRound)}
                 type="button"
-                onClick={() => { setRoundTrip(isRound); }}
+                onClick={() => {
+                  setRoundTrip(isRound);
+                }}
                 aria-pressed={roundTrip === isRound}
                 className={cn(
                   "rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors",
@@ -337,7 +345,7 @@ export function BookingWidget({
           </div>
         ) : null}
 
-        <div className="mt-1 flex flex-col divide-y divide-sand-200 lg:flex-row lg:items-stretch lg:divide-x lg:divide-y-0 lg:rtl:divide-x-reverse">
+        <div className="divide-sand-200 mt-1 flex flex-col divide-y lg:flex-row lg:items-stretch lg:divide-x lg:divide-y-0 lg:rtl:divide-x-reverse">
           {tab === "flights" ? (
             <>
               <BookingField label={t("from")} icon={<PlaneIcon className={iconClass} />}>
@@ -483,7 +491,9 @@ export function BookingWidget({
                   name="price_max"
                   className={bookingControlClass}
                   value={packagesBudget}
-                  onChange={(event) => { setPackagesBudget(event.target.value); }}
+                  onChange={(event) => {
+                    setPackagesBudget(event.target.value);
+                  }}
                 >
                   <option value="">{t("anyBudget")}</option>
                   {[5000, 10000, 20000].map((v) => (
@@ -527,7 +537,9 @@ export function BookingWidget({
                   name="purpose"
                   className={bookingControlClass}
                   value={visaPurpose}
-                  onChange={(event) => { setVisaPurpose(event.target.value); }}
+                  onChange={(event) => {
+                    setVisaPurpose(event.target.value);
+                  }}
                 >
                   <option value="">{t("anyVisaType")}</option>
                   {(["tourism", "business", "study"] as const).map((p) => (
@@ -555,7 +567,9 @@ export function BookingWidget({
                   name="depart"
                   min={today}
                   value={cruiseDepart}
-                  onChange={(event) => { setCruiseDepart(event.target.value); }}
+                  onChange={(event) => {
+                    setCruiseDepart(event.target.value);
+                  }}
                   className={bookingControlClass}
                 />
               </BookingField>
@@ -577,7 +591,7 @@ export function BookingWidget({
       {dateError ? (
         <p
           role="alert"
-          className="mt-3 rounded-xl bg-danger-600/95 px-4 py-2.5 text-sm font-medium text-white"
+          className="bg-danger-600/95 mt-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white"
         >
           {dateError}
         </p>

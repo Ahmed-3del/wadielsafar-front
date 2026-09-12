@@ -16,8 +16,8 @@ export const siteConfig = {
    * there, not reimplement any of it.
    */
   orbitLoyaltyUrl: "https://orbit.daysam.co/stores/wadi-al-safar-travel",
-  contactPhone: "+966115602558",
-  contactPhoneDisplay: "+20 11 2020 404",
+  contactPhone: "+966112020404",
+  contactPhoneDisplay: "+966 11 2020 404",
   contactEmail: "info@wadialsafar.com",
   /*
    * Branch lines carried over from the existing company listings. Each keeps a
@@ -40,6 +40,9 @@ export const siteConfig = {
   registration: {
     taxNumber: "311275985300003",
     commercialRegistry: "1010927769",
+    tourismLicense: "73100536",
+    licenseCategoryAr: "وكالة سفر وسياحة",
+    licenseCategoryEn: "Travel & tourism agency",
   },
   socialLinks: [
     "https://facebook.com/wadialsafartravel",
