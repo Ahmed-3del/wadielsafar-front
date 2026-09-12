@@ -5,10 +5,12 @@ import { Container } from "@/components/ui/Container";
 import { BookingWidget, type BookingOption } from "@/components/booking/BookingWidget";
 import { SearchResults } from "./SearchResults";
 import { useSearchTab } from "./search-tab-context";
+import { HeroBackground } from "@/components/hero/HeroBackground";
 import { SEE_ALL } from "@/lib/constants/search-cross-sell";
 import type { Airport } from "@/types/airport";
 import type { CruisePort } from "@/types/cruise";
 import type { SearchResultSets } from "@/types/search";
+import type { PageHero } from "@/types/page-hero";
 
 interface HomeSearchProps {
   destinations: BookingOption[];
@@ -17,6 +19,10 @@ interface HomeSearchProps {
   cruisePorts: CruisePort[];
   defaultOrigin: string;
   results: SearchResultSets;
+  /** Editor-configured background for the band; null falls back to the brand
+   *  gradient. Only the background is used here — the band keeps its own
+   *  translated heading rather than an editor-entered one. */
+  hero: PageHero | null;
 }
 
 /*
@@ -36,6 +42,7 @@ export function HomeSearch({
   cruisePorts,
   defaultOrigin,
   results,
+  hero,
 }: HomeSearchProps) {
   const t = useTranslations("Search");
   const { tab, setTab } = useSearchTab();
@@ -44,9 +51,15 @@ export function HomeSearch({
     <>
       {/* The search band. Directly under the header, on a short navy field
           rather than inside a full-height hero: the client asked for it near
-          the top, and a tall picture above it is what pushed it down. */}
-      <section className="bg-linear-to-br from-navy-900 via-navy-800 to-navy-900">
-        <Container className="py-7 sm:py-9">
+          the top, and a tall picture above it is what pushed it down.
+          HeroBackground falls back to the same brand gradient this section
+          always had, so an editor who never touches it changes nothing — and
+          its own overlay_opacity scrim is what keeps the title readable over
+          a photo, same as every other page's hero. */}
+      <section className="relative overflow-hidden bg-navy-900">
+        <HeroBackground hero={hero} priority />
+
+        <Container className="relative py-7 sm:py-9">
           <div className="mb-5 text-center lg:text-start">
             <h1 className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">
               {t("title")}

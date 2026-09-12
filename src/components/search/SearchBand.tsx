@@ -5,6 +5,7 @@ import { getDestinations } from "@/lib/api/destinations";
 import { getVisaCountries } from "@/lib/api/visas";
 import { getPopularAirports } from "@/lib/api/airports";
 import { getCruisePorts } from "@/lib/api/cruises";
+import { getPageHero } from "@/lib/api/page-heroes";
 import { safeResults } from "@/lib/api/client";
 import type { SearchResultSets } from "@/types/search";
 
@@ -22,7 +23,7 @@ import type { SearchResultSets } from "@/types/search";
  * independently — page.tsx fetches once and hands the same object to both.
  */
 export async function SearchBand({ results }: { results: SearchResultSets }) {
-  const [locale, tBooking, destinations, visaCountries, popularAirports, cruisePorts] =
+  const [locale, tBooking, destinations, visaCountries, popularAirports, cruisePorts, hero] =
     await Promise.all([
       getLocale(),
       getTranslations("Booking"),
@@ -30,6 +31,7 @@ export async function SearchBand({ results }: { results: SearchResultSets }) {
       safeResults(getVisaCountries({ page_size: 50 })),
       safeResults(getPopularAirports()),
       safeResults(getCruisePorts()),
+      getPageHero("home").catch(() => null),
     ]);
 
   const isArabic = locale === "ar";
@@ -56,6 +58,7 @@ export async function SearchBand({ results }: { results: SearchResultSets }) {
       cruisePorts={cruisePorts}
       defaultOrigin={defaultOrigin}
       results={results}
+      hero={hero}
     />
   );
 }
