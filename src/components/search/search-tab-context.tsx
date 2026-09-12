@@ -22,12 +22,12 @@ interface SearchTabValue {
  * setter instead of a crash.
  */
 const SearchTabContext = createContext<SearchTabValue>({
-  tab: "flights",
+  tab: "packages",
   setTab: () => {},
 });
 
 export function SearchTabProvider({ children }: { children: ReactNode }) {
-  const [tab, setTab] = useState<SearchTab>("flights");
+  const [tab, setTab] = useState<SearchTab>("packages");
   const value = useMemo(() => ({ tab, setTab }), [tab]);
 
   return <SearchTabContext.Provider value={value}>{children}</SearchTabContext.Provider>;
