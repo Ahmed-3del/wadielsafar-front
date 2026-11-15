@@ -564,7 +564,21 @@
     "portCount": "{count, plural, one {1 port} other {# ports}}",
     "loading": "Searching…",
     "editSearch": "Edit",
-    "closeSearch": "Close search"
+    "closeSearch": "Close search",
+    "roomsGuests": "Rooms & guests",
+    "roomLabel": "Room {n}",
+    "adultsHeader": "Adults (12+)",
+    "childrenHeader": "Children (0-11)",
+    "roomsCount": "{count, plural, one {# room} other {# rooms}}",
+    "adultsCount": "{count, plural, one {# adult} other {# adults}}",
+    "childrenCount": "{count, plural, one {# child} other {# children}}",
+    "guestsShort": "{rooms, plural, one {# room} other {# rooms}}, {people, plural, one {# guest} other {# guests}}",
+    "addRoom": "Add another room",
+    "maxRooms": "Up to {max} rooms",
+    "removeRoom": "Remove room {n}",
+    "done": "Done",
+    "occupancyLabel": "Room breakdown",
+    "occupancyRoom": "Room {n}: {adults}, {children}"
   },
   "Trust": {
     "eyebrow": "Why Wadi Al Safar",
@@ -850,7 +864,8 @@
       "processing": "Processing",
       "travelDate": "Travel date",
       "city": "Appointment city",
-      "applicants": "Applicants"
+      "applicants": "Applicants",
+      "residency": "Saudi or resident"
     },
     "daysValue": "{days} working days",
     "back": "Back",
@@ -858,7 +873,11 @@
     "submit": "Send application",
     "waIntro": "Hello, I'd like to submit an application for {visa}:",
     "successTitle": "We've got your application",
-    "successBody": "Our team will review your documents, arrange biometrics if required, and confirm the fees."
+    "successBody": "Our team will review your documents, arrange biometrics if required, and confirm the fees.",
+    "residency": {
+      "saudi": "Saudi",
+      "resident": "Resident"
+    }
   },
   "Cruises": {
     "eyebrow": "Cruises",

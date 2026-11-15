@@ -90,6 +90,38 @@ export async function apiList<T>(
   return apiFetch<PaginatedResponse<T>>(path, { params });
 }
 
+/** The API's own page-size cap (common/pagination on the backend). */
+const MAX_PAGE_SIZE = 100;
+/** A runaway guard, not a limit anyone should reach: 50 pages of 100. */
+const MAX_PAGES = 50;
+
+/**
+ * Every row of a paginated list, page by page, swallowing failures like
+ * `safeResults`. For the catalogues a page shows whole and filters in the
+ * browser — the visa countries and visa types. Asking for one big page does
+ * not work: the API caps a page at 100, so `page_size: 60` on a 174-country
+ * catalogue silently dropped two thirds of it, France and Turkey among them.
+ */
+export async function safeAllResults<T>(
+  fetchPage: (params: { page: number; page_size: number }) => Promise<PaginatedResponse<T>>,
+): Promise<T[]> {
+  const rows: T[] = [];
+  try {
+    for (let page = 1; page <= MAX_PAGES; page += 1) {
+      const data = await fetchPage({ page, page_size: MAX_PAGE_SIZE });
+      rows.push(...data.results);
+      if (!data.next) break;
+    }
+    return rows;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[api] paged request failed, returning what loaded:", error);
+    }
+    // Whatever loaded before the failure is still better than nothing.
+    return rows;
+  }
+}
+
 /**
  * Resolves a paginated list request to its `results`, swallowing failures.
  * Homepage sections use this so a down/unreachable backend degrades to an

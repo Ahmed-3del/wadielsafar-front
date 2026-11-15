@@ -11,6 +11,7 @@ import {
 import { createPortal } from "react-dom";
 import { CheckIcon, SearchIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils/cn";
+import { matchesSearch } from "@/lib/utils/search-text";
 
 /* The measurement below must land before paint, but React warns when
    useLayoutEffect runs during a server render — which client components still
@@ -126,8 +127,11 @@ export function Combobox({
       : initialItems
     : (items ?? []).filter((item) => {
         if (!trimmed) return true;
-        const haystack = `${item.label} ${item.description ?? ""} ${item.badge ?? ""}`.toLowerCase();
-        return haystack.includes(trimmed.toLowerCase());
+        // Folded, so "افغانستان" finds "أفغانستان" — see search-text.ts.
+        return matchesSearch(
+          `${item.label} ${item.description ?? ""} ${item.badge ?? ""}`,
+          trimmed,
+        );
       });
 
   const showSuggestionsHeading = Boolean(labels.suggestions) && isAsync && !trimmed && options.length > 0;

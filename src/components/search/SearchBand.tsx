@@ -7,7 +7,7 @@ import { getVisaCountries } from "@/lib/api/visas";
 import { getPopularAirports } from "@/lib/api/airports";
 import { getCruisePorts } from "@/lib/api/cruises";
 import { getPageHero } from "@/lib/api/page-heroes";
-import { safeResults } from "@/lib/api/client";
+import { safeAllResults, safeResults } from "@/lib/api/client";
 import type { SearchResultSets } from "@/types/search";
 
 /*
@@ -36,7 +36,8 @@ export async function SearchBand({
       getLocale(),
       getTranslations("Booking"),
       safeResults(getDestinations({ page_size: 50 })),
-      safeResults(getVisaCountries({ page_size: 50 })),
+      // Every country, not a first page — the widget's picker searches this list.
+      safeAllResults((paging) => getVisaCountries(paging)),
       safeResults(getPopularAirports()),
       safeResults(getCruisePorts()),
       getPageHero("home").catch(() => null),

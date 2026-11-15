@@ -27,10 +27,17 @@ export interface VisaBookingContext {
 const APPOINTMENT_CITIES = ["riyadh", "jeddah", "dammam"] as const;
 type AppointmentCity = (typeof APPOINTMENT_CITIES)[number];
 
+/** Saudi citizens and residents apply with different documents — an iqama
+ *  holder needs it, and some consulates only take residents through set
+ *  channels — so the agent needs to know which before checking the file. */
+const RESIDENCIES = ["saudi", "resident"] as const;
+type Residency = (typeof RESIDENCIES)[number];
+
 interface WizardState {
   travelDate: string;
   city: AppointmentCity | "";
   applicants: string;
+  residency: Residency | "";
   name: string;
   phone: string;
   email: string;
@@ -41,6 +48,7 @@ const INITIAL: WizardState = {
   travelDate: "",
   city: "",
   applicants: "1",
+  residency: "",
   name: "",
   phone: "",
   email: "",
@@ -71,6 +79,7 @@ export function VisaBookingWizard({ context }: { context: VisaBookingContext }) 
 
   const stepOneValid = Boolean(state.travelDate && state.city);
   const stepTwoValid =
+    Boolean(state.residency) &&
     Boolean(state.name.trim()) &&
     isValidPhone(state.phone) &&
     /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(state.email);
@@ -82,6 +91,7 @@ export function VisaBookingWizard({ context }: { context: VisaBookingContext }) 
       `• ${t("labels.travelDate")}: ${formatDate(state.travelDate, locale)}`,
       `• ${t("labels.city")}: ${cityLabel}`,
       `• ${t("labels.applicants")}: ${state.applicants}`,
+      state.residency ? `• ${t("labels.residency")}: ${t(`residency.${state.residency}`)}` : "",
       `• ${tRequest("labels.name")}: ${state.name}`,
       state.notes ? `• ${tRequest("labels.notes")}: ${state.notes}` : "",
     ]
@@ -110,6 +120,7 @@ export function VisaBookingWizard({ context }: { context: VisaBookingContext }) 
           visa_fee: formatPrice(context.price, locale),
           appointment_city: state.city ? t(`cities.${state.city}`) : "",
           applicants: state.applicants,
+          residency: state.residency ? t(`residency.${state.residency}`) : "",
           travel_date: state.travelDate,
         },
       });
@@ -214,6 +225,33 @@ export function VisaBookingWizard({ context }: { context: VisaBookingContext }) 
                 ))}
               </select>
             </FormField>
+            <FormField label={t("labels.residency")} htmlFor="residency-saudi" required>
+              <div role="radiogroup" aria-label={t("labels.residency")} className="grid grid-cols-2 gap-2">
+                {RESIDENCIES.map((value) => {
+                  const selected = state.residency === value;
+                  return (
+                    <button
+                      key={value}
+                      id={`residency-${value}`}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => {
+                        set("residency", value);
+                      }}
+                      className={cn(
+                        "h-12 rounded-xl border text-sm font-semibold transition-colors",
+                        selected
+                          ? "border-gold-500 bg-gold-50 text-navy-900"
+                          : "border-sand-200 bg-white text-sand-600 hover:border-navy-300",
+                      )}
+                    >
+                      {t(`residency.${value}`)}
+                    </button>
+                  );
+                })}
+              </div>
+            </FormField>
             <FormField label={tRequest("labels.name")} htmlFor="name" required>
               <input
                 id="name"
@@ -272,6 +310,10 @@ export function VisaBookingWizard({ context }: { context: VisaBookingContext }) 
               { label: t("labels.travelDate"), value: formatDate(state.travelDate, locale) },
               { label: t("labels.city"), value: state.city ? t(`cities.${state.city}`) : "" },
               { label: t("labels.applicants"), value: state.applicants },
+              {
+                label: t("labels.residency"),
+                value: state.residency ? t(`residency.${state.residency}`) : "",
+              },
               { label: tRequest("labels.name"), value: state.name },
               { label: tRequest("labels.phone"), value: state.phone },
               { label: tRequest("labels.email"), value: state.email },

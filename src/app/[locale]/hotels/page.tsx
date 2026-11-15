@@ -12,6 +12,7 @@ import { toRequestFields } from "@/features/requests/fields";
 import { getInquiryFields } from "@/lib/api/inquiry-fields";
 import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
+import { occupancyFromQuery } from "@/lib/utils/occupancy-context";
 import type { Locale } from "@/i18n/routing";
 
 interface HotelsPageProps {
@@ -21,6 +22,7 @@ interface HotelsPageProps {
     checkIn?: string;
     checkOut?: string;
     guests?: string;
+    occupancy?: string;
   }>;
 }
 
@@ -49,6 +51,12 @@ export default async function HotelsPage({ params, searchParams }: HotelsPagePro
   if (query.checkIn) defaults.check_in = query.checkIn;
   if (query.checkOut) defaults.check_out = query.checkOut;
   if (query.guests) defaults.guests = query.guests;
+  // Rooms and guests from the homepage picker win over the old single count.
+  const occupancy = await occupancyFromQuery(query.occupancy);
+  if (occupancy) {
+    defaults.rooms = String(occupancy.rooms);
+    defaults.guests = String(occupancy.people);
+  }
 
   const steps = (["tell", "shortlist", "confirm"] as const).map((id) => ({
     id,
@@ -83,6 +91,7 @@ export default async function HotelsPage({ params, searchParams }: HotelsPagePro
             serviceType="HOTEL"
             fields={requestFields}
             defaults={defaults}
+            context={occupancy ? [occupancy.context] : undefined}
             title={t("formTitle")}
             notice={arrivedFromSearch ? tForm("prefilledNotice") : undefined}
           />

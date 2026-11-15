@@ -564,7 +564,21 @@
     "portCount": "{count, plural, one {ميناء واحد} two {ميناءان} few {# موانئ} many {# ميناءً} other {# ميناء}}",
     "loading": "جارٍ البحث…",
     "editSearch": "تعديل",
-    "closeSearch": "إغلاق البحث"
+    "closeSearch": "إغلاق البحث",
+    "roomsGuests": "الغرف والضيوف",
+    "roomLabel": "غرفة {n}",
+    "adultsHeader": "بالغين (+12)",
+    "childrenHeader": "أطفال (0-11)",
+    "roomsCount": "{count, plural, one {غرفة واحدة} two {غرفتان} few {# غرف} many {# غرفة} other {# غرفة}}",
+    "adultsCount": "{count, plural, one {بالغ واحد} two {بالغان} few {# بالغين} many {# بالغًا} other {# بالغ}}",
+    "childrenCount": "{count, plural, zero {بدون أطفال} one {طفل واحد} two {طفلان} few {# أطفال} many {# طفلًا} other {# طفل}}",
+    "guestsShort": "{rooms, plural, one {غرفة} two {غرفتان} few {# غرف} other {# غرفة}}، {people, plural, one {ضيف} two {ضيفان} few {# ضيوف} other {# ضيفًا}}",
+    "addRoom": "إضافة غرفة أخرى",
+    "maxRooms": "يمكنك إضافة {max} غرف كحد أقصى",
+    "removeRoom": "حذف غرفة {n}",
+    "done": "تم",
+    "occupancyLabel": "توزيع الغرف",
+    "occupancyRoom": "غرفة {n}: {adults}، {children}"
   },
   "Trust": {
     "eyebrow": "لماذا وادي السفر",
@@ -850,7 +864,8 @@
       "processing": "مدة المعالجة",
       "travelDate": "تاريخ السفر",
       "city": "مدينة الموعد",
-      "applicants": "عدد المتقدمين"
+      "applicants": "عدد المتقدمين",
+      "residency": "سعودي أم مقيم"
     },
     "daysValue": "{days} أيام عمل",
     "back": "رجوع",
@@ -858,7 +873,11 @@
     "submit": "أرسل الطلب",
     "waIntro": "السلام عليكم، أرغب في تقديم طلب {visa}:",
     "successTitle": "وصلنا طلبك",
-    "successBody": "سيتواصل معك فريقنا لمراجعة المستندات وتحديد موعد البصمة إن لزم، وتأكيد الرسوم."
+    "successBody": "سيتواصل معك فريقنا لمراجعة المستندات وتحديد موعد البصمة إن لزم، وتأكيد الرسوم.",
+    "residency": {
+      "saudi": "سعودي",
+      "resident": "مقيم"
+    }
   },
   "Cruises": {
     "eyebrow": "رحلات بحرية",

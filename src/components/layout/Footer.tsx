@@ -176,16 +176,15 @@ export async function Footer() {
             splitting the row evenly is what left the link columns airy and the
             contact column cramped. */}
         <Container className="grid grid-cols-2 gap-x-8 gap-y-10 pb-10 lg:grid-cols-12">
-          <div className="col-span-2 lg:col-span-4">
+          {/* The logo and the socials, nothing else — the client dropped the
+              blurb that sat under the logo. */}
+          <div className="col-span-2 flex flex-col items-center text-center sm:items-start sm:text-start lg:col-span-3">
             <Logo name={tBrand("name")} variant="full" />
-            <p className="mt-3 max-w-xs text-sm leading-6 text-sand-600">
-              {tFooter("description")}
-            </p>
 
-            <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-sand-500">
+            <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-sand-500">
               {tFooter("socialTitle")}
             </p>
-            <ul className="mt-2 flex flex-wrap gap-2">
+            <ul className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
               {footer.socials.map((social) => {
                 const mark = SOCIAL_MARKS[social.platform];
                 if (!mark) return null;
@@ -215,7 +214,7 @@ export async function Footer() {
             <LinkColumn
               title={tFooter("quickLinksTitle")}
               items={quickLinks}
-              className="lg:col-span-2"
+              className="lg:col-span-3"
             />
           ) : null}
 
@@ -317,53 +316,49 @@ export async function Footer() {
           </Container>
         ) : null}
 
-        {/* One strip: the brand and its copyright on one side, the licence
-            numbers a Saudi travel agency is required to publish on the
-            other. A vertical divider between each number reads as one row of
-            credentials rather than a wrapped paragraph of them. */}
+        {/* The credentials a Saudi travel agency is required to publish, as a
+            grid of label-over-value cells — two by two on a phone, one row of
+            four from sm up — and the copyright on its own small line under
+            them. The brand name that used to head this strip is gone: the
+            logo above already says it. */}
         <div className="border-t border-sand-200 py-6">
-          <Container className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-start">
-            <div>
-              <p className="flex items-center justify-center gap-2 text-base font-semibold text-navy-900 sm:justify-start">
-                <span aria-hidden="true" className="h-4 w-1 rounded-full bg-gold-500" />
-                {tBrand("name")}
-              </p>
-              <p className="mt-1 text-xs text-sand-500">
-                &copy; {year} {tFooter("rights")}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-base text-sand-600 sm:justify-end">
-              <span>
-                {tFooter("taxNumber")}:{" "}
-                <span dir="ltr" className="font-semibold text-navy-900">
-                  {siteConfig.registration.taxNumber}
-                </span>
-              </span>
-              <span aria-hidden="true" className="hidden h-3 w-px bg-sand-300 sm:inline-block" />
-              <span>
-                {tFooter("commercialRegistry")}:{" "}
-                <span dir="ltr" className="font-semibold text-navy-900">
-                  {siteConfig.registration.commercialRegistry}
-                </span>
-              </span>
-              <span aria-hidden="true" className="hidden h-3 w-px bg-sand-300 sm:inline-block" />
-              <span>
-                {tFooter("licenseCategory")}:{" "}
-                <span className="font-semibold text-navy-900">
-                  {isArabic
+          <Container>
+            <dl className="grid grid-cols-2 gap-y-4 text-center sm:grid-cols-4 sm:divide-x sm:divide-sand-200">
+              {[
+                { label: tFooter("taxNumber"), value: siteConfig.registration.taxNumber, ltr: true },
+                {
+                  label: tFooter("commercialRegistry"),
+                  value: siteConfig.registration.commercialRegistry,
+                  ltr: true,
+                },
+                {
+                  label: tFooter("licenseCategory"),
+                  value: isArabic
                     ? siteConfig.registration.licenseCategoryAr
-                    : siteConfig.registration.licenseCategoryEn}
-                </span>
-              </span>
-              <span aria-hidden="true" className="hidden h-3 w-px bg-sand-300 sm:inline-block" />
-              <span>
-                {tFooter("tourismLicense")}:{" "}
-                <span dir="ltr" className="font-semibold text-navy-900">
-                  {siteConfig.registration.tourismLicense}
-                </span>
-              </span>
-            </div>
+                    : siteConfig.registration.licenseCategoryEn,
+                  ltr: false,
+                },
+                {
+                  label: tFooter("tourismLicense"),
+                  value: siteConfig.registration.tourismLicense,
+                  ltr: true,
+                },
+              ].map((row) => (
+                <div key={row.label} className="flex flex-col gap-1 px-2">
+                  <dt className="text-xs text-sand-500">{row.label}</dt>
+                  <dd
+                    dir={row.ltr ? "ltr" : undefined}
+                    className="text-sm font-semibold text-navy-900 sm:text-base"
+                  >
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <p className="mt-5 border-t border-sand-200 pt-4 text-center text-xs text-sand-500">
+              &copy; {year} {tBrand("name")} — {tFooter("rights")}
+            </p>
           </Container>
         </div>
       </div>

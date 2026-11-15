@@ -1,17 +1,12 @@
 import { getTranslations } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import {
-  BedIcon,
   GlobeIcon,
   PassportIcon,
   PinIcon,
   ShieldIcon,
-  BagIcon,
-  TicketIcon,
 } from "@/components/ui/icons";
 import { getVisaCountries } from "@/lib/api/visas";
-import { getPackages } from "@/lib/api/packages";
-import { getHotels } from "@/lib/api/hotels";
 import { siteConfig } from "@/config/site";
 import type { PaginatedResponse } from "@/types/api";
 
@@ -30,31 +25,25 @@ async function countOf(request: Promise<PaginatedResponse<unknown>>): Promise<nu
  * a short line, with hairlines between them. The client asked for it small
  * and simple, and then for more figures in the same shape.
  *
- * Every figure is verifiable rather than invented: 70+ destinations and the
- * licence from the company's own information, the branches counted from
- * siteConfig, the five services the search offers, and three live counts read
- * straight off the catalogue (visa countries, packages, hotels) — so they grow
- * as the panel does, and a count the API cannot answer is left out rather than
- * guessed. No customer counts, awards or ratings.
+ * Four figures — the client's pick of the ones that matter. Every one is
+ * verifiable rather than invented: 70+ destinations and the licence from the
+ * company's own information, the branches counted from siteConfig, and the
+ * visa countries read live off the catalogue, so it grows as the panel does
+ * (and is left out, not guessed, when the API cannot answer). No customer
+ * counts, awards or ratings.
  *
- * One row at every width: on a phone it swipes sideways, which keeps the same
- * shape instead of breaking into a grid whose dividers land on row ends.
+ * One row of four at every width — four fit a phone without swiping.
  */
 export async function TrustSection() {
-  const [t, visaCountries, packages, hotels] = await Promise.all([
+  const [t, visaCountries] = await Promise.all([
     getTranslations("Trust"),
     countOf(getVisaCountries({ page_size: 1 })),
-    countOf(getPackages({ page_size: 1 })),
-    countOf(getHotels({ page_size: 1 })),
   ]);
 
   const stats = [
     { key: "destinations" as const, value: "+70", Icon: GlobeIcon },
     { key: "visaCountries" as const, value: visaCountries, Icon: PassportIcon },
-    { key: "packages" as const, value: packages, Icon: BagIcon },
-    { key: "hotels" as const, value: hotels, Icon: BedIcon },
     { key: "branches" as const, value: siteConfig.branches.length, Icon: PinIcon },
-    { key: "services" as const, value: 5, Icon: TicketIcon },
     { key: "licensed" as const, value: t("stats.licensed.value"), Icon: ShieldIcon },
   ].filter((stat) => stat.value !== null);
 
@@ -67,11 +56,11 @@ export async function TrustSection() {
           {t("eyebrow")}
         </h2>
 
-        <dl className="no-scrollbar -mx-4 flex divide-x divide-sand-200 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
+        <dl className="grid grid-cols-4 divide-x divide-sand-200">
           {stats.map(({ key, value, Icon }) => (
             <div
               key={key}
-              className="flex w-28 shrink-0 flex-col items-center gap-1.5 px-2 text-center lg:w-auto lg:flex-1 lg:gap-2"
+              className="flex min-w-0 flex-col items-center gap-1.5 px-1 text-center sm:px-2 lg:gap-2"
             >
               <dt className="order-3 text-[11px] leading-4 text-sand-600 sm:text-sm sm:leading-5">
                 {t(`stats.${key}.label`, { cr: siteConfig.registration.commercialRegistry })}

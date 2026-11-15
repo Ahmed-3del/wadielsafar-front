@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { BookingField, bookingControlClass } from "./BookingField";
 import { AirportPicker } from "./LocationPicker";
 import { CruiseRoutePicker } from "./CruiseRoutePicker";
+import { RoomsPicker } from "./RoomsPicker";
+import { DEFAULT_OCCUPANCY, totals, type Room } from "@/lib/utils/occupancy";
 import { Combobox, type ComboboxItem } from "@/components/ui/Combobox";
 import {
   BedIcon,
@@ -165,6 +167,8 @@ export function BookingWidget({
   const [returnDate, setReturnDate] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  // Shared by hotels and packages, so switching between the two keeps it.
+  const [occupancy, setOccupancy] = useState<Room[]>(DEFAULT_OCCUPANCY);
   const [dateError, setDateError] = useState<string | null>(null);
 
   /*
@@ -227,6 +231,12 @@ export function BookingWidget({
     return options.find((option) => option.value === value)?.label ?? value;
   }
 
+  const occupancyTotals = totals(occupancy);
+  const occupancySummary = t("guestsShort", {
+    rooms: occupancy.length,
+    people: occupancyTotals.adults + occupancyTotals.children,
+  });
+
   /** What is chosen on the open tab, in one line — the folded bar's label. */
   function summary(): string {
     const anyDestination = t("anyDestination");
@@ -238,9 +248,14 @@ export function BookingWidget({
           packagesBudget
             ? t("upTo", { amount: Number(packagesBudget).toLocaleString("en-US") })
             : t("anyBudget"),
+          occupancySummary,
         ].join(" · ");
       case "hotels":
-        return [destination ? labelOf(destinations, destination) : anyDestination, checkIn]
+        return [
+          destination ? labelOf(destinations, destination) : anyDestination,
+          checkIn,
+          occupancySummary,
+        ]
           .filter(Boolean)
           .join(" · ");
       case "visas":
@@ -322,6 +337,8 @@ export function BookingWidget({
       if (destination) plan.set("destination", destination);
       if (depart) plan.set("travel_date", depart);
       if (priceMax) plan.set("budget", budgetBandFor(Number(priceMax)));
+      const occupancyParam = params.get("occupancy");
+      if (occupancyParam) plan.set("occupancy", occupancyParam);
       const planQuery = plan.toString();
       router.push(`/packages/plan${planQuery ? `?${planQuery}` : ""}`);
       return;
@@ -555,14 +572,8 @@ export function BookingWidget({
                     className={bookingControlClass}
                   />
                 </BookingField>
-                <BookingField label={t("guests")} icon={<UsersIcon className={iconClass} />}>
-                  <select name="guests" className={bookingControlClass} defaultValue="2">
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <option key={n} value={n}>
-                        {t("guestCount", { count: n })}
-                      </option>
-                    ))}
-                  </select>
+                <BookingField label={t("roomsGuests")} icon={<UsersIcon className={iconClass} />}>
+                  <RoomsPicker rooms={occupancy} onChange={setOccupancy} />
                 </BookingField>
               </>
             ) : null}
@@ -603,6 +614,9 @@ export function BookingWidget({
                 </BookingField>
                 <BookingField label={t("depart")} icon={<CalendarIcon className={iconClass} />}>
                   <input type="date" name="depart" min={today} className={bookingControlClass} />
+                </BookingField>
+                <BookingField label={t("roomsGuests")} icon={<UsersIcon className={iconClass} />}>
+                  <RoomsPicker rooms={occupancy} onChange={setOccupancy} />
                 </BookingField>
               </>
             ) : null}

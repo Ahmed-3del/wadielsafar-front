@@ -41,8 +41,8 @@ export const siteConfig = {
     taxNumber: "311275985300003",
     commercialRegistry: "1010927769",
     tourismLicense: "73100536",
-    licenseCategoryAr: "وكالة سفر وسياحة",
-    licenseCategoryEn: "Travel & tourism agency",
+    licenseCategoryAr: "سفر وسياحة عام",
+    licenseCategoryEn: "General travel & tourism",
   },
   socialLinks: [
     "https://facebook.com/wadialsafartravel",

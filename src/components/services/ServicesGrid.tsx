@@ -3,7 +3,6 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Link } from "@/i18n/navigation";
 import { MediaImage } from "@/components/ui/MediaImage";
-import { Rail } from "@/components/ui/Rail";
 import {
   BagIcon,
   BedIcon,
@@ -102,9 +101,17 @@ export async function ServicesGrid() {
   return (
     <Section className="border-sand-200 border-b py-4 sm:py-5 lg:py-5">
       <Container>
-        <h2 className="text-navy-900 text-base font-bold sm:text-lg">{t("eyebrow")}</h2>
+        {/* No visible title and no arrows, as the client asked — the marks
+            speak for themselves. Centred on the page from sm up (they wrap if
+            the row runs out of room); on a phone the row swipes sideways. */}
+        <h2 className="sr-only">{t("eyebrow")}</h2>
 
-        <Rail label={t("title")} className="mt-2 gap-2 pb-1 sm:gap-3 lg:pb-1">
+        <div
+          role="region"
+          aria-label={t("title")}
+          tabIndex={0}
+          className="no-scrollbar -mx-4 flex snap-x gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-3 sm:overflow-visible sm:px-0"
+        >
           {rows.map((service) => {
             const Icon = ICONS[service.icon] ?? TicketIcon;
             const description = isArabic ? service.description_ar : service.description_en;
@@ -140,7 +147,7 @@ export async function ServicesGrid() {
               </Link>
             );
           })}
-        </Rail>
+        </div>
       </Container>
     </Section>
   );

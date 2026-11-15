@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/ui/States";
 import { SearchIcon } from "@/components/ui/icons";
 import { VISA_PURPOSES, type VisaCountry, type VisaPurpose, type VisaType } from "@/types/visa";
 import { cn } from "@/lib/utils/cn";
+import { matchesSearch } from "@/lib/utils/search-text";
 
 interface VisaExplorerProps {
   visas: VisaType[];
@@ -36,17 +37,35 @@ export function VisaExplorer({
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = query.trim();
     return visas.filter((visa) => {
       if (country && String(visa.country.id) !== country) return false;
       if (purpose && visa.purpose !== purpose) return false;
       if (!q) return true;
-      return [visa.name_ar, visa.name_en, visa.country.name_ar, visa.country.name_en]
-        .join(" ")
-        .toLowerCase()
-        .includes(q);
+      // Folded, so "افغانستان" finds "أفغانستان" without the hamza typed.
+      return matchesSearch(
+        [visa.name_ar, visa.name_en, visa.country.name_ar, visa.country.name_en].join(" "),
+        q,
+      );
     });
   }, [visas, country, purpose, query]);
+
+  /*
+   * The country circles: only countries with at least one visa on sale —
+   * a circle that opens onto "no visas found" is a dead end — and narrowed
+   * by the search box as well, so typing a country brings its circle to the
+   * front instead of leaving it somewhere in a rail of a hundred and more.
+   * The selected one always stays, so a filter in force is never hidden.
+   */
+  const railCountries = useMemo(() => {
+    const withVisas = new Set(visas.map((visa) => visa.country.id));
+    const q = query.trim();
+    return countries.filter(
+      (row) =>
+        String(row.id) === country ||
+        (withVisas.has(row.id) && (!q || matchesSearch(`${row.name_ar} ${row.name_en}`, q))),
+    );
+  }, [countries, visas, query, country]);
 
   return (
     <div>
@@ -65,7 +84,7 @@ export function VisaExplorer({
 
       <div className="mt-6">
         <VisaCountryRail
-          countries={countries}
+          countries={railCountries}
           selected={country}
           onSelect={setCountry}
           allLabel={t("allCountries")}
@@ -106,7 +125,7 @@ export function VisaExplorer({
       </div>
 
       {filtered.length > 0 ? (
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((visa) => (
             <VisaCard key={visa.id} visa={visa} />
           ))}

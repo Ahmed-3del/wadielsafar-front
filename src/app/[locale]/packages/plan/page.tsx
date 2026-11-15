@@ -16,6 +16,7 @@ import { getInquiryFields } from "@/lib/api/inquiry-fields";
 import { getDestinations } from "@/lib/api/destinations";
 import { safeResults } from "@/lib/api/client";
 import { getPageHero } from "@/lib/api/page-heroes";
+import { occupancyFromQuery } from "@/lib/utils/occupancy-context";
 import type { Locale } from "@/i18n/routing";
 
 /* Guarded against arbitrary query values: an unknown band would select
@@ -24,7 +25,12 @@ const BUDGET_BANDS = new Set(["under5k", "5to10k", "10to20k", "over20k"]);
 
 interface PackagePlanPageProps {
   params: Promise<{ locale: Locale }>;
-  searchParams: Promise<{ destination?: string; budget?: string; travel_date?: string }>;
+  searchParams: Promise<{
+    destination?: string;
+    budget?: string;
+    travel_date?: string;
+    occupancy?: string;
+  }>;
 }
 
 export async function generateMetadata({ params }: PackagePlanPageProps): Promise<Metadata> {
@@ -35,7 +41,8 @@ export async function generateMetadata({ params }: PackagePlanPageProps): Promis
 
 export default async function PackagePlanPage({ params, searchParams }: PackagePlanPageProps) {
   const { locale } = await params;
-  const { destination, budget, travel_date: travelDate } = await searchParams;
+  const { destination, budget, travel_date: travelDate, occupancy: occupancyParam } =
+    await searchParams;
   setRequestLocale(locale);
 
   const [t, destinations, hero, inquiryFields] = await Promise.all([
@@ -64,6 +71,9 @@ export default async function PackagePlanPage({ params, searchParams }: PackageP
   if (budget && BUDGET_BANDS.has(budget)) defaults.budget = budget;
   // Only an ISO date the date input can actually display.
   if (travelDate && /^\d{4}-\d{2}-\d{2}$/.test(travelDate)) defaults.travel_date = travelDate;
+  // Everyone in every room counts as a traveller; the breakdown rides along.
+  const occupancy = await occupancyFromQuery(occupancyParam);
+  if (occupancy) defaults.travellers = String(occupancy.people);
 
   const facts = (["noFee", "agent", "whatsapp"] as const).map((key) => (
     <span key={key} className="flex items-center gap-2">
@@ -113,6 +123,7 @@ export default async function PackagePlanPage({ params, searchParams }: PackageP
             serviceType="PACKAGE"
             fields={requestFields}
             defaults={defaults}
+            context={occupancy ? [occupancy.context] : undefined}
             title={t("formTitle")}
           />
         </Container>

@@ -19,6 +19,6 @@ export function getVisaTypeById(id: number | string) {
   return apiFetch<VisaType>(`/visas/${id}/`);
 }
 
-export function getVisaCountries(params?: { page_size?: number }) {
+export function getVisaCountries(params?: { page?: number; page_size?: number }) {
   return apiList<VisaCountry>("/visas/countries/", params);
 }
