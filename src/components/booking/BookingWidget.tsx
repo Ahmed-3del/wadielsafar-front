@@ -279,7 +279,7 @@ export function BookingWidget({
       <div
         role="tablist"
         aria-label={t("tabsLabel")}
-        className="grid grid-cols-5 gap-1.5 pb-2 lg:flex lg:flex-wrap lg:gap-2 lg:pb-3"
+        className="grid grid-cols-5 gap-1.5 pb-2 lg:flex lg:flex-wrap lg:gap-2 lg:pb-2.5"
       >
         {TABS.map(({ id, Icon }) => {
           const active = tab === id;
@@ -294,7 +294,7 @@ export function BookingWidget({
               }}
               className={cn(
                 "flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1.5 text-[11px] leading-tight font-semibold transition-all duration-200",
-                "lg:shrink-0 lg:flex-row lg:gap-2 lg:rounded-full lg:px-4 lg:py-2.5 lg:text-sm",
+                "lg:shrink-0 lg:flex-row lg:gap-2 lg:rounded-full lg:px-4 lg:py-2 lg:text-sm",
                 active
                   ? "text-navy-900 bg-white shadow-md"
                   : "bg-white/10 text-white/90 hover:bg-white/20",
@@ -323,7 +323,7 @@ export function BookingWidget({
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="rounded-2xl bg-white p-1.5 shadow-xl lg:rounded-3xl lg:p-3"
+        className="rounded-2xl bg-white p-1.5 shadow-xl lg:rounded-3xl lg:p-2"
         key={tab}
       >
         {tab === "flights" ? (
@@ -587,7 +587,7 @@ export function BookingWidget({
             ) : null}
           </div>
 
-          <div className="flex shrink-0 items-stretch ps-1.5 lg:items-center lg:p-2 lg:ps-3">
+          <div className="flex shrink-0 items-stretch ps-1.5 lg:items-center lg:p-1.5 lg:ps-3">
             {/* An arrow, not a magnifier: this button does not search an
                 inventory, it carries what has been filled in through to the
                 request form an agent answers. On a phone it is the arrow
@@ -595,7 +595,7 @@ export function BookingWidget({
             <Button
               type="submit"
               size="lg"
-              className="max-lg:h-auto max-lg:rounded-xl max-lg:px-3.5 lg:w-auto"
+              className="max-lg:h-auto max-lg:rounded-xl max-lg:px-3.5 lg:h-12 lg:w-auto"
             >
               <span className="max-lg:sr-only">{t("search")}</span>
               <ChevronForwardIcon className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
@@ -614,7 +614,7 @@ export function BookingWidget({
       ) : null}
 
       {stuck ? null : (
-        <p className="mt-2.5 text-center text-xs text-white/70 lg:mt-3 lg:text-start">
+        <p className="mt-2.5 text-center text-xs text-white/70 lg:mt-2 lg:text-start">
           {t("disclaimer")}
         </p>
       )}

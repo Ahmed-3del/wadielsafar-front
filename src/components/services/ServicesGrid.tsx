@@ -100,11 +100,11 @@ export async function ServicesGrid() {
    * thrown away.
    */
   return (
-    <Section className="border-sand-200 border-b py-4 sm:py-6 lg:py-8">
+    <Section className="border-sand-200 border-b py-4 sm:py-5 lg:py-5">
       <Container>
         <h2 className="text-navy-900 text-base font-bold sm:text-lg">{t("eyebrow")}</h2>
 
-        <Rail label={t("title")} className="mt-3 gap-2 pb-1 sm:gap-3 lg:pb-2">
+        <Rail label={t("title")} className="mt-2 gap-2 pb-1 sm:gap-3 lg:pb-1">
           {rows.map((service) => {
             const Icon = ICONS[service.icon] ?? TicketIcon;
             const description = isArabic ? service.description_ar : service.description_en;
@@ -117,10 +117,10 @@ export async function ServicesGrid() {
                 // this service, unless the tile has a page of its own.
                 href={service.link || contactHref({ service: service.slug })}
                 title={description || undefined}
-                className="group hover:bg-sand-50 flex w-20 shrink-0 snap-start flex-col items-center gap-1.5 rounded-xl p-1.5 text-center transition-colors sm:w-24"
+                className="group hover:bg-sand-50 flex w-20 shrink-0 snap-start flex-col items-center gap-1.5 rounded-xl p-1.5 text-center transition-colors sm:w-28"
               >
                 {service.image ? (
-                  <span className="ring-sand-200 relative h-11 w-11 overflow-hidden rounded-full ring-1 sm:h-12 sm:w-12">
+                  <span className="ring-sand-200 relative h-11 w-11 overflow-hidden rounded-full ring-1 lg:h-10 lg:w-10">
                     <MediaImage
                       src={service.image}
                       alt=""
@@ -130,7 +130,7 @@ export async function ServicesGrid() {
                     />
                   </span>
                 ) : (
-                  <span className="bg-navy-900 text-gold-400 grid h-11 w-11 shrink-0 place-items-center rounded-full transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
+                  <span className="bg-navy-900 text-gold-400 grid h-11 w-11 shrink-0 place-items-center rounded-full transition-transform duration-300 group-hover:scale-105 lg:h-10 lg:w-10">
                     <Icon className="h-5 w-5" />
                   </span>
                 )}

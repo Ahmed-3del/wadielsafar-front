@@ -590,6 +590,15 @@
       "destinations": {
         "label": "وجهة حول العالم"
       },
+      "visaCountries": {
+        "label": "دولة نستخرج تأشيرتها"
+      },
+      "packages": {
+        "label": "باقة جاهزة"
+      },
+      "hotels": {
+        "label": "فندق مختار"
+      },
       "branches": {
         "label": "فروع لخدمتك"
       },

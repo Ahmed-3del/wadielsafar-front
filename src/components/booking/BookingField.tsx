@@ -25,7 +25,7 @@ export function BookingField({ label, icon, children, className }: BookingFieldP
         // scrolling row: flex-1 lets two fields fill it, and the floor makes a
         // third or fourth overflow into the scroll instead of squeezing.
         "group relative flex min-w-[8rem] flex-1 shrink-0 cursor-pointer snap-start items-center gap-3 px-3 py-2 transition-colors",
-        "lg:min-w-0 lg:shrink lg:px-4 lg:py-3",
+        "lg:min-w-0 lg:shrink lg:px-4 lg:py-2.5",
         "hover:bg-sand-50 focus-within:bg-sand-50",
         className,
       )}

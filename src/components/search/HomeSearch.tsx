@@ -234,9 +234,9 @@ export function HomeSearch({
       <section className="bg-navy-900 relative overflow-hidden">
         <HeroBackground hero={hero} priority />
 
-        <Container className="relative py-5 sm:py-9">
-          <div className="mb-4 text-center sm:mb-5 lg:text-start">
-            <h1 className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">{t("title")}</h1>
+        <Container className="relative py-5 sm:py-7 lg:py-6">
+          <div className="mb-4 text-center sm:mb-5 lg:mb-4 lg:text-start">
+            <h1 className="text-xl font-bold text-white sm:text-2xl">{t("title")}</h1>
             <p className="mt-1.5 text-sm text-white/70 max-sm:hidden">{t("subtitle")}</p>
           </div>
 
@@ -272,7 +272,7 @@ export function HomeSearch({
 
       {afterBand}
 
-      <section className="py-6 sm:py-12">
+      <section className="py-6 sm:py-8">
         <Container>
           <SearchResults
             tab={tab}

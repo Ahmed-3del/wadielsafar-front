@@ -590,6 +590,15 @@
       "destinations": {
         "label": "Destinations worldwide"
       },
+      "visaCountries": {
+        "label": "Visa countries"
+      },
+      "packages": {
+        "label": "Ready-made packages"
+      },
+      "hotels": {
+        "label": "Handpicked hotels"
+      },
       "branches": {
         "label": "Branches to serve you"
       },
