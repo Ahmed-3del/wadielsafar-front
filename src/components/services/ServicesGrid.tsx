@@ -1,7 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Link } from "@/i18n/navigation";
 import { MediaImage } from "@/components/ui/MediaImage";
 import { Rail } from "@/components/ui/Rail";
@@ -92,15 +91,20 @@ export async function ServicesGrid() {
   // Navigation-ish content, so it must not vanish because a fetch failed.
   const rows: Service[] = services.length > 0 ? services : FALLBACK_ADDON_SERVICES;
 
+  /*
+   * A slim strip of icon tiles, not a section of cards. It sits directly under
+   * the search now (see page.tsx), ahead of everything else, so it has to
+   * be small: a row of marks with a label each — the way a booking app lays
+   * out its extras — rather than tiles with a picture and a paragraph. The
+   * description travels as the tile's tooltip, so nothing an editor writes is
+   * thrown away.
+   */
   return (
-    <Section>
+    <Section className="border-sand-200 border-b py-4 sm:py-6 lg:py-8">
       <Container>
-        <SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
+        <h2 className="text-navy-900 text-base font-bold sm:text-lg">{t("eyebrow")}</h2>
 
-        {/* Swipe on a phone, arrows on a desktop — the Rail is where that
-            behaviour already lives, and eight tiles is exactly the case it was
-            built for. */}
-        <Rail label={t("title")} className="mt-8 gap-3 sm:gap-4">
+        <Rail label={t("title")} className="mt-3 gap-2 pb-1 sm:gap-3 lg:pb-2">
           {rows.map((service) => {
             const Icon = ICONS[service.icon] ?? TicketIcon;
             const description = isArabic ? service.description_ar : service.description_en;
@@ -108,47 +112,31 @@ export async function ServicesGrid() {
             return (
               <Link
                 key={service.slug}
-                // Where the panel points it. Most of these are arranged by an
-                // agent, so the contact form is the default — but a tile with
-                // a page of its own should lead there.
-                //
-                // The tile's own slug travels with it, so a reader who pressed
-                // "Travel insurance" lands on a form already set to Travel
-                // insurance — asking that service's own questions, if it has
-                // any — rather than one asking what they came for.
+                // Where the panel points it — the contact form by default,
+                // carrying the tile's slug so the form opens already set to
+                // this service, unless the tile has a page of its own.
                 href={service.link || contactHref({ service: service.slug })}
-                className="group flex w-52 shrink-0 snap-start flex-col items-center gap-3 overflow-hidden rounded-2xl border border-sand-200 bg-white p-4 text-center transition-all duration-200 hover:-translate-y-1 hover:border-gold-500 hover:shadow-lg sm:w-56 sm:p-5"
+                title={description || undefined}
+                className="group hover:bg-sand-50 flex w-20 shrink-0 snap-start flex-col items-center gap-1.5 rounded-xl p-1.5 text-center transition-colors sm:w-24"
               >
-                {/* An uploaded picture where there is one, the icon where
-                    there is not. Both are panel decisions, and the tiles
-                    stretch to the tallest in the row, so a mixed row still
-                    lines up. */}
                 {service.image ? (
-                  <span className="relative -mx-4 -mt-4 mb-1 aspect-video w-[calc(100%+2rem)] overflow-hidden rounded-t-2xl sm:-mx-5 sm:-mt-5 sm:w-[calc(100%+2.5rem)]">
+                  <span className="ring-sand-200 relative h-11 w-11 overflow-hidden rounded-full ring-1 sm:h-12 sm:w-12">
                     <MediaImage
                       src={service.image}
                       alt=""
                       fill
-                      sizes="(min-width: 640px) 224px, 208px"
-                      className="object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
+                      sizes="48px"
+                      className="object-cover"
                     />
                   </span>
                 ) : (
-                  <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-navy-900 text-gold-400 transition-transform duration-300 group-hover:scale-105">
-                    <Icon className="h-7 w-7" />
+                  <span className="bg-navy-900 text-gold-400 grid h-11 w-11 shrink-0 place-items-center rounded-full transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
+                    <Icon className="h-5 w-5" />
                   </span>
                 )}
-                <span className="text-sm font-bold leading-5 text-navy-900">
+                <span className="text-navy-900 line-clamp-2 text-[11px] leading-4 font-semibold sm:text-xs">
                   {name}
                 </span>
-                {/* The line an editor writes in the panel, which the tiles
-                    used to drop on the floor. Clamped so one long answer
-                    cannot make its tile twice the height of its neighbours. */}
-                {description ? (
-                  <span className="line-clamp-3 text-xs leading-5 text-sand-600">
-                    {description}
-                  </span>
-                ) : null}
               </Link>
             );
           })}

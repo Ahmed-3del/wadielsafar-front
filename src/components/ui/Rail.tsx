@@ -125,7 +125,7 @@ export function Rail({ children, className, label }: RailProps) {
           // absolutely positioned inside a card. Without it the clip does not
           // apply to those, and one `sr-only` span was enough to drag a whole
           // page sideways — see ScrollGrid, where that actually happened.
-          "no-scrollbar relative -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4",
+          "no-scrollbar relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-4",
           "sm:gap-6",
           // The snapport is the scrollport reduced by `scroll-padding`, not by
           // `padding` — so without these the first card snapped straight past

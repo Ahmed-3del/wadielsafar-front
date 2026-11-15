@@ -1,6 +1,5 @@
 import Image from "next/image";
 import lockupArt from "@/assets/brand/logo-horizontal.png";
-import markArt from "@/assets/brand/logo-mark.png";
 import { cn } from "@/lib/utils/cn";
 
 interface LogoProps {
@@ -46,21 +45,17 @@ export function Logo({ name, variant = "bar", priority = false, className }: Log
     );
   }
 
+  // The whole lockup at every width. The phone's header no longer carries the
+  // number beside it — the logo has the bar to itself, centred — so the
+  // mark-only fallback the narrow bar used to need is gone.
   return (
     <span className={cn("inline-flex items-center", className)}>
-      <Image
-        src={markArt}
-        alt={name}
-        priority={priority}
-        sizes="53px"
-        className="h-10 w-auto min-[480px]:hidden"
-      />
       <Image
         src={lockupArt}
         alt={name}
         priority={priority}
         sizes="(min-width: 1024px) 151px, 118px"
-        className="hidden h-11 w-auto min-[480px]:block lg:h-14"
+        className="h-11 w-auto lg:h-14"
       />
     </span>
   );

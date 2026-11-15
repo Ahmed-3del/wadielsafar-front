@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { CloseIcon, GiftIcon, MenuIcon, WhatsAppIcon } from "@/components/ui/icons";
+import { CloseIcon, GiftIcon, MenuIcon, PhoneIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { whatsappLink } from "@/lib/utils/whatsapp";
 import { cn } from "@/lib/utils/cn";
@@ -144,6 +144,16 @@ export function HeaderMenu({ primary, secondary }: HeaderMenuProps) {
               </div>
 
               <div className="flex flex-col gap-2">
+                {/* The phone's header bar is the logo alone now, so the
+                    number it used to carry lives here on a phone. */}
+                <a
+                  href={`tel:${siteConfig.contactPhone}`}
+                  className="flex items-center justify-center gap-2 rounded-full border border-gold-500/50 bg-gold-50 px-4 py-3 text-sm font-bold text-navy-900 transition-colors hover:bg-gold-100 sm:hidden"
+                >
+                  <PhoneIcon className="h-4 w-4" />
+                  {tCommon("callUs")}
+                  <span dir="ltr">{siteConfig.contactPhoneDisplay}</span>
+                </a>
                 {/* Leaves the site — Orbit is where sign-in, joining, and the
                     wallet card actually live, not a page here. */}
                 <a

@@ -25,6 +25,7 @@ export async function Testimonials() {
 
         {testimonials.length > 0 ? (
           <ScrollGrid
+            mobile="wide"
             label={t("title")}
             gridClassName="sm:grid-cols-2 lg:grid-cols-3"
             className="mt-6 sm:mt-10"

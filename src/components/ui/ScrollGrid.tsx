@@ -8,6 +8,14 @@ interface ScrollGridProps {
   /** Grid classes applied from `sm` up, e.g. "sm:grid-cols-2 lg:grid-cols-3". */
   gridClassName: string;
   className?: string;
+  /**
+   * How wide each card is on a phone. `pair` (the default) shows two cards
+   * side by side with the edge of a third peeking in — what the client asked
+   * for on every card rail. `wide` keeps one large card in view, for content
+   * that is text rather than a card (testimonials, the footer's branches, the
+   * savings deals with their countdowns).
+   */
+  mobile?: "pair" | "wide";
 }
 
 /*
@@ -24,7 +32,13 @@ interface ScrollGridProps {
  * controls for pointer users. This is the version for blocks that only need
  * the mobile behaviour and should stay server-rendered.
  */
-export function ScrollGrid({ children, label, gridClassName, className }: ScrollGridProps) {
+export function ScrollGrid({
+  children,
+  label,
+  gridClassName,
+  className,
+  mobile = "pair",
+}: ScrollGridProps) {
   return (
     <div
       role="region"
@@ -39,13 +53,12 @@ export function ScrollGrid({ children, label, gridClassName, className }: Scroll
         "relative",
         // Mobile: a snap scroller that bleeds to the screen edges, so the next
         // card peeks in and the row reads as scrollable without an affordance.
-        "no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2",
-        // Children need a width to scroll against. The same 85vw the Rail
-        // gives its cards, and in the same unit: the scroller bleeds to both
-        // screen edges, so a percentage of it and a percentage of the screen
-        // are the same thing — but only one of them stays equal to the Rail's
-        // when the container padding changes.
-        "[&>*]:w-[85vw] [&>*]:shrink-0 [&>*]:snap-start",
+        "no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2",
+        // Children need a width to scroll against, in vw because the scroller
+        // bleeds to both screen edges. 42vw is two cards and a sliver of the
+        // third on any phone — the same width railCardClass gives the Rail.
+        mobile === "pair" ? "[&>*]:w-[42vw]" : "[&>*]:w-[85vw]",
+        "[&>*]:shrink-0 [&>*]:snap-start",
         // From sm up it is an ordinary grid again, and the mobile-only rules
         // are unwound so the cards fill their cells.
         "sm:mx-0 sm:grid sm:snap-none sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0",

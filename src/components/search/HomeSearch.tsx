@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/Container";
 import { BookingWidget, type BookingOption } from "@/components/booking/BookingWidget";
@@ -30,6 +30,76 @@ interface HomeSearchProps {
    *  gradient. Only the background is used here — the band keeps its own
    *  translated heading rather than an editor-entered one. */
   hero: PageHero | null;
+  /** Rendered between the search band and its results — the services strip,
+   *  which the client wants as the first thing under the search. A slot
+   *  rather than an import because it is a server component. */
+  afterBand?: ReactNode;
+}
+
+/** Below lg the widget is pinned under the header once scrolled past. From lg
+ *  up it is a large form in a hero and stays where it is. */
+const PIN_QUERY = "(max-width: 1023.98px)";
+
+/*
+ * Pins the search under the sticky header on a phone, so the tabs and filters
+ * are a tap away from anywhere on the page.
+ *
+ * Not CSS `position: sticky`: a sticky box only sticks inside its own parent,
+ * and the widget's parent is the hero band, which scrolls away a few hundred
+ * pixels down. Instead the widget goes `fixed` once its slot reaches the
+ * header, and the slot keeps the widget's height so the page under it does
+ * not jump. One widget, moved — not a second copy — so what was typed into it
+ * is never out of step.
+ */
+function usePinnedOnMobile() {
+  const slotRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const [pinned, setPinned] = useState(false);
+  const pinnedRef = useRef(false);
+  const [slotHeight, setSlotHeight] = useState<number | undefined>(undefined);
+  const [headerBottom, setHeaderBottom] = useState(64);
+
+  useEffect(() => {
+    const media = window.matchMedia(PIN_QUERY);
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const slot = slotRef.current;
+      const bar = barRef.current;
+      if (!slot || !bar) return;
+      if (!media.matches) {
+        pinnedRef.current = false;
+        setPinned(false);
+        return;
+      }
+      const header = document.querySelector("header");
+      const bottom = header ? header.getBoundingClientRect().bottom : 64;
+      const shouldPin = slot.getBoundingClientRect().top < bottom;
+      // Measured while still in flow, so the slot holds exactly the room the
+      // widget took up before it left.
+      if (shouldPin && !pinnedRef.current) setSlotHeight(bar.offsetHeight);
+      pinnedRef.current = shouldPin;
+      setPinned(shouldPin);
+      setHeaderBottom(bottom);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    media.addEventListener("change", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      media.removeEventListener("change", schedule);
+    };
+  }, []);
+
+  return { slotRef, barRef, pinned, slotHeight, headerBottom };
 }
 
 /*
@@ -50,9 +120,11 @@ export function HomeSearch({
   defaultOrigin,
   results,
   hero,
+  afterBand,
 }: HomeSearchProps) {
   const t = useTranslations("Search");
   const { tab, setTab } = useSearchTab();
+  const { slotRef, barRef, pinned, slotHeight, headerBottom } = usePinnedOnMobile();
 
   /*
    * One filter, one live-fetch hook, per tab that has a field the catalogue
@@ -145,7 +217,6 @@ export function HomeSearch({
         return cruisesEnabled && cruises.isLoading;
       case "hotels":
         return hotelsEnabled && hotels.isLoading;
-
       case "flights":
         return flightsEnabled && flights.isLoading;
     }
@@ -163,30 +234,45 @@ export function HomeSearch({
       <section className="bg-navy-900 relative overflow-hidden">
         <HeroBackground hero={hero} priority />
 
-        <Container className="relative py-7 sm:py-9">
-          <div className="mb-5 text-center lg:text-start">
+        <Container className="relative py-5 sm:py-9">
+          <div className="mb-4 text-center sm:mb-5 lg:text-start">
             <h1 className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">{t("title")}</h1>
-            <p className="mt-1.5 text-sm text-white/70">{t("subtitle")}</p>
+            <p className="mt-1.5 text-sm text-white/70 max-sm:hidden">{t("subtitle")}</p>
           </div>
 
-          <BookingWidget
-            destinations={destinations}
-            visaCountries={visaCountries}
-            popularAirports={popularAirports}
-            cruisePorts={cruisePorts}
-            defaultOrigin={defaultOrigin}
-            tab={tab}
-            onTabChange={setTab}
-            onVisaFilterChange={setVisaFilter}
-            onPackagesFilterChange={setPackagesFilter}
-            onHotelsFilterChange={setHotelsFilter}
-            onCruisesFilterChange={setCruisesFilter}
-            onFlightsFilterChange={setFlightsFilter}
-          />
+          <div ref={slotRef} style={pinned ? { height: slotHeight } : undefined}>
+            <div
+              ref={barRef}
+              style={pinned ? { top: headerBottom } : undefined}
+              className={
+                pinned
+                  ? "bg-navy-900/95 fixed inset-x-0 z-40 px-4 pt-2 pb-2.5 shadow-lg backdrop-blur-md"
+                  : undefined
+              }
+            >
+              <BookingWidget
+                stuck={pinned}
+                destinations={destinations}
+                visaCountries={visaCountries}
+                popularAirports={popularAirports}
+                cruisePorts={cruisePorts}
+                defaultOrigin={defaultOrigin}
+                tab={tab}
+                onTabChange={setTab}
+                onVisaFilterChange={setVisaFilter}
+                onPackagesFilterChange={setPackagesFilter}
+                onHotelsFilterChange={setHotelsFilter}
+                onCruisesFilterChange={setCruisesFilter}
+                onFlightsFilterChange={setFlightsFilter}
+              />
+            </div>
+          </div>
         </Container>
       </section>
 
-      <section className="py-10 sm:py-12">
+      {afterBand}
+
+      <section className="py-6 sm:py-12">
         <Container>
           <SearchResults
             tab={tab}

@@ -72,16 +72,25 @@ export default async function HomePage({ params }: HomePageProps) {
     CTA: () => <FinalCta />,
   };
 
+  /*
+   * The services strip is pinned directly under the search, above even the
+   * search's own results — the client wants it as the first thing a visitor
+   * sees under the filters. The panel still decides whether it shows at all;
+   * only its position in the running order no longer applies.
+   */
+  const showServices = sections.includes("SERVICES");
+  const rest = sections.filter((key) => key !== "SERVICES");
+
   return (
     // The provider wraps the whole page, not just the search band: the
     // recommendations rail reads the open tab from here, and it is rendered
     // as one of `sections` below — a sibling of the search band, not a child.
     <SearchTabProvider>
-      <SearchBand results={results} />
+      <SearchBand results={results} afterBand={showServices ? <ServicesGrid /> : null} />
       {/* Fragment, not a wrapper div: each section owns its own full-bleed
           background, and an extra block element between them and the page
           would be one more thing to keep out of the way. */}
-      {sections.map((key) => (
+      {rest.map((key) => (
         <Fragment key={key}>{SECTIONS[key]()}</Fragment>
       ))}
     </SearchTabProvider>

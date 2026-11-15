@@ -27,7 +27,7 @@ export function DestinationCard({ destination, featured, className }: Destinatio
         // Regular tiles dropped from min-h-64 to min-h-52: they carry a name
         // and a country, nothing that needs the extra headroom the featured
         // tile's larger heading does.
-        featured ? "min-h-88 lg:min-h-full" : "min-h-52",
+        featured ? "min-h-56 sm:min-h-88 lg:min-h-full" : "min-h-40 sm:min-h-52",
         className,
       )}
     >
@@ -45,7 +45,7 @@ export function DestinationCard({ destination, featured, className }: Destinatio
         className="absolute inset-0 bg-linear-to-t from-navy-950/85 via-navy-950/25 to-transparent"
       />
 
-      <div className="relative flex h-full flex-col justify-end p-4 sm:p-5">
+      <div className="relative flex h-full flex-col justify-end p-3 sm:p-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-gold-400">
           {country}
         </p>

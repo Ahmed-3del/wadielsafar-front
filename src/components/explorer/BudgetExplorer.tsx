@@ -29,10 +29,18 @@ export async function BudgetExplorer() {
   const { min, max } = budgetBounds(packages, STEP);
 
   return (
-    <Section className="bg-sand-50">
+    // Tighter than a standard section on a phone: someone dragging the
+    // slider needs to see the packages change underneath it, so the heading,
+    // the filters and the first row of cards all have to fit one screen.
+    <Section className="bg-sand-50 py-6 sm:py-16 lg:py-20">
       <Container>
-        <SectionHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
-        <div className="mt-6 sm:mt-10">
+        <SectionHeading
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("description")}
+          className="[&_h2]:max-sm:text-xl [&>p:last-child]:max-sm:hidden"
+        />
+        <div className="mt-3 sm:mt-10">
           <BudgetExplorerPanel packages={packages} min={min} max={max} step={STEP} />
         </div>
       </Container>

@@ -16,6 +16,8 @@ import { SERVICE_TYPE } from "@/lib/constants/search-cross-sell";
 import { cn } from "@/lib/utils/cn";
 import type { SearchTab, SearchResultSets } from "@/types/search";
 
+const MAX_CARDS = 4;
+
 interface SearchResultsProps {
   tab: SearchTab;
   results: SearchResultSets;
@@ -51,12 +53,17 @@ export function SearchResults({
 }: SearchResultsProps) {
   const t = useTranslations("Search");
 
+  /*
+   * Four at most. The rail is a taste of the catalogue, not the catalogue —
+   * "see all" above it is the way to the rest, and a row that ran to six or
+   * eight cards kept the visitor swiping instead of moving on.
+   */
   const content = {
-    flights: results.flights.map((flight) => <FlightCard key={flight.id} flight={flight} />),
-    hotels: results.hotels.map((hotel) => <HotelCard key={hotel.id} hotel={hotel} />),
-    packages: results.packages.map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />),
-    visas: results.visas.map((visa) => <VisaCard key={visa.id} visa={visa} />),
-    cruises: results.cruises.map((cruise) => <CruiseCard key={cruise.id} cruise={cruise} />),
+    flights: results.flights.slice(0, MAX_CARDS).map((flight) => <FlightCard key={flight.id} flight={flight} />),
+    hotels: results.hotels.slice(0, MAX_CARDS).map((hotel) => <HotelCard key={hotel.id} hotel={hotel} />),
+    packages: results.packages.slice(0, MAX_CARDS).map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />),
+    visas: results.visas.slice(0, MAX_CARDS).map((visa) => <VisaCard key={visa.id} visa={visa} />),
+    cruises: results.cruises.slice(0, MAX_CARDS).map((cruise) => <CruiseCard key={cruise.id} cruise={cruise} />),
   }[tab];
 
   return (

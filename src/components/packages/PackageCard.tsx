@@ -38,21 +38,21 @@ export function PackageCard({ pkg, className }: PackageCardProps) {
           src={pkg.cover_image}
           alt={title}
           fill
-          sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 50vw, 85vw"
+          sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 50vw, 42vw"
           className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
         />
         {pkg.is_featured ? (
-          <Badge tone="gold" className="absolute start-3 top-3 shadow-sm">
+          <Badge tone="gold" className="absolute start-2 top-2 shadow-sm max-sm:px-2 max-sm:py-0.5 max-sm:text-[10px] sm:start-3 sm:top-3">
             {t("badgeFeatured")}
           </Badge>
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gold-700">
+      <div className="flex flex-1 flex-col p-2.5 sm:p-4">
+        <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-gold-700 sm:text-xs sm:tracking-widest">
           {destination}
         </p>
-        <h3 className="mt-1 line-clamp-2 text-base font-bold leading-snug text-navy-900">
+        <h3 className="mt-0.5 line-clamp-2 text-sm font-bold sm:mt-1 sm:text-base leading-snug text-navy-900">
           {/* Stretched link: the whole card is the target, but only the title
               is announced as the link. */}
           <Link href={`/packages/${pkg.slug}`} className="after:absolute after:inset-0">
@@ -60,16 +60,16 @@ export function PackageCard({ pkg, className }: PackageCardProps) {
           </Link>
         </h3>
 
-        <p className="mt-1.5 text-sm text-sand-600">
+        <p className="mt-1 text-xs text-sand-600 sm:mt-1.5 sm:text-sm">
           {t("durationNights", { days: pkg.duration_days, nights })}
         </p>
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-3">
+        <div className="mt-auto flex items-end justify-between gap-3 pt-2 sm:pt-3">
           <div>
-            <p className="text-xs text-sand-500">{t("startingFrom")}</p>
-            <p className="text-lg font-bold text-navy-900">{formatPrice(pkg.price_from, locale)}</p>
+            <p className="text-[10px] text-sand-500 sm:text-xs">{t("startingFrom")}</p>
+            <p className="text-sm font-bold text-navy-900 sm:text-lg">{formatPrice(pkg.price_from, locale)}</p>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-700 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-700 transition-transform max-sm:hidden duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
             {t("discover")}
             <ChevronForwardIcon className="h-4 w-4" />
           </span>

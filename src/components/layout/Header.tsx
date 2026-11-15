@@ -25,30 +25,40 @@ export async function Header() {
   ]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-sand-200/80 bg-white/95 backdrop-blur-md">
-      <Container className="flex h-16 items-center justify-between gap-3 lg:h-20">
-        <Link href="/" aria-label={t("name")} className="shrink-0">
+    <header className="border-sand-200/80 sticky top-0 z-50 border-b bg-white/95 backdrop-blur-md">
+      {/* On a phone: a three-column grid with the logo alone in the middle and
+          the menu at the end. The empty first cell is the menu button's twin,
+          so the logo sits on the true centre of the screen rather than the
+          centre of whatever space the button leaves. From sm up it is the
+          logo-then-actions row it always was. */}
+      <Container className="grid h-16 grid-cols-[2.75rem_1fr_2.75rem] items-center gap-3 sm:flex sm:justify-between lg:h-20">
+        <span aria-hidden="true" className="sm:hidden" />
+
+        <Link href="/" aria-label={t("name")} className="shrink-0 justify-self-center">
           <Logo name={t("name")} priority />
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 justify-self-end sm:gap-3">
           {/* dir="ltr" on the number itself, not the row: a phone number reads
               left to right in both languages, but the label around it must
               not. */}
           <a
             href={`tel:${siteConfig.contactPhone}`}
-            className="group flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-50 px-3 py-2 transition-colors hover:border-gold-500 hover:bg-gold-100 sm:px-4"
+            className="group border-gold-500/40 bg-gold-50 hover:border-gold-500 hover:bg-gold-100 hidden items-center gap-2 rounded-full border px-3 py-2 transition-colors sm:flex sm:px-4"
           >
-            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-gold-500 text-navy-900">
+            <span className="bg-gold-500 text-navy-900 grid h-7 w-7 shrink-0 place-items-center rounded-full">
               <PhoneIcon className="h-3.5 w-3.5" />
             </span>
             <span className="flex flex-col leading-tight">
               {/* The label is the part that disappears first on a narrow
                   screen; the number never does. */}
-              <span className="hidden text-[10px] font-medium text-sand-600 sm:block">
+              <span className="text-sand-600 hidden text-[10px] font-medium sm:block">
                 {tCommon("callUs")}
               </span>
-              <span dir="ltr" className="whitespace-nowrap text-sm font-bold text-navy-900 sm:text-base">
+              <span
+                dir="ltr"
+                className="text-navy-900 text-sm font-bold whitespace-nowrap sm:text-base"
+              >
                 {siteConfig.contactPhoneDisplay}
               </span>
             </span>

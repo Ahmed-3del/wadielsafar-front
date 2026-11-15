@@ -21,16 +21,22 @@ export function BookingField({ label, icon, children, className }: BookingFieldP
   return (
     <label
       className={cn(
-        "group relative flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-4 py-3 transition-colors",
+        // A floor width on a phone, where the fields share one sideways-
+        // scrolling row: flex-1 lets two fields fill it, and the floor makes a
+        // third or fourth overflow into the scroll instead of squeezing.
+        "group relative flex min-w-[8rem] flex-1 shrink-0 cursor-pointer snap-start items-center gap-3 px-3 py-2 transition-colors",
+        "lg:min-w-0 lg:shrink lg:px-4 lg:py-3",
         "hover:bg-sand-50 focus-within:bg-sand-50",
         className,
       )}
     >
-      <span className="shrink-0 text-navy-300 transition-colors group-focus-within:text-gold-600">
+      {/* Icons from lg up only: at a phone field's width they were the
+          difference between a value fitting and being cut off. */}
+      <span className="text-navy-300 group-focus-within:text-gold-600 hidden shrink-0 transition-colors lg:block">
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-xs font-medium text-sand-500">{label}</span>
+        <span className="text-sand-500 block text-[11px] font-medium lg:text-xs">{label}</span>
         {children}
       </span>
     </label>

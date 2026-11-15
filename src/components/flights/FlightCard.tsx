@@ -40,7 +40,7 @@ export function FlightCard({ flight }: FlightCardProps) {
             src={flight.cover_image}
             alt={destination}
             fill
-            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 28vw, (min-width: 640px) 45vw, 72vw"
+            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 28vw, (min-width: 640px) 45vw, 42vw"
             className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
           />
         </div>
@@ -62,8 +62,8 @@ export function FlightCard({ flight }: FlightCardProps) {
         </div> */}
       </div>
 
-      <div className="flex flex-1 flex-col p-4 pt-7">
-        {airline ? <p className="text-center text-sm text-sand-500">{airline}</p> : null}
+      <div className="flex flex-1 flex-col p-2.5 sm:p-4 sm:pt-7">
+        {airline ? <p className="truncate text-center text-xs text-sand-500 sm:text-sm">{airline}</p> : null}
 
         {/* text-base rather than text-lg: at the old size the two city names
             plus their codes routinely wrapped to a second line on a card this
@@ -73,10 +73,10 @@ export function FlightCard({ flight }: FlightCardProps) {
           originCode={flight.origin_airport_code}
           destination={destination}
           destinationCode={flight.destination_airport_code}
-          className="mt-2.5 text-base"
+          className="mt-1.5 text-sm sm:mt-2.5 sm:text-base"
         />
 
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
+        <div className="mt-2.5 flex flex-wrap gap-1.5 max-sm:hidden">
           <span className={badgeClass}>{t(`tripTypes.${flight.trip_type}`)}</span>
           <span className={badgeClass}>{t(`cabinClasses.${flight.cabin_class}`)}</span>
           {flight.baggage_allowance_kg !== null ? (
@@ -90,7 +90,7 @@ export function FlightCard({ flight }: FlightCardProps) {
              one line and "أكتوبر 2026" on the next, which reads as a bug. The
              separator stays on the first line, where a trailing "·" reads as
              "continued". */
-          <p className="mt-2 flex flex-wrap gap-x-1.5 text-sm text-sand-500">
+          <p className="mt-1.5 flex flex-wrap gap-x-1.5 text-xs text-sand-500 sm:mt-2 sm:text-sm">
             <span className="whitespace-nowrap">
               {t("departure")}: {formatDate(flight.departure_date, locale)}
               {flight.return_date ? " ·" : null}
@@ -103,7 +103,7 @@ export function FlightCard({ flight }: FlightCardProps) {
           </p>
         ) : null}
 
-        <p className="mt-auto pt-2.5 text-base font-semibold text-gold-700">
+        <p className="mt-auto pt-2 text-sm font-semibold text-gold-700 sm:pt-2.5 sm:text-base">
           {t("priceFrom", { price: formatPrice(flight.price_from, locale, flight.currency) })}
         </p>
       </div>

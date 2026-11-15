@@ -27,29 +27,29 @@ export function HotelCard({ hotel }: HotelCardProps) {
           src={image}
           alt={name}
           fill
-          sizes="(min-width: 1024px) 33vw, 100vw"
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 42vw"
           className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
         />
       </div>
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-2.5 sm:p-4">
         <StarRating
           value={hotel.star_rating}
           label={t("starRating", { count: hotel.star_rating })}
-          className="text-sm"
+          className="text-xs sm:text-sm"
         />
-        <h3 className="mt-1 text-base font-semibold text-navy-900">{name}</h3>
-        <p className="mt-1 text-sm text-sand-500">
+        <h3 className="mt-1 line-clamp-2 text-sm font-semibold text-navy-900 sm:text-base">{name}</h3>
+        <p className="mt-1 truncate text-xs text-sand-500 sm:text-sm">
           {destination}
           {isArabic ? "، " : ", "}
           {isArabic ? hotel.destination.country_ar : hotel.destination.country_en}
         </p>
         {/* mt-auto keeps the price on the same line across a row of cards
             whose names and locations wrap to different heights. */}
-        <p className="mt-auto pt-2.5 text-base font-semibold text-gold-700">
+        <p className="mt-auto pt-2 text-sm font-semibold text-gold-700 sm:pt-2.5 sm:text-base">
           {t("priceFrom", {
             price: formatPrice(hotel.price_per_night_from, locale, hotel.currency),
           })}
-          <span className="ms-1 text-sm font-normal text-sand-500">{t("perNight")}</span>
+          <span className="ms-1 text-xs font-normal text-sand-500 sm:text-sm">{t("perNight")}</span>
         </p>
       </div>
     </Link>

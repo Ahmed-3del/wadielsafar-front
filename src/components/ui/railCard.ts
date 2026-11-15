@@ -18,4 +18,6 @@
  * Exported rather than applied inside Rail because callers own their children:
  * a row of small service tiles has its own width and must not take this one.
  */
-export const railCardClass = "w-[72vw] shrink-0 snap-start sm:w-72 lg:w-80";
+// 42vw since the client asked for two cards side by side on a phone: two in
+// full and the edge of a third, which still says "this scrolls".
+export const railCardClass = "w-[42vw] shrink-0 snap-start sm:w-72 lg:w-80";

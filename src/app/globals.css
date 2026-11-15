@@ -323,9 +323,15 @@ select.booking-control {
 }
 
 /* Entrance for freshly navigated content. Transform-only, so it cannot move
-   anything already painted and cannot register as layout shift. */
+   anything already painted and cannot register as layout shift.
+   `backwards`, not `both`: a forwards fill keeps the final keyframe's
+   transform applied to <main> for good, and any transform — even an identity
+   one — makes <main> the containing block for every `position: fixed`
+   descendant. The homepage search pins itself under the header that way on a
+   phone, and with the fill in place it pinned to the top of <main>, off
+   screen. Once the animation ends there is nothing left to hold. */
 .page-enter {
-  animation: page-enter 460ms var(--ease-out-soft) both;
+  animation: page-enter 460ms var(--ease-out-soft) backwards;
 }
 
 @keyframes page-enter {

@@ -51,7 +51,8 @@
       "two": "Branch 2",
       "three": "Branch 3"
     },
-    "credentialsTitle": "Registration"
+    "credentialsTitle": "Registration",
+    "paymentTitle": "Payment methods"
   },
   "Services": {
     "eyebrow": "What We Offer",
@@ -584,6 +585,21 @@
         "title": "A licensed company",
         "body": "Commercial registry {cr} — you're dealing with a registered Saudi business."
       }
+    },
+    "stats": {
+      "destinations": {
+        "label": "Destinations worldwide"
+      },
+      "branches": {
+        "label": "Branches to serve you"
+      },
+      "services": {
+        "label": "Services in one place"
+      },
+      "licensed": {
+        "value": "Licensed",
+        "label": "Commercial registry {cr}"
+      }
     }
   },
   "QuickServices": {
@@ -613,7 +629,9 @@
     "cardPointsUnit": "pts",
     "cardPointsCaption": "Example balance",
     "cardTier": "Rewards Member",
-    "cardCta": "Free to join"
+    "cardCta": "Free to join",
+    "short": "Earn points on every booking and redeem them for discounts and upgrades.",
+    "join": "Join free"
   },
   "DestinationsPage": {
     "title": "Destinations",

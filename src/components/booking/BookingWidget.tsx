@@ -68,6 +68,10 @@ interface BookingWidgetProps {
   onHotelsFilterChange?: (filter: { destination: string }) => void;
   onCruisesFilterChange?: (filter: { country: string; port: string; departAfter: string }) => void;
   onFlightsFilterChange?: (filter: { originCode: string; destinationCode: string }) => void;
+  /** True while the homepage has pinned the widget under the header on a
+   *  phone. Drops the small print, which is not worth screen height on a bar
+   *  that stays in view the whole way down the page. */
+  stuck?: boolean;
 }
 
 const TABS: { id: SearchTab; Icon: typeof PlaneIcon }[] = [
@@ -112,6 +116,7 @@ export function BookingWidget({
   onHotelsFilterChange,
   onCruisesFilterChange,
   onFlightsFilterChange,
+  stuck = false,
 }: BookingWidgetProps) {
   const t = useTranslations("Booking");
   const tPicker = useTranslations("Picker");
@@ -266,12 +271,15 @@ export function BookingWidget({
     <div className="w-full">
       {/* All five services visible at once. They used to scroll sideways, which
           hid "cruises" off the edge of a phone — the one tab a reader would
-          never think to look for, because nothing said it was there. Wrapping
-          costs one extra row and shows the whole offer. */}
+          never think to look for, because nothing said it was there. On a
+          phone they are one row of five, icon over label, like an app's tab
+          bar: wrapping took two rows, and this strip now stays pinned under
+          the header on the homepage, where every pixel of height is paid for
+          on every screen of the scroll. */}
       <div
         role="tablist"
         aria-label={t("tabsLabel")}
-        className="flex flex-wrap justify-center gap-2 pb-3 sm:justify-start"
+        className="grid grid-cols-5 gap-1.5 pb-2 lg:flex lg:flex-wrap lg:gap-2 lg:pb-3"
       >
         {TABS.map(({ id, Icon }) => {
           const active = tab === id;
@@ -285,7 +293,8 @@ export function BookingWidget({
                 setTab(id);
               }}
               className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all duration-200 sm:px-4",
+                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1.5 text-[11px] leading-tight font-semibold transition-all duration-200",
+                "lg:shrink-0 lg:flex-row lg:gap-2 lg:rounded-full lg:px-4 lg:py-2.5 lg:text-sm",
                 active
                   ? "text-navy-900 bg-white shadow-md"
                   : "bg-white/10 text-white/90 hover:bg-white/20",
@@ -296,17 +305,12 @@ export function BookingWidget({
                   glance where a background change does not. */}
               <Icon
                 className={cn(
-                  iconClass,
+                  "h-4 w-4 lg:h-5 lg:w-5",
                   "ease-out-soft transition-all duration-200",
-                  // Hidden on the narrowest phones, where the five tabs
-                  // otherwise take three rows. The pill behind the label still
-                  // marks the open tab; the icon is the second signal, and the
-                  // row it costs is worth more at 320px.
-                  "max-[359px]:hidden",
                   active && "text-gold-600 scale-110",
                 )}
               />
-              {t(`tabs.${id}`)}
+              <span className="max-w-full truncate">{t(`tabs.${id}`)}</span>
             </button>
           );
         })}
@@ -319,11 +323,11 @@ export function BookingWidget({
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="rounded-3xl bg-white p-2 shadow-xl sm:p-3"
+        className="rounded-2xl bg-white p-1.5 shadow-xl lg:rounded-3xl lg:p-3"
         key={tab}
       >
         {tab === "flights" ? (
-          <div className="flex flex-wrap gap-2 px-2 pt-2 pb-1">
+          <div className="flex flex-wrap gap-1.5 px-1 pb-1.5 lg:gap-2 lg:px-2 lg:pt-2 lg:pb-1">
             {([true, false] as const).map((isRound) => (
               <button
                 key={String(isRound)}
@@ -333,7 +337,7 @@ export function BookingWidget({
                 }}
                 aria-pressed={roundTrip === isRound}
                 className={cn(
-                  "rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors",
+                  "rounded-full border px-3 py-1 text-xs font-semibold transition-colors lg:px-4 lg:py-1.5 lg:text-sm",
                   roundTrip === isRound
                     ? "border-navy-900 bg-navy-900 text-white"
                     : "border-sand-200 text-sand-600 hover:border-navy-300",
@@ -345,243 +349,255 @@ export function BookingWidget({
           </div>
         ) : null}
 
-        <div className="divide-sand-200 mt-1 flex flex-col divide-y lg:flex-row lg:items-stretch lg:divide-x lg:divide-y-0 lg:rtl:divide-x-reverse">
-          {tab === "flights" ? (
-            <>
-              <BookingField label={t("from")} icon={<PlaneIcon className={iconClass} />}>
-                <AirportPicker
-                  name="from"
-                  variant="widget"
-                  value={origin}
-                  onChange={(value, item) => {
-                    setOrigin(value);
-                    setOriginCode(item?.badge ?? "");
-                  }}
-                  popular={popularAirports}
-                />
-              </BookingField>
-              <BookingField label={t("to")} icon={<PinIcon className={iconClass} />}>
-                <AirportPicker
-                  name="search"
-                  variant="widget"
-                  value={arrival}
-                  onChange={(value, item) => {
-                    setArrival(value);
-                    setDestinationCode(item?.badge ?? "");
-                  }}
-                  popular={popularAirports}
-                  placeholder={t("toPlaceholder")}
-                />
-              </BookingField>
-              <BookingField label={t("depart")} icon={<CalendarIcon className={iconClass} />}>
-                <input
-                  type="date"
-                  name="depart"
-                  min={today}
-                  value={depart}
-                  onChange={(event) => {
-                    setDepart(event.target.value);
-                    setStart(event.target.value, returnDate, setReturnDate);
-                  }}
-                  className={bookingControlClass}
-                />
-              </BookingField>
-              {roundTrip ? (
-                <BookingField label={t("return")} icon={<CalendarIcon className={iconClass} />}>
+        {/* One row at every width. On a phone the fields scroll sideways
+            under a fixed submit button rather than stacking — stacked, the
+            form was five rows tall, far too much for a bar that stays pinned
+            to the top of the screen. The next field peeking in at the edge is
+            what says the row scrolls. */}
+        <div className="flex items-stretch lg:mt-1">
+          <div className="divide-sand-200 no-scrollbar flex min-w-0 flex-1 snap-x divide-x overflow-x-auto lg:items-stretch lg:overflow-visible">
+            {tab === "flights" ? (
+              <>
+                <BookingField label={t("from")} icon={<PlaneIcon className={iconClass} />}>
+                  <AirportPicker
+                    name="from"
+                    variant="widget"
+                    value={origin}
+                    onChange={(value, item) => {
+                      setOrigin(value);
+                      setOriginCode(item?.badge ?? "");
+                    }}
+                    popular={popularAirports}
+                  />
+                </BookingField>
+                <BookingField label={t("to")} icon={<PinIcon className={iconClass} />}>
+                  <AirportPicker
+                    name="search"
+                    variant="widget"
+                    value={arrival}
+                    onChange={(value, item) => {
+                      setArrival(value);
+                      setDestinationCode(item?.badge ?? "");
+                    }}
+                    popular={popularAirports}
+                    placeholder={t("toPlaceholder")}
+                  />
+                </BookingField>
+                <BookingField label={t("depart")} icon={<CalendarIcon className={iconClass} />}>
                   <input
                     type="date"
-                    name="return"
-                    // The departure once there is one, today until then.
-                    min={depart || today}
-                    value={returnDate}
+                    name="depart"
+                    min={today}
+                    value={depart}
                     onChange={(event) => {
-                      setReturnDate(event.target.value);
+                      setDepart(event.target.value);
+                      setStart(event.target.value, returnDate, setReturnDate);
+                    }}
+                    className={bookingControlClass}
+                  />
+                </BookingField>
+                {roundTrip ? (
+                  <BookingField label={t("return")} icon={<CalendarIcon className={iconClass} />}>
+                    <input
+                      type="date"
+                      name="return"
+                      // The departure once there is one, today until then.
+                      min={depart || today}
+                      value={returnDate}
+                      onChange={(event) => {
+                        setReturnDate(event.target.value);
+                        setDateError(null);
+                      }}
+                      className={bookingControlClass}
+                    />
+                  </BookingField>
+                ) : null}
+                <BookingField label={t("travellers")} icon={<UsersIcon className={iconClass} />}>
+                  <select name="pax" className={bookingControlClass} defaultValue="1">
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <option key={n} value={n}>
+                        {t("travellerCount", { count: n })}
+                      </option>
+                    ))}
+                  </select>
+                </BookingField>
+              </>
+            ) : null}
+
+            {tab === "hotels" ? (
+              <>
+                <BookingField label={t("destination")} icon={<PinIcon className={iconClass} />}>
+                  <Combobox
+                    name="destination"
+                    variant="widget"
+                    value={destination}
+                    onChange={setDestination}
+                    items={destinationItems}
+                    placeholder={t("anyDestination")}
+                    labels={{
+                      listbox: tPicker("destinationListbox"),
+                      empty: tPicker("empty"),
+                      loading: tPicker("loading"),
+                    }}
+                  />
+                </BookingField>
+                <BookingField label={t("checkIn")} icon={<CalendarIcon className={iconClass} />}>
+                  <input
+                    type="date"
+                    name="checkIn"
+                    min={today}
+                    value={checkIn}
+                    onChange={(event) => {
+                      setCheckIn(event.target.value);
+                      setStart(event.target.value, checkOut, setCheckOut);
+                    }}
+                    className={bookingControlClass}
+                  />
+                </BookingField>
+                <BookingField label={t("checkOut")} icon={<CalendarIcon className={iconClass} />}>
+                  <input
+                    type="date"
+                    name="checkOut"
+                    min={checkIn || today}
+                    value={checkOut}
+                    onChange={(event) => {
+                      setCheckOut(event.target.value);
                       setDateError(null);
                     }}
                     className={bookingControlClass}
                   />
                 </BookingField>
-              ) : null}
-              <BookingField label={t("travellers")} icon={<UsersIcon className={iconClass} />}>
-                <select name="pax" className={bookingControlClass} defaultValue="1">
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <option key={n} value={n}>
-                      {t("travellerCount", { count: n })}
-                    </option>
-                  ))}
-                </select>
-              </BookingField>
-            </>
-          ) : null}
+                <BookingField label={t("guests")} icon={<UsersIcon className={iconClass} />}>
+                  <select name="guests" className={bookingControlClass} defaultValue="2">
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <option key={n} value={n}>
+                        {t("guestCount", { count: n })}
+                      </option>
+                    ))}
+                  </select>
+                </BookingField>
+              </>
+            ) : null}
 
-          {tab === "hotels" ? (
-            <>
-              <BookingField label={t("destination")} icon={<PinIcon className={iconClass} />}>
-                <Combobox
-                  name="destination"
-                  variant="widget"
-                  value={destination}
-                  onChange={setDestination}
-                  items={destinationItems}
-                  placeholder={t("anyDestination")}
-                  labels={{
-                    listbox: tPicker("destinationListbox"),
-                    empty: tPicker("empty"),
-                    loading: tPicker("loading"),
-                  }}
-                />
-              </BookingField>
-              <BookingField label={t("checkIn")} icon={<CalendarIcon className={iconClass} />}>
-                <input
-                  type="date"
-                  name="checkIn"
-                  min={today}
-                  value={checkIn}
-                  onChange={(event) => {
-                    setCheckIn(event.target.value);
-                    setStart(event.target.value, checkOut, setCheckOut);
-                  }}
-                  className={bookingControlClass}
-                />
-              </BookingField>
-              <BookingField label={t("checkOut")} icon={<CalendarIcon className={iconClass} />}>
-                <input
-                  type="date"
-                  name="checkOut"
-                  min={checkIn || today}
-                  value={checkOut}
-                  onChange={(event) => {
-                    setCheckOut(event.target.value);
-                    setDateError(null);
-                  }}
-                  className={bookingControlClass}
-                />
-              </BookingField>
-              <BookingField label={t("guests")} icon={<UsersIcon className={iconClass} />}>
-                <select name="guests" className={bookingControlClass} defaultValue="2">
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <option key={n} value={n}>
-                      {t("guestCount", { count: n })}
-                    </option>
-                  ))}
-                </select>
-              </BookingField>
-            </>
-          ) : null}
+            {tab === "packages" ? (
+              <>
+                <BookingField label={t("destination")} icon={<PinIcon className={iconClass} />}>
+                  <Combobox
+                    name="destination"
+                    variant="widget"
+                    value={destination}
+                    onChange={setDestination}
+                    items={destinationItems}
+                    placeholder={t("anyDestination")}
+                    labels={{
+                      listbox: tPicker("destinationListbox"),
+                      empty: tPicker("empty"),
+                      loading: tPicker("loading"),
+                    }}
+                  />
+                </BookingField>
+                <BookingField label={t("budget")} icon={<GlobeIcon className={iconClass} />}>
+                  <select
+                    name="price_max"
+                    className={bookingControlClass}
+                    value={packagesBudget}
+                    onChange={(event) => {
+                      setPackagesBudget(event.target.value);
+                    }}
+                  >
+                    <option value="">{t("anyBudget")}</option>
+                    {[5000, 10000, 20000].map((v) => (
+                      <option key={v} value={v}>
+                        {t("upTo", { amount: v.toLocaleString("en-US") })}
+                      </option>
+                    ))}
+                  </select>
+                </BookingField>
+                <BookingField label={t("depart")} icon={<CalendarIcon className={iconClass} />}>
+                  <input type="date" name="depart" min={today} className={bookingControlClass} />
+                </BookingField>
+              </>
+            ) : null}
 
-          {tab === "packages" ? (
-            <>
-              <BookingField label={t("destination")} icon={<PinIcon className={iconClass} />}>
-                <Combobox
-                  name="destination"
-                  variant="widget"
-                  value={destination}
-                  onChange={setDestination}
-                  items={destinationItems}
-                  placeholder={t("anyDestination")}
-                  labels={{
-                    listbox: tPicker("destinationListbox"),
-                    empty: tPicker("empty"),
-                    loading: tPicker("loading"),
-                  }}
-                />
-              </BookingField>
-              <BookingField label={t("budget")} icon={<GlobeIcon className={iconClass} />}>
-                <select
-                  name="price_max"
-                  className={bookingControlClass}
-                  value={packagesBudget}
-                  onChange={(event) => {
-                    setPackagesBudget(event.target.value);
-                  }}
-                >
-                  <option value="">{t("anyBudget")}</option>
-                  {[5000, 10000, 20000].map((v) => (
-                    <option key={v} value={v}>
-                      {t("upTo", { amount: v.toLocaleString("en-US") })}
-                    </option>
-                  ))}
-                </select>
-              </BookingField>
-              <BookingField label={t("depart")} icon={<CalendarIcon className={iconClass} />}>
-                <input type="date" name="depart" min={today} className={bookingControlClass} />
-              </BookingField>
-            </>
-          ) : null}
+            {tab === "visas" ? (
+              <>
+                <BookingField label={t("visaDestination")} icon={<PinIcon className={iconClass} />}>
+                  <Combobox
+                    name="country"
+                    variant="widget"
+                    value={visaCountry}
+                    onChange={(value, item) => {
+                      setVisaCountry(value);
+                      // Only a genuine pick from the list narrows the results
+                      // below — free text that matched nothing is not a country
+                      // id the API filter could use.
+                      setVisaFilterCountry(item ? value : "");
+                    }}
+                    items={visaItems}
+                    placeholder={t("chooseCountry")}
+                    labels={{
+                      listbox: tPicker("countryListbox"),
+                      empty: tPicker("empty"),
+                      loading: tPicker("loading"),
+                    }}
+                  />
+                </BookingField>
+                <BookingField label={t("visaFor")} icon={<PassportIcon className={iconClass} />}>
+                  <select
+                    name="purpose"
+                    className={bookingControlClass}
+                    value={visaPurpose}
+                    onChange={(event) => {
+                      setVisaPurpose(event.target.value);
+                    }}
+                  >
+                    <option value="">{t("anyVisaType")}</option>
+                    {(["tourism", "business", "study"] as const).map((p) => (
+                      <option key={p} value={p}>
+                        {t(`visaPurposes.${p}`)}
+                      </option>
+                    ))}
+                  </select>
+                </BookingField>
+              </>
+            ) : null}
 
-          {tab === "visas" ? (
-            <>
-              <BookingField label={t("visaDestination")} icon={<PinIcon className={iconClass} />}>
-                <Combobox
-                  name="country"
-                  variant="widget"
-                  value={visaCountry}
-                  onChange={(value, item) => {
-                    setVisaCountry(value);
-                    // Only a genuine pick from the list narrows the results
-                    // below — free text that matched nothing is not a country
-                    // id the API filter could use.
-                    setVisaFilterCountry(item ? value : "");
-                  }}
-                  items={visaItems}
-                  placeholder={t("chooseCountry")}
-                  labels={{
-                    listbox: tPicker("countryListbox"),
-                    empty: tPicker("empty"),
-                    loading: tPicker("loading"),
-                  }}
+            {tab === "cruises" ? (
+              <>
+                <CruiseRoutePicker
+                  ports={cruisePorts}
+                  country={cruiseCountry}
+                  onCountryChange={setCruiseCountry}
+                  port={cruisePort}
+                  onPortChange={setCruisePort}
                 />
-              </BookingField>
-              <BookingField label={t("visaFor")} icon={<PassportIcon className={iconClass} />}>
-                <select
-                  name="purpose"
-                  className={bookingControlClass}
-                  value={visaPurpose}
-                  onChange={(event) => {
-                    setVisaPurpose(event.target.value);
-                  }}
-                >
-                  <option value="">{t("anyVisaType")}</option>
-                  {(["tourism", "business", "study"] as const).map((p) => (
-                    <option key={p} value={p}>
-                      {t(`visaPurposes.${p}`)}
-                    </option>
-                  ))}
-                </select>
-              </BookingField>
-            </>
-          ) : null}
+                <BookingField label={t("leaving")} icon={<CalendarIcon className={iconClass} />}>
+                  <input
+                    type="date"
+                    name="depart"
+                    min={today}
+                    value={cruiseDepart}
+                    onChange={(event) => {
+                      setCruiseDepart(event.target.value);
+                    }}
+                    className={bookingControlClass}
+                  />
+                </BookingField>
+              </>
+            ) : null}
+          </div>
 
-          {tab === "cruises" ? (
-            <>
-              <CruiseRoutePicker
-                ports={cruisePorts}
-                country={cruiseCountry}
-                onCountryChange={setCruiseCountry}
-                port={cruisePort}
-                onPortChange={setCruisePort}
-              />
-              <BookingField label={t("leaving")} icon={<CalendarIcon className={iconClass} />}>
-                <input
-                  type="date"
-                  name="depart"
-                  min={today}
-                  value={cruiseDepart}
-                  onChange={(event) => {
-                    setCruiseDepart(event.target.value);
-                  }}
-                  className={bookingControlClass}
-                />
-              </BookingField>
-            </>
-          ) : null}
-
-          <div className="p-2 lg:flex lg:items-center lg:ps-3">
+          <div className="flex shrink-0 items-stretch ps-1.5 lg:items-center lg:p-2 lg:ps-3">
             {/* An arrow, not a magnifier: this button does not search an
                 inventory, it carries what has been filled in through to the
-                request form an agent answers. */}
-            <Button type="submit" size="lg" className="w-full lg:w-auto">
-              {t("search")}
+                request form an agent answers. On a phone it is the arrow
+                alone — the label stays for screen readers. */}
+            <Button
+              type="submit"
+              size="lg"
+              className="max-lg:h-auto max-lg:rounded-xl max-lg:px-3.5 lg:w-auto"
+            >
+              <span className="max-lg:sr-only">{t("search")}</span>
               <ChevronForwardIcon className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
             </Button>
           </div>
@@ -597,7 +613,11 @@ export function BookingWidget({
         </p>
       ) : null}
 
-      <p className="mt-3 text-center text-xs text-white/70 lg:text-start">{t("disclaimer")}</p>
+      {stuck ? null : (
+        <p className="mt-2.5 text-center text-xs text-white/70 lg:mt-3 lg:text-start">
+          {t("disclaimer")}
+        </p>
+      )}
     </div>
   );
 }

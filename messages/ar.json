@@ -51,7 +51,8 @@
       "two": "فرع 2",
       "three": "فرع 3"
     },
-    "credentialsTitle": "بيانات التسجيل"
+    "credentialsTitle": "بيانات التسجيل",
+    "paymentTitle": "وسائل الدفع"
   },
   "Services": {
     "eyebrow": "خدماتنا",
@@ -584,6 +585,21 @@
         "title": "شركة مرخّصة",
         "body": "سجل تجاري {cr} — تتعامل مع جهة سعودية موثّقة."
       }
+    },
+    "stats": {
+      "destinations": {
+        "label": "وجهة حول العالم"
+      },
+      "branches": {
+        "label": "فروع لخدمتك"
+      },
+      "services": {
+        "label": "خدمات في مكان واحد"
+      },
+      "licensed": {
+        "value": "مرخّصة",
+        "label": "سجل تجاري {cr}"
+      }
     }
   },
   "QuickServices": {
@@ -613,7 +629,9 @@
     "cardPointsUnit": "نقطة",
     "cardPointsCaption": "رصيد توضيحي",
     "cardTier": "عضو المكافآت",
-    "cardCta": "الانضمام مجاني"
+    "cardCta": "الانضمام مجاني",
+    "short": "اجمع نقاطًا مع كل حجز واستبدلها بخصومات وترقيات.",
+    "join": "انضم مجانًا"
   },
   "DestinationsPage": {
     "title": "الوجهات",

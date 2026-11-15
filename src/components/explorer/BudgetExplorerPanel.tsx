@@ -31,7 +31,7 @@ interface BudgetExplorerPanelProps {
    than the h-11 this used to be — it matches the purpose chips on /visas,
    and on a phone four or five of these used to wrap into two full rows per
    group; shaved height times two groups was real scroll saved. */
-const CHIP = "h-10 shrink-0 rounded-full border px-3.5 text-sm font-semibold transition-all duration-200 ease-out-soft";
+const CHIP = "h-8 shrink-0 rounded-full border px-3 text-xs font-semibold sm:h-10 sm:px-3.5 sm:text-sm transition-all duration-200 ease-out-soft";
 const CHIP_ON = "border-gold-500 bg-gold-50 text-navy-900";
 const CHIP_OFF = "border-sand-200 text-sand-600 hover:border-navy-300 hover:text-navy-900";
 
@@ -86,7 +86,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
 
   return (
     <div>
-      <div className="rounded-2xl border border-sand-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+      <div className="rounded-2xl border border-sand-200 bg-white p-3 shadow-sm sm:p-6 lg:p-8">
         {/* Both columns open with a label row of the same height and the grid
             aligns to the top, so "Budget per person" and "Trip length" sit on
             one line. Bottom-aligning them, as this did, lines up the feet of
@@ -94,16 +94,16 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
             `sm:grid-cols-2` a step before the `lg` two-up split: a phone in
             landscape or a small tablet has the width for two columns before
             it has the width for the wider auto-sized second one. */}
-        <div className="grid items-start gap-x-8 gap-y-5 sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="grid items-start gap-x-8 gap-y-3 sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto]">
           <div>
-            <div className="flex h-7 items-center justify-between gap-4">
-              <label htmlFor="budget" className="text-sm font-medium text-navy-900">
+            <div className="flex h-6 items-center justify-between gap-4 sm:h-7">
+              <label htmlFor="budget" className="text-xs font-medium text-navy-900 sm:text-sm">
                 {t("budgetLabel")}
               </label>
               <output
                 htmlFor="budget"
                 aria-live="polite"
-                className="text-lg font-bold text-gold-700 sm:text-xl"
+                className="text-base font-bold text-gold-700 sm:text-xl"
               >
                 {t("upTo", { price: formatPrice(String(budget), locale) })}
               </output>
@@ -112,7 +112,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
             <input
               id="budget"
               type="range"
-              className="range-gold mt-3"
+              className="range-gold mt-2 sm:mt-3"
               min={min}
               max={max}
               step={step}
@@ -124,17 +124,17 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
               style={{ "--range-fill": `${fillPercent}%` } as CSSProperties}
             />
 
-            <div className="mt-2 flex h-4 items-center justify-between text-xs text-sand-500">
+            <div className="mt-1 flex h-4 items-center justify-between text-[10px] text-sand-500 sm:mt-2 sm:text-xs">
               <span>{formatPrice(String(min), locale)}</span>
               <span>{formatPrice(String(max), locale)}</span>
             </div>
           </div>
 
           <div className="lg:border-s lg:border-sand-200 lg:ps-10">
-            <p className="flex h-7 items-center text-sm font-medium text-navy-900">
+            <p className="flex h-6 items-center text-xs font-medium text-navy-900 sm:h-7 sm:text-sm">
               {t("nightsLabel")}
             </p>
-            <div role="radiogroup" aria-label={t("nightsLabel")} className={cn("mt-3", CHIP_ROW)}>
+            <div role="radiogroup" aria-label={t("nightsLabel")} className={cn("mt-1.5 sm:mt-3", CHIP_ROW)}>
               {NIGHTS_BANDS.map((band) => {
                 const selected = band === nights;
                 return (
@@ -159,12 +159,12 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
             Hidden when the catalogue only holds one kind: a filter with a
             single option filters nothing. */}
         {tripTypes.length > 1 ? (
-          <div className="mt-5 border-t border-sand-200 pt-4">
-            <p className="text-sm font-medium text-navy-900">{t("tripTypeLabel")}</p>
+          <div className="mt-3 border-t border-sand-200 pt-3 sm:mt-5 sm:pt-4">
+            <p className="text-xs font-medium text-navy-900 sm:text-sm">{t("tripTypeLabel")}</p>
             <div
               role="radiogroup"
               aria-label={t("tripTypeLabel")}
-              className={cn("mt-3", CHIP_ROW)}
+              className={cn("mt-1.5 sm:mt-3", CHIP_ROW)}
             >
               <button
                 type="button"
@@ -197,8 +197,8 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
         {/* The count belongs to the filters, not to the results: it is the
             answer to the last thing the reader touched, and it was sitting
             outside the card where a change to a chip left it unnoticed. */}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-sand-200 pt-4">
-          <p aria-live="polite" className="text-sm font-semibold text-navy-900">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-sand-200 pt-2 sm:mt-5 sm:pt-4">
+          <p aria-live="polite" className="text-xs font-semibold text-navy-900 sm:text-sm">
             {t("count", { count: results.length })}
           </p>
 
@@ -206,7 +206,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
             type="button"
             onClick={reset}
             disabled={!touched}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-sand-600 transition-colors hover:bg-sand-100 hover:text-navy-900 disabled:pointer-events-none disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-sand-600 sm:py-2 sm:text-sm transition-colors hover:bg-sand-100 hover:text-navy-900 disabled:pointer-events-none disabled:opacity-40"
           >
             <ResetIcon className="h-4 w-4" />
             {t("reset")}
@@ -218,7 +218,7 @@ export function BudgetExplorerPanel({ packages, min, max, step }: BudgetExplorer
         <ScrollGrid
           label={t("title")}
           gridClassName="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-          className="mt-6"
+          className="mt-3 sm:mt-6"
         >
           {results.slice(0, 6).map((pkg) => (
             <PackageCard key={pkg.id} pkg={pkg} />

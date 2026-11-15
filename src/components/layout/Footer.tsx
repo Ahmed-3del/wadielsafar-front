@@ -1,6 +1,13 @@
 import type { ComponentType, SVGProps } from "react";
 import Image from "next/image";
 import footerScene from "@/assets/footer-scene.webp";
+import tamaraLogo from "@/assets/payments/tamara.png";
+import tabbyLogo from "@/assets/payments/tabby.png";
+import madaLogo from "@/assets/payments/mada.png";
+import applePayLogo from "@/assets/payments/applepay.png";
+import mastercardLogo from "@/assets/payments/mastercard.png";
+import visaLogo from "@/assets/payments/visa.png";
+import bankLogo from "@/assets/payments/bank.png";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
@@ -27,6 +34,22 @@ import {
 import { whatsappLink } from "@/lib/utils/whatsapp";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
+
+/*
+ * How a trip can be paid for, shown the way the social links are: a row of
+ * small white chips. Names are the alt text; the order is the client's.
+ * Artwork cropped from the client-supplied strip — swap the files in
+ * src/assets/payments/ for official vector marks when the client sends them.
+ */
+const PAYMENT_METHODS = [
+  { key: "tamara", logo: tamaraLogo, label: { ar: "تمارا", en: "Tamara" } },
+  { key: "tabby", logo: tabbyLogo, label: { ar: "تابي", en: "Tabby" } },
+  { key: "mada", logo: madaLogo, label: { ar: "مدى", en: "mada" } },
+  { key: "applepay", logo: applePayLogo, label: { ar: "Apple Pay", en: "Apple Pay" } },
+  { key: "mastercard", logo: mastercardLogo, label: { ar: "ماستركارد", en: "Mastercard" } },
+  { key: "visa", logo: visaLogo, label: { ar: "فيزا", en: "Visa" } },
+  { key: "bank", logo: bankLogo, label: { ar: "تحويل بنكي", en: "Bank transfer" } },
+] as const;
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -235,6 +258,24 @@ export async function Footer() {
             >
               {tCommon("bookNow")}
             </Link>
+
+            <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-sand-500">
+              {tFooter("paymentTitle")}
+            </p>
+            <ul className="mt-2 flex flex-wrap gap-2">
+              {PAYMENT_METHODS.map(({ key, logo, label }) => (
+                <li
+                  key={key}
+                  className="grid h-10 place-items-center rounded-lg border border-sand-200 bg-white px-2"
+                >
+                  <Image
+                    src={logo}
+                    alt={label[isArabic ? "ar" : "en"]}
+                    className="h-6 w-auto max-w-16 object-contain"
+                  />
+                </li>
+              ))}
+            </ul>
           </div>
         </Container>
 
@@ -253,6 +294,7 @@ export async function Footer() {
               nobody needs and justify-center centers what's left, at every
               width, with no per-breakpoint column count to keep in sync. */}
           <ScrollGrid
+            mobile="wide"
             label={tFooter("branchesTitle")}
             gridClassName="sm:grid-cols-[repeat(auto-fit,minmax(240px,300px))] sm:justify-center"
             className="mt-4"

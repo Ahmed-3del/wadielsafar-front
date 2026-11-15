@@ -85,7 +85,7 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
             src={cover}
             alt={country}
             fill
-            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 28vw, (min-width: 640px) 45vw, 72vw"
+            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 28vw, (min-width: 640px) 45vw, 42vw"
             className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.07]"
           />
         </div>
@@ -100,7 +100,7 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
             the white ring itself already separates the badge from the photo
             without one. */}
         <div className="absolute inset-x-0 bottom-0 flex translate-y-1/2 justify-center">
-          <span className="grid h-12 w-12 place-items-center overflow-hidden rounded-full border-[3px] border-white bg-sand-100">
+          <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-full border-[3px] border-white bg-sand-100 sm:h-12 sm:w-12">
             {flag ? (
               <Image
                 src={flag}
@@ -116,9 +116,9 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col items-center px-3 pb-2.5 pt-7 text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gold-700">{country}</p>
-        <h3 className="mt-1 line-clamp-2 text-sm font-bold leading-snug text-navy-900">
+      <div className="flex flex-1 flex-col items-center px-2 pb-2 pt-6 text-center sm:px-3 sm:pb-2.5 sm:pt-7">
+        <p className="max-w-full truncate text-[10px] font-semibold uppercase tracking-wide text-gold-700 sm:text-xs sm:tracking-widest">{country}</p>
+        <h3 className="mt-0.5 line-clamp-2 text-xs font-bold sm:mt-1 sm:text-sm leading-snug text-navy-900">
           {/* Stretched link: the whole card is the target, but only the visa
               name is announced. The apply button below sits above it. */}
           <Link href={`/visas/${visa.id}`} className="after:absolute after:inset-0">
@@ -126,15 +126,11 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
           </Link>
         </h3>
 
-        {/* Still all four facts a traveller asks — price, processing,
-            validity, entry type — but as a row of small stat blocks, label
-            over value, each centred in its own cell. The label-then-value
-            pairs this replaced were start-aligned inside a centred card: two
-            different alignments arguing on the same few square centimetres,
-            and a fact with nothing in the cell beside it read as adrift
-            rather than as one stat among several. Centred, every cell reads
-            the same way whether its neighbour is filled or not. */}
-        <dl className="mt-2 grid w-full grid-cols-2 gap-x-2 gap-y-2 border-t border-sand-200 pt-2.5 text-xs">
+        {/* Price and processing time, and nothing else — the client asked
+            for the card to carry just those two. Validity and entry type are
+            on the visa's own page, one tap away. Label over value, each
+            centred in its own cell. */}
+        <dl className="mt-2 grid w-full grid-cols-2 gap-x-1.5 border-t border-sand-200 pt-2 text-[11px] sm:gap-x-2 sm:pt-2.5 sm:text-xs">
           <div className="flex flex-col items-center gap-0.5">
             <dt className="text-[11px] text-sand-500">{t("price")}</dt>
             <dd className="font-bold text-navy-900">{formatPrice(visa.price, locale)}</dd>
@@ -152,27 +148,11 @@ export function VisaCard({ visa, className }: { visa: VisaType; className?: stri
               {t("workingDays", { days: visa.processing_time_days })}
             </dd>
           </div>
-          {visa.validity_days ? (
-            <div className="flex flex-col items-center gap-0.5">
-              <dt className="text-[11px] text-sand-500">{t("validityLabel")}</dt>
-              <dd className="font-semibold text-navy-900">
-                {t("days", { days: visa.validity_days })}
-              </dd>
-            </div>
-          ) : null}
-          {/* Shown only when the record says so. Guessing "single entry" is how
-              someone books a side trip they are not allowed to take. */}
-          {visa.entry_type ? (
-            <div className="flex flex-col items-center gap-0.5">
-              <dt className="text-[11px] text-sand-500">{t("entryLabel")}</dt>
-              <dd className="font-semibold text-navy-900">{t(`entry.${visa.entry_type}`)}</dd>
-            </div>
-          ) : null}
         </dl>
 
         <Link
           href={`/visas/${visa.id}`}
-          className={cn(buttonVariants("primary", "sm"), "relative mt-2.5 w-full")}
+          className={cn(buttonVariants("primary", "sm"), "relative mt-2 w-full max-sm:h-8 max-sm:text-xs sm:mt-2.5")}
         >
           {t("apply")}
         </Link>

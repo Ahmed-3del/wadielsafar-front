@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { HomeSearch } from "./HomeSearch";
 import type { BookingOption } from "@/components/booking/BookingWidget";
@@ -22,7 +23,14 @@ import type { SearchResultSets } from "@/types/search";
  * and it is a sibling of this component now that both can be positioned
  * independently — page.tsx fetches once and hands the same object to both.
  */
-export async function SearchBand({ results }: { results: SearchResultSets }) {
+export async function SearchBand({
+  results,
+  afterBand,
+}: {
+  results: SearchResultSets;
+  /** Shown between the band and its results — see HomeSearch. */
+  afterBand?: ReactNode;
+}) {
   const [locale, tBooking, destinations, visaCountries, popularAirports, cruisePorts, hero] =
     await Promise.all([
       getLocale(),
@@ -59,6 +67,7 @@ export async function SearchBand({ results }: { results: SearchResultSets }) {
       defaultOrigin={defaultOrigin}
       results={results}
       hero={hero}
+      afterBand={afterBand}
     />
   );
 }
