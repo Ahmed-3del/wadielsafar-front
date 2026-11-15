@@ -6,5 +6,5 @@ interface SectionProps extends HTMLAttributes<HTMLElement> {
 }
 
 export function Section({ className, as: Tag = "section", ...props }: SectionProps) {
-  return <Tag className={cn("py-10 sm:py-16 lg:py-20", className)} {...props} />;
+  return <Tag className={cn("py-6 sm:py-8 lg:py-10", className)} {...props} />;
 }

@@ -246,7 +246,7 @@ export function HomeSearch({
               style={pinned ? { top: headerBottom } : undefined}
               className={
                 pinned
-                  ? "bg-navy-900/95 fixed inset-x-0 z-40 px-4 pt-2 pb-2.5 shadow-lg backdrop-blur-md"
+                  ? "bg-navy-900/95 fixed inset-x-0 z-40 max-h-[calc(100dvh-5rem)] overflow-y-auto px-4 pt-2 pb-2.5 shadow-lg backdrop-blur-md"
                   : undefined
               }
             >

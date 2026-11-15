@@ -21,12 +21,11 @@ export function BookingField({ label, icon, children, className }: BookingFieldP
   return (
     <label
       className={cn(
-        // A floor width on a phone, where the fields share one sideways-
-        // scrolling row: flex-1 lets two fields fill it, and the floor makes a
-        // third or fourth overflow into the scroll instead of squeezing.
-        "group relative flex min-w-[8rem] flex-1 shrink-0 cursor-pointer snap-start items-center gap-3 px-3 py-2 transition-colors",
-        "lg:min-w-0 lg:shrink lg:px-4 lg:py-2.5",
-        "hover:bg-sand-50 focus-within:bg-sand-50",
+        // A tile on a phone — the widget lays the fields out as a two-column
+        // grid there — and a plain divided cell of one row from lg up.
+        "group relative flex min-w-0 cursor-pointer items-center gap-3 rounded-xl bg-sand-50 px-3 py-2 ring-1 ring-sand-200/70 ring-inset transition-colors",
+        "focus-within:ring-gold-500 hover:bg-sand-100",
+        "lg:flex-1 lg:rounded-none lg:bg-transparent lg:px-4 lg:py-2.5 lg:ring-0 lg:hover:bg-sand-50 lg:focus-within:bg-sand-50",
         className,
       )}
     >

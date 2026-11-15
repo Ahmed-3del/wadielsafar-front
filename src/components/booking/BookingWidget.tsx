@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
 import { BookingField, bookingControlClass } from "./BookingField";
@@ -15,6 +15,8 @@ import {
   PassportIcon,
   PinIcon,
   ChevronForwardIcon,
+  CloseIcon,
+  SearchIcon,
   PlaneIcon,
   ShipIcon,
   UsersIcon,
@@ -205,6 +207,68 @@ export function BookingWidget({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- onFlightsFilterChange is the parent's setState setter, stable across renders.
   }, [originCode, destinationCode]);
 
+  /*
+   * Pinned under the header on a phone, the widget folds down to its tabs and
+   * one summary line of what is chosen; a tap opens the full form inside the
+   * bar. The form stays mounted while folded (hidden, not removed) so the
+   * fields with no state of their own here — a package date, a guest count —
+   * keep what was typed. Unpinning always folds it back.
+   */
+  const locale = useLocale();
+  const [expanded, setExpanded] = useState(false);
+  const [wasStuck, setWasStuck] = useState(stuck);
+  if (stuck !== wasStuck) {
+    setWasStuck(stuck);
+    setExpanded(false);
+  }
+  const folded = stuck && !expanded;
+
+  function labelOf(options: BookingOption[], value: string) {
+    return options.find((option) => option.value === value)?.label ?? value;
+  }
+
+  /** What is chosen on the open tab, in one line — the folded bar's label. */
+  function summary(): string {
+    const anyDestination = t("anyDestination");
+    const isArabic = locale === "ar";
+    switch (tab) {
+      case "packages":
+        return [
+          destination ? labelOf(destinations, destination) : anyDestination,
+          packagesBudget
+            ? t("upTo", { amount: Number(packagesBudget).toLocaleString("en-US") })
+            : t("anyBudget"),
+        ].join(" · ");
+      case "hotels":
+        return [destination ? labelOf(destinations, destination) : anyDestination, checkIn]
+          .filter(Boolean)
+          .join(" · ");
+      case "visas":
+        return [
+          visaCountry ? labelOf(visaCountries, visaCountry) : t("chooseCountry"),
+          visaPurpose
+            ? t(`visaPurposes.${visaPurpose as "tourism" | "business" | "study"}`)
+            : t("anyVisaType"),
+        ].join(" · ");
+      case "cruises": {
+        const port = cruisePorts.find((row) => row.code === cruisePort);
+        const country = cruisePorts.find((row) => row.country_code === cruiseCountry);
+        const place = port
+          ? isArabic
+            ? port.city_ar
+            : port.city_en
+          : country
+            ? isArabic
+              ? country.country_ar
+              : country.country_en
+            : anyDestination;
+        return [place, cruiseDepart].filter(Boolean).join(" · ");
+      }
+      case "flights":
+        return [origin, arrival || t("toPlaceholder")].filter(Boolean).join(" · ");
+    }
+  }
+
   const today = todayIso();
 
   /** Clears a later date that the newly chosen earlier one has invalidated. */
@@ -279,7 +343,7 @@ export function BookingWidget({
       <div
         role="tablist"
         aria-label={t("tabsLabel")}
-        className="grid grid-cols-5 gap-1.5 pb-2 lg:flex lg:flex-wrap lg:gap-2 lg:pb-2.5"
+        className="mb-2 grid grid-cols-5 gap-1 rounded-2xl bg-white/10 p-1 ring-1 ring-white/10 lg:mb-0 lg:flex lg:flex-wrap lg:gap-2 lg:rounded-none lg:bg-transparent lg:p-0 lg:pb-2.5 lg:ring-0"
       >
         {TABS.map(({ id, Icon }) => {
           const active = tab === id;
@@ -293,11 +357,11 @@ export function BookingWidget({
                 setTab(id);
               }}
               className={cn(
-                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1.5 text-[11px] leading-tight font-semibold transition-all duration-200",
+                "flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 py-1.5 text-[11px] leading-tight font-semibold transition-all duration-200",
                 "lg:shrink-0 lg:flex-row lg:gap-2 lg:rounded-full lg:px-4 lg:py-2 lg:text-sm",
                 active
                   ? "text-navy-900 bg-white shadow-md"
-                  : "bg-white/10 text-white/90 hover:bg-white/20",
+                  : "text-white/85 hover:bg-white/15 lg:bg-white/10 lg:hover:bg-white/20",
               )}
             >
               {/* The icon carries the selection too, not just the pill behind
@@ -316,6 +380,28 @@ export function BookingWidget({
         })}
       </div>
 
+      {folded ? (
+        <button
+          type="button"
+          onClick={() => {
+            setExpanded(true);
+          }}
+          aria-expanded={false}
+          className="flex w-full items-center gap-3 rounded-2xl bg-white px-3 py-2 text-start shadow-lg lg:hidden"
+        >
+          <span className="bg-gold-50 text-gold-700 grid h-9 w-9 shrink-0 place-items-center rounded-xl">
+            <SearchIcon className="h-4 w-4" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="text-sand-500 block text-[11px] font-medium">{t(`tabs.${tab}`)}</span>
+            <span className="text-navy-900 block truncate text-sm font-semibold">{summary()}</span>
+          </span>
+          <span className="bg-navy-900 shrink-0 rounded-full px-3 py-1.5 text-xs font-bold text-white">
+            {t("editSearch")}
+          </span>
+        </button>
+      ) : null}
+
       {/* noValidate so the guard in handleSubmit is what runs. Left to the
           browser, an out-of-range date is refused with a native tooltip in the
           browser's language rather than the site's — an Arabic visitor on an
@@ -323,11 +409,14 @@ export function BookingWidget({
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="rounded-2xl bg-white p-1.5 shadow-xl lg:rounded-3xl lg:p-2"
+        className={cn(
+          "rounded-2xl bg-white p-2 shadow-xl lg:rounded-3xl lg:p-2",
+          folded && "hidden",
+        )}
         key={tab}
       >
         {tab === "flights" ? (
-          <div className="flex flex-wrap gap-1.5 px-1 pb-1.5 lg:gap-2 lg:px-2 lg:pt-2 lg:pb-1">
+          <div className="flex flex-wrap gap-1.5 pb-2 lg:gap-2 lg:px-2 lg:pt-2 lg:pb-1">
             {([true, false] as const).map((isRound) => (
               <button
                 key={String(isRound)}
@@ -349,13 +438,12 @@ export function BookingWidget({
           </div>
         ) : null}
 
-        {/* One row at every width. On a phone the fields scroll sideways
-            under a fixed submit button rather than stacking — stacked, the
-            form was five rows tall, far too much for a bar that stays pinned
-            to the top of the screen. The next field peeking in at the edge is
-            what says the row scrolls. */}
-        <div className="flex items-stretch lg:mt-1">
-          <div className="divide-sand-200 no-scrollbar flex min-w-0 flex-1 snap-x divide-x overflow-x-auto lg:items-stretch lg:overflow-visible">
+        {/* On a phone: a two-column grid of field tiles, with an odd last
+            field taking the full row, and the submit button full width under
+            them — every field whole and readable, nothing cut off at an edge.
+            From lg up: the single divided row it always was. */}
+        <div className="flex flex-col gap-2 lg:mt-1 lg:flex-row lg:items-stretch lg:gap-0">
+          <div className="divide-sand-200 grid min-w-0 flex-1 grid-cols-2 gap-1.5 lg:flex lg:items-stretch lg:gap-0 lg:divide-x [&>*:last-child:nth-child(odd)]:col-span-2">
             {tab === "flights" ? (
               <>
                 <BookingField label={t("from")} icon={<PlaneIcon className={iconClass} />}>
@@ -587,19 +675,32 @@ export function BookingWidget({
             ) : null}
           </div>
 
-          <div className="flex shrink-0 items-stretch ps-1.5 lg:items-center lg:p-1.5 lg:ps-3">
+          <div className="flex shrink-0 gap-2 lg:items-center lg:p-1.5 lg:ps-3">
             {/* An arrow, not a magnifier: this button does not search an
                 inventory, it carries what has been filled in through to the
-                request form an agent answers. On a phone it is the arrow
-                alone — the label stays for screen readers. */}
+                request form an agent answers. */}
             <Button
               type="submit"
               size="lg"
-              className="max-lg:h-auto max-lg:rounded-xl max-lg:px-3.5 lg:h-12 lg:w-auto"
+              className="max-lg:h-11 max-lg:flex-1 max-lg:rounded-xl max-lg:text-base lg:h-12 lg:w-auto"
             >
-              <span className="max-lg:sr-only">{t("search")}</span>
+              <span>{t("search")}</span>
               <ChevronForwardIcon className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
             </Button>
+            {/* Folds the pinned bar back down. Only exists while pinned, and
+                pinning only happens on a phone. */}
+            {stuck ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setExpanded(false);
+                }}
+                aria-label={t("closeSearch")}
+                className="border-sand-200 text-navy-900 grid h-11 w-11 shrink-0 place-items-center rounded-xl border lg:hidden"
+              >
+                <CloseIcon className="h-4 w-4" />
+              </button>
+            ) : null}
           </div>
         </div>
       </form>

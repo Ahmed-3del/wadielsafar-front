@@ -562,7 +562,9 @@
     "portListbox": "موانئ المغادرة",
     "noPorts": "لا توجد موانئ مطابقة",
     "portCount": "{count, plural, one {ميناء واحد} two {ميناءان} few {# موانئ} many {# ميناءً} other {# ميناء}}",
-    "loading": "جارٍ البحث…"
+    "loading": "جارٍ البحث…",
+    "editSearch": "تعديل",
+    "closeSearch": "إغلاق البحث"
   },
   "Trust": {
     "eyebrow": "لماذا وادي السفر",

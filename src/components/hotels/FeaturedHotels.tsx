@@ -27,7 +27,7 @@ export async function FeaturedHotels() {
         {/* Two columns from the smallest phone up. A hotel card is short
             enough now — one image, a rating, a name, a price — that a single
             column just meant more scrolling for the same six hotels. */}
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-6 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
           {hotels.map((hotel, index) => (
             <Reveal key={hotel.id} delay={Math.min(index, 5) * 60}>
               <HotelCard hotel={hotel} />

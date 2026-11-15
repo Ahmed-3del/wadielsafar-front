@@ -59,7 +59,7 @@ export async function TrustSection() {
   ].filter((stat) => stat.value !== null);
 
   return (
-    <section aria-labelledby="trust-heading" className="bg-sand-50 py-6 sm:py-10">
+    <section aria-labelledby="trust-heading" className="bg-sand-50 py-5 sm:py-8">
       <Container>
         {/* Named for screen readers, not shown: the figures are the whole
             design, and a heading above them is the bulk this replaced. */}

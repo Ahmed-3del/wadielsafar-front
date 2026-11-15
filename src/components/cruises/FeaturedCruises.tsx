@@ -34,7 +34,7 @@ export async function FeaturedCruises() {
         </div>
 
         {cruises.length > 0 ? (
-          <Reveal className="mt-6 sm:mt-10">
+          <Reveal className="mt-4 sm:mt-6">
             <Rail label={t("title")}>
               {cruises.map((cruise) => (
                 <CruiseCard
@@ -48,7 +48,7 @@ export async function FeaturedCruises() {
         ) : (
           <EmptyState
             title={t("empty")}
-            className="mt-6 sm:mt-10"
+            className="mt-4 sm:mt-6"
             action={
               <Link href={contactHref({ service: "CRUISE" })} className={buttonVariants("primary", "md")}>
                 {t("requestCruise")}

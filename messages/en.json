@@ -562,7 +562,9 @@
     "portListbox": "Departure ports",
     "noPorts": "No ports match",
     "portCount": "{count, plural, one {1 port} other {# ports}}",
-    "loading": "Searching…"
+    "loading": "Searching…",
+    "editSearch": "Edit",
+    "closeSearch": "Close search"
   },
   "Trust": {
     "eyebrow": "Why Wadi Al Safar",

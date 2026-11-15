@@ -37,7 +37,7 @@ export async function PlanIncludes() {
       <Container>
         <SectionHeading title={t("title")} description={t("description")} />
         <FeatureGrid
-          className="mt-6 sm:mt-10"
+          className="mt-4 sm:mt-6"
           items={ITEMS.map(({ key, Icon }) => ({
             id: key,
             title: t(`items.${key}.title`),

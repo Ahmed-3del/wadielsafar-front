@@ -59,7 +59,7 @@ export async function SavingsSection() {
             mobile="wide"
           label={t("title")}
           gridClassName="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-          className="mt-6 sm:mt-10"
+          className="mt-4 sm:mt-6"
         >
           {live.map((promotion) => {
             const Icon = ICONS[promotion.icon] ?? TagIcon;

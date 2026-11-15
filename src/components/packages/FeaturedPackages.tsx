@@ -33,7 +33,7 @@ export async function FeaturedPackages() {
         </div>
 
         {packages.length > 0 ? (
-          <Reveal className="mt-6 sm:mt-10">
+          <Reveal className="mt-4 sm:mt-6">
             {/* A rail rather than a grid: package counts vary, and a rail never
                 leaves a half-empty final row. */}
             <Rail label={t("title")}>
@@ -49,7 +49,7 @@ export async function FeaturedPackages() {
         ) : (
           <EmptyState
             title={t("empty")}
-            className="mt-6 sm:mt-10"
+            className="mt-4 sm:mt-6"
             action={
               <Link href={contactHref({ service: "PACKAGE" })} className={buttonVariants("primary", "md")}>
                 {t("requestTrip")}

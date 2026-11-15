@@ -40,7 +40,7 @@ export async function ReadyMadeRail() {
           </Link>
         </div>
 
-        <Reveal className="mt-6 sm:mt-10">
+        <Reveal className="mt-4 sm:mt-6">
           <Rail label={t("title")}>
             {packages.map((pkg) => (
               <PackageCard

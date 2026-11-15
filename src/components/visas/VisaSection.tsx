@@ -38,7 +38,7 @@ export async function VisaSection() {
           /* One scrollable row, as the client asked: swipe on a phone, arrows
              from lg up. A three-across grid could only ever show three of the
              eighteen visas we actually sell. */
-          <Reveal className="mt-6 sm:mt-10 block">
+          <Reveal className="mt-4 sm:mt-6 block">
             <Rail label={t("title")}>
               {featured.map((visa) => (
                 <VisaCard
@@ -52,7 +52,7 @@ export async function VisaSection() {
         ) : (
           <EmptyState
             title={t("empty")}
-            className="mt-6 sm:mt-10"
+            className="mt-4 sm:mt-6"
             action={
               <Link href={contactHref({ service: "VISA" })} className={buttonVariants("primary", "md")}>
                 {t("apply")}
